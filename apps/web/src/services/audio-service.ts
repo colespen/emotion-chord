@@ -8,33 +8,48 @@ export class AudioService {
   static async initialize(): Promise<void> {
     if (this.isInitialized) return;
 
+    // Set master volume to prevent distortion
+    Tone.getDestination().volume.value = -12; // Reduce master volume by 12dB
+
     // Create a polyphonic synthesizer for playing chords
     this.synth = new Tone.PolySynth(Tone.Synth, {
+      volume: -8, // Additional volume reduction at synth level
       envelope: {
-        attack: 0.1,
-        decay: 0.3,
-        sustain: 0.7,
-        release: 2,
+        attack: 0.02,
+        decay: 0.2,
+        sustain: 0.4,
+        release: 1.5,
       },
       oscillator: {
-        type: 'sawtooth',
+        type: 'triangle', // Softer waveform than sawtooth
       },
-    }).toDestination();
+    });
 
-    // Apply some effects for richer sound
+    // Apply effects for richer sound with controlled levels
     const reverb = new Tone.Reverb({
-      decay: 1.5,
-      wet: 0.3,
+      decay: 1.2,
+      wet: 0.2, // Reduced wet signal to prevent muddiness
     });
     
     const filter = new Tone.Filter({
-      frequency: 1000,
+      frequency: 1200,
       type: 'lowpass',
+      rolloff: -12, // Gentler filter rolloff
     });
 
+    // Add a compressor to control dynamics and prevent clipping
+    const compressor = new Tone.Compressor({
+      threshold: -12,
+      ratio: 3,
+      attack: 0.003,
+      release: 0.1,
+    });
+
+    // Signal chain: synth -> filter -> reverb -> compressor -> destination
     this.synth.connect(filter);
     filter.connect(reverb);
-    reverb.toDestination();
+    reverb.connect(compressor);
+    compressor.toDestination();
 
     this.isInitialized = true;
   }
@@ -53,6 +68,7 @@ export class AudioService {
     chord: ChordSuggestion,
     duration: string = '2n'
   ): Promise<void> {
+    // Auto-initialize if not already done
     await this.initialize();
     await this.startAudioContext();
 
@@ -63,7 +79,7 @@ export class AudioService {
     // Convert MIDI notes to frequencies
     const frequencies = chord.voicing.map(this.midiToFrequency);
     
-    // Play the chord
+    // Play the chord with controlled timing
     this.synth.triggerAttackRelease(frequencies, duration);
   }
 
@@ -71,6 +87,7 @@ export class AudioService {
     chord: ChordSuggestion,
     noteLength: string = '8n'
   ): Promise<void> {
+    // Auto-initialize if not already done
     await this.initialize();
     await this.startAudioContext();
 
@@ -80,11 +97,14 @@ export class AudioService {
 
     const frequencies = chord.voicing.map(this.midiToFrequency);
     
+    // Clear any existing scheduled events
+    Tone.getTransport().cancel();
+    
     // Play notes in sequence with slight delay
     frequencies.forEach((freq, index) => {
       Tone.getTransport().schedule((time) => {
         this.synth!.triggerAttackRelease(freq, noteLength, time);
-      }, `+${index * 0.2}`);
+      }, `+${index * 0.15}`); // Slightly faster arpeggio timing
     });
 
     Tone.getTransport().start();
@@ -92,7 +112,8 @@ export class AudioService {
     // Stop transport after arpeggio completes
     Tone.getTransport().schedule(() => {
       Tone.getTransport().stop();
-    }, `+${frequencies.length * 0.2 + 1}`);
+      Tone.getTransport().cancel();
+    }, `+${frequencies.length * 0.15 + 1}`);
   }
 
   static stopAll(): void {

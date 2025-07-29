@@ -29,7 +29,12 @@ export function useAudio() {
     setState(prev => ({ ...prev, isPlaying: true, error: null }));
     
     try {
+      // Auto-initialize audio on first play (handles user interaction requirement)
       await AudioService.playChord(chord);
+      
+      // Mark as initialized after successful play
+      setState(prev => ({ ...prev, isInitialized: true }));
+      
       // Reset playing state after chord duration
       setTimeout(() => {
         setState(prev => ({ ...prev, isPlaying: false }));
@@ -44,11 +49,16 @@ export function useAudio() {
     setState(prev => ({ ...prev, isPlaying: true, error: null }));
     
     try {
+      // Auto-initialize audio on first play (handles user interaction requirement)
       await AudioService.playArpeggio(chord);
-      // Reset playing state after arpeggio duration
+      
+      // Mark as initialized after successful play
+      setState(prev => ({ ...prev, isInitialized: true }));
+      
+      // Reset playing state after arpeggio duration (adjusted for faster timing)
       setTimeout(() => {
         setState(prev => ({ ...prev, isPlaying: false }));
-      }, chord.voicing.length * 200 + 1000);
+      }, chord.voicing.length * 150 + 1000);
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Failed to play arpeggio';
       setState(prev => ({ ...prev, isPlaying: false, error: errorMessage }));

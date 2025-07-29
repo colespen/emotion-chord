@@ -16,7 +16,6 @@ export default function Home() {
     isPlaying,
     isInitialized,
     error: audioError,
-    initializeAudio,
     playChord,
     playArpeggio,
     stopAudio,
@@ -25,18 +24,12 @@ export default function Home() {
   const [playingChord, setPlayingChord] = useState<string | null>(null);
 
   const handlePlayChord = async (chord: ChordSuggestion) => {
-    if (!isInitialized) {
-      await initializeAudio();
-    }
     setPlayingChord(chord.symbol);
     await playChord(chord);
     setPlayingChord(null);
   };
 
   const handlePlayArpeggio = async (chord: ChordSuggestion) => {
-    if (!isInitialized) {
-      await initializeAudio();
-    }
     setPlayingChord(chord.symbol);
     await playArpeggio(chord);
     setPlayingChord(null);
@@ -67,7 +60,7 @@ export default function Home() {
           <div className="max-w-2xl mx-auto">
             <EmotionInput onSubmit={generateChord} loading={loading} />
             
-            {/* Audio Controls */}
+            {/* Audio Status & Controls */}
             {data && (
               <div className="flex items-center justify-center gap-4 mt-6 p-4 bg-white rounded-lg border border-gray-200">
                 <div className="flex items-center gap-2">
@@ -77,20 +70,13 @@ export default function Home() {
                     <VolumeX className="h-5 w-5 text-gray-400" />
                   )}
                   <span className="text-sm text-gray-600">
-                    Audio {isInitialized ? 'Ready' : 'Not Initialized'}
+                    {isInitialized ? 'Audio Ready' : 'Audio will initialize on first play'}
                   </span>
                 </div>
-                {!isInitialized && (
-                  <Button size="sm" onClick={initializeAudio}>
-                    Initialize Audio
-                  </Button>
-                )}
-                {data && (
-                  <Button size="sm" variant="outline" onClick={clearData}>
-                    <RotateCcw className="h-4 w-4 mr-2" />
-                    Reset
-                  </Button>
-                )}
+                <Button size="sm" variant="outline" onClick={clearData}>
+                  <RotateCcw className="h-4 w-4 mr-2" />
+                  Reset
+                </Button>
               </div>
             )}
           </div>
