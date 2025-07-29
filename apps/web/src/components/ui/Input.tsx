@@ -1,9 +1,7 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
 
-interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {}
-
-export function Input({ className, type = 'text', ...props }: InputProps) {
+export function Input({ className, type = 'text', ...props }: React.InputHTMLAttributes<HTMLInputElement>) {
   return (
     <input
       type={type}
@@ -16,9 +14,7 @@ export function Input({ className, type = 'text', ...props }: InputProps) {
   );
 }
 
-interface TextareaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {}
-
-export function Textarea({ className, ...props }: TextareaProps) {
+export function Textarea({ className, ...props }: React.TextareaHTMLAttributes<HTMLTextAreaElement>) {
   return (
     <textarea
       className={cn(

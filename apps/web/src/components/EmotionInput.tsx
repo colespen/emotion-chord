@@ -71,7 +71,7 @@ export function EmotionInput({ onSubmit, loading }: EmotionInputProps) {
               className="text-left text-xs p-2 bg-gray-50 hover:bg-gray-100 rounded-md transition-colors border border-gray-200"
               disabled={loading}
             >
-              "{suggestion}"
+              &quot;{suggestion}&quot;
             </button>
           ))}
         </div>

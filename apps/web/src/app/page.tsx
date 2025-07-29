@@ -13,7 +13,6 @@ import type { ChordSuggestion } from '@/types/emotion-chord';
 export default function Home() {
   const { data, loading, error, generateChord, clearData } = useEmotionChord();
   const {
-    isPlaying,
     isInitialized,
     isArpeggioLooping,
     error: audioError,
@@ -60,8 +59,8 @@ export default function Home() {
             🎵 Emotion to Chord
           </h1>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Discover the musical expression of your emotions. Enter how you're feeling, 
-            and we'll generate the perfect chord using AI-powered emotion analysis.
+            Discover the musical expression of your emotions. Enter how you&apos;re feeling, 
+            and we&apos;ll generate the perfect chord using AI-powered emotion analysis.
           </p>
         </header>
 
