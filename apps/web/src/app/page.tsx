@@ -15,9 +15,10 @@ export default function Home() {
   const {
     isPlaying,
     isInitialized,
+    isArpeggioLooping,
     error: audioError,
     playChord,
-    playArpeggio,
+    toggleArpeggio,
     stopAudio,
   } = useAudio();
 
@@ -29,10 +30,20 @@ export default function Home() {
     setPlayingChord(null);
   };
 
-  const handlePlayArpeggio = async (chord: ChordSuggestion) => {
-    setPlayingChord(chord.symbol);
-    await playArpeggio(chord);
-    setPlayingChord(null);
+  const handleToggleArpeggio = async (chord: ChordSuggestion) => {
+    console.log('handleToggleArpeggio called with data:', data);
+    console.log('Emotion data:', data?.emotion);
+    console.log('Suggested tempo:', data?.emotion?.suggestedTempo);
+    
+    if (isArpeggioLooping) {
+      // If already looping, stop it
+      stopAudio();
+      setPlayingChord(null);
+    } else {
+      // Start the arpeggio loop with emotion-based timing
+      setPlayingChord(chord.symbol);
+      await toggleArpeggio(chord, data?.emotion);
+    }
   };
 
   const handleStop = () => {
@@ -112,9 +123,10 @@ export default function Home() {
                 <ChordDisplay
                   chord={data.primaryChord}
                   isPrimary={true}
-                  isPlaying={playingChord === data.primaryChord.symbol}
+                  isPlaying={playingChord === data.primaryChord.symbol && !isArpeggioLooping}
+                  isArpeggioLooping={isArpeggioLooping && playingChord === data.primaryChord.symbol}
                   onPlayChord={() => handlePlayChord(data.primaryChord)}
-                  onPlayArpeggio={() => handlePlayArpeggio(data.primaryChord)}
+                  onPlayArpeggio={() => handleToggleArpeggio(data.primaryChord)}
                   onStop={handleStop}
                 />
               </div>
@@ -130,9 +142,10 @@ export default function Home() {
                       <ChordDisplay
                         key={`${chord.symbol}-${index}`}
                         chord={chord}
-                        isPlaying={playingChord === chord.symbol}
+                        isPlaying={playingChord === chord.symbol && !isArpeggioLooping}
+                        isArpeggioLooping={isArpeggioLooping && playingChord === chord.symbol}
                         onPlayChord={() => handlePlayChord(chord)}
-                        onPlayArpeggio={() => handlePlayArpeggio(chord)}
+                        onPlayArpeggio={() => handleToggleArpeggio(chord)}
                         onStop={handleStop}
                       />
                     ))}

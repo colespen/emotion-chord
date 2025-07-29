@@ -176,7 +176,7 @@ export class ChordGenerator {
     for (let i = 0; i < notes.length; i++) {
       const note = notes[i];
       const cacheKey = `${note}4`;
-      
+
       let noteMidi = midiCache.get(cacheKey);
       if (noteMidi === undefined) {
         noteMidi = Note.midi(cacheKey) || 60;
@@ -220,44 +220,45 @@ export class ChordGenerator {
 
     // Select based on valence
     if (emotion.valence > 0.3) {
-      EMOTION_MUSICAL_CHARACTERISTICS.positive.chordQualities.forEach(q => 
+      EMOTION_MUSICAL_CHARACTERISTICS.positive.chordQualities.forEach((q) =>
         candidateQualities.add(q)
       );
     } else if (emotion.valence < -0.3) {
-      EMOTION_MUSICAL_CHARACTERISTICS.negative.chordQualities.forEach(q => 
+      EMOTION_MUSICAL_CHARACTERISTICS.negative.chordQualities.forEach((q) =>
         candidateQualities.add(q)
       );
     }
 
     // Add based on arousal
     if (emotion.arousal > 0.6) {
-      EMOTION_MUSICAL_CHARACTERISTICS.highEnergy.chordQualities.forEach(q => 
+      EMOTION_MUSICAL_CHARACTERISTICS.highEnergy.chordQualities.forEach((q) =>
         candidateQualities.add(q)
       );
     } else if (emotion.arousal < 0.4) {
-      EMOTION_MUSICAL_CHARACTERISTICS.lowEnergy.chordQualities.forEach(q => 
+      EMOTION_MUSICAL_CHARACTERISTICS.lowEnergy.chordQualities.forEach((q) =>
         candidateQualities.add(q)
       );
     }
 
     // Add based on tension
     if (emotion.tension > 0.6) {
-      EMOTION_MUSICAL_CHARACTERISTICS.tense.chordQualities.forEach(q => 
+      EMOTION_MUSICAL_CHARACTERISTICS.tense.chordQualities.forEach((q) =>
         candidateQualities.add(q)
       );
     } else if (emotion.tension < 0.4) {
-      EMOTION_MUSICAL_CHARACTERISTICS.relaxed.chordQualities.forEach(q => 
+      EMOTION_MUSICAL_CHARACTERISTICS.relaxed.chordQualities.forEach((q) =>
         candidateQualities.add(q)
       );
     }
 
     // Score each quality (optimized to avoid creating new arrays)
     const qualityScores = new Map<string, number>();
-    
+
     for (const quality of candidateQualities) {
-      const weight = CHORD_EMOTIONAL_WEIGHTS[
-        quality as keyof typeof CHORD_EMOTIONAL_WEIGHTS
-      ];
+      const weight =
+        CHORD_EMOTIONAL_WEIGHTS[
+          quality as keyof typeof CHORD_EMOTIONAL_WEIGHTS
+        ];
       if (weight) {
         const score =
           Math.abs(weight.valence - emotion.valence) * -1 +
@@ -269,20 +270,24 @@ export class ChordGenerator {
     }
 
     // Convert to array only once and sort
-    const sortedQualities = Array.from(qualityScores.entries())
-      .sort((a, b) => b[1] - a[1]);
+    const sortedQualities = Array.from(qualityScores.entries()).sort(
+      (a, b) => b[1] - a[1]
+    );
 
-    const index = Math.floor(variation * sortedQualities.length) % sortedQualities.length;
+    const index =
+      Math.floor(variation * sortedQualities.length) % sortedQualities.length;
     return sortedQualities[index]?.[0] || "maj7";
   }
 
   private generateVoicing(chord: any, emotion: EmotionAnalysis): number[] {
-    const baseOctave = emotion.arousal > 0.5 ? 3 : 2; // Start lower for voicings
+    // Use higher octave range to avoid muddy low notes
+    // Ensure no notes go below G3 (MIDI 55) for clarity
+    const baseOctave = emotion.arousal > 0.5 ? 4 : 3; // Higher base octaves
     const spread = emotion.complexity > 0.5 ? "wide" : "close";
 
     const notes = chord.notes;
     if (!notes || notes.length === 0) {
-      return [48, 52, 55, 59]; // Default C major 7 voicing (C3, E3, G3, B3)
+      return [60, 64, 67, 71]; // Default C major 7 voicing (C4, E4, G4, B4)
     }
 
     // For extended chords (5+ notes), we might want to omit some notes for playability
@@ -337,21 +342,81 @@ export class ChordGenerator {
     }
 
     // Ensure voicing is sorted and within reasonable range
-    return voicing
-      .filter((midi) => midi >= 36 && midi <= 96) // C2 to C7
+    // Minimum G3 (MIDI 55) for upper voicing to avoid muddiness
+    let voicingFiltered = voicing
+      .filter((midi) => midi >= 55 && midi <= 96) // G3 to C7
       .sort((a, b) => a - b);
+
+    // If filtering removed too many notes, shift everything up an octave
+    if (voicingFiltered.length < notesToVoice.length) {
+      voicingFiltered = voicing
+        .map((midi) => (midi < 55 ? midi + 12 : midi)) // Shift low notes up an octave
+        .filter((midi) => midi >= 55 && midi <= 96)
+        .sort((a, b) => a - b);
+    }
+
+    // Check if the voicing starts with the root note
+    const rootNote = chord.root || notes[0];
+    const rootMidi = this.getMidiNote(rootNote, 3); // Root in octave 3
+    const lowestVoicingNote = voicingFiltered[0];
+    const lowestVoicingNoteName = this.midiToNoteName(lowestVoicingNote);
+
+    // If the lowest note in voicing is NOT the root, add root in bass
+    if (lowestVoicingNoteName !== rootNote) {
+      // Add root note in bass (around C3-F#3 range for clarity)
+      let bassRoot = rootMidi;
+
+      // Ensure bass root is below the voicing but not too low
+      while (bassRoot >= lowestVoicingNote - 2) {
+        bassRoot -= 12; // Go down an octave
+      }
+
+      // Don't go below C2 (too muddy)
+      if (bassRoot >= 36) {
+        // Remove any root notes from the upper voicing to avoid doubling
+        voicingFiltered = voicingFiltered.filter((midi) => {
+          const noteName = this.midiToNoteName(midi);
+          return noteName !== rootNote;
+        });
+
+        // Add bass root at the beginning
+        voicingFiltered.unshift(bassRoot);
+      }
+    }
+
+    return voicingFiltered;
   }
 
   private getMidiNote(note: string, octave: number): number {
     const cacheKey = `${note}${octave}`;
     let midi = midiCache.get(cacheKey);
-    
+
     if (midi === undefined) {
       midi = Note.midi(cacheKey) || 60; // Default to middle C if note parsing fails
       midiCache.set(cacheKey, midi);
     }
-    
+
     return midi;
+  }
+
+  private midiToNoteName(midiNote: number): string {
+    // Convert MIDI number back to note name (without octave)
+    // Use a simple lookup for common MIDI values to avoid dependency issues
+    const noteNames = [
+      "C",
+      "C#",
+      "D",
+      "D#",
+      "E",
+      "F",
+      "F#",
+      "G",
+      "G#",
+      "A",
+      "A#",
+      "B",
+    ];
+    return noteNames[midiNote % 12];
   }
 
   private selectVoicingNotes(chord: any, emotion: EmotionAnalysis): string[] {
@@ -360,7 +425,7 @@ export class ChordGenerator {
 
     // For extended chords, we want to include all notes for full harmonic richness
     // But we can optimize the voicing for playability and sound quality
-    
+
     if (emotion.tension > 0.7) {
       // Include all notes for maximum dissonance and complexity
       return notes; // Return ALL notes, not limited to 5

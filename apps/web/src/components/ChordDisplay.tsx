@@ -9,6 +9,7 @@ interface ChordDisplayProps {
   chord: ChordSuggestion;
   isPrimary?: boolean;
   isPlaying?: boolean;
+  isArpeggioLooping?: boolean;
   onPlayChord: () => void;
   onPlayArpeggio: () => void;
   onStop: () => void;
@@ -18,6 +19,7 @@ export function ChordDisplay({
   chord,
   isPrimary = false,
   isPlaying = false,
+  isArpeggioLooping = false,
   onPlayChord,
   onPlayArpeggio,
   onStop,
@@ -53,12 +55,16 @@ export function ChordDisplay({
             </Button>
             <Button
               size="sm"
-              variant="outline"
-              onClick={onPlayArpeggio}
-              disabled={isPlaying}
+              variant={isArpeggioLooping ? "primary" : "outline"}
+              onClick={isArpeggioLooping ? onStop : onPlayArpeggio}
+              disabled={isPlaying && !isArpeggioLooping}
             >
-              <Music className="h-4 w-4" />
-              Arpeggio
+              {isArpeggioLooping ? (
+                <Square className="h-4 w-4" />
+              ) : (
+                <Music className="h-4 w-4" />
+              )}
+              {isArpeggioLooping ? 'Stop Loop' : 'Arpeggio'}
             </Button>
           </div>
         </CardTitle>

@@ -1,10 +1,11 @@
 import { useState, useCallback, useEffect } from 'react';
 import { AudioService } from '@/services/audio-service';
-import type { ChordSuggestion } from '@/types/emotion-chord';
+import type { ChordSuggestion, EmotionAnalysis } from '@/types/emotion-chord';
 
 interface UseAudioState {
   isPlaying: boolean;
   isInitialized: boolean;
+  isArpeggioLooping: boolean;
   error: string | null;
 }
 
@@ -12,6 +13,7 @@ export function useAudio() {
   const [state, setState] = useState<UseAudioState>({
     isPlaying: false,
     isInitialized: false,
+    isArpeggioLooping: false,
     error: null,
   });
 
@@ -45,29 +47,32 @@ export function useAudio() {
     }
   }, []);
 
-  const playArpeggio = useCallback(async (chord: ChordSuggestion) => {
-    setState(prev => ({ ...prev, isPlaying: true, error: null }));
+  const toggleArpeggio = useCallback(async (chord: ChordSuggestion, emotion?: EmotionAnalysis) => {
+    setState(prev => ({ ...prev, error: null }));
     
     try {
       // Auto-initialize audio on first play (handles user interaction requirement)
-      await AudioService.playArpeggio(chord);
+      const isNowPlaying = await AudioService.toggleArpeggioLoop(chord, emotion);
       
-      // Mark as initialized after successful play
-      setState(prev => ({ ...prev, isInitialized: true }));
-      
-      // Reset playing state after arpeggio duration (adjusted for faster timing)
-      setTimeout(() => {
-        setState(prev => ({ ...prev, isPlaying: false }));
-      }, chord.voicing.length * 150 + 1000);
+      // Mark as initialized after successful interaction
+      setState(prev => ({ 
+        ...prev, 
+        isInitialized: true,
+        isArpeggioLooping: isNowPlaying
+      }));
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Failed to play arpeggio';
-      setState(prev => ({ ...prev, isPlaying: false, error: errorMessage }));
+      const errorMessage = error instanceof Error ? error.message : 'Failed to toggle arpeggio';
+      setState(prev => ({ ...prev, error: errorMessage }));
     }
   }, []);
 
   const stopAudio = useCallback(() => {
     AudioService.stopAll();
-    setState(prev => ({ ...prev, isPlaying: false }));
+    setState(prev => ({ 
+      ...prev, 
+      isPlaying: false,
+      isArpeggioLooping: false
+    }));
   }, []);
 
   useEffect(() => {
@@ -80,7 +85,7 @@ export function useAudio() {
     ...state,
     initializeAudio,
     playChord,
-    playArpeggio,
+    toggleArpeggio,
     stopAudio,
   };
 }

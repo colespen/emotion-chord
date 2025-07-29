@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { ChordGenerator } from '../src/services/chordGenerator.js';
+import { ChordGenerator } from '../dist/services/chordGenerator.js';
 
 describe('ChordGenerator', () => {
   const chordGenerator = new ChordGenerator();
@@ -23,6 +23,9 @@ describe('ChordGenerator', () => {
     expect(am11Chord.notes).toHaveLength(6);
     expect(am11Chord.voicing).toHaveLength(6);
     expect(am11Chord.notes.length).toBe(am11Chord.voicing.length);
+    
+    // Ensure no notes are too low (below G3 = MIDI 55)
+    expect(Math.min(...am11Chord.voicing)).toBeGreaterThanOrEqual(55);
   });
 
   it('should generate complete voicings for 9th chords', () => {
@@ -40,6 +43,8 @@ describe('ChordGenerator', () => {
     alternatives.forEach(chord => {
       expect(chord.notes.length).toBe(chord.voicing.length);
       expect(chord.voicing.length).toBeGreaterThan(0);
+      // Ensure no chord voicings go too low
+      expect(Math.min(...chord.voicing)).toBeGreaterThanOrEqual(55);
     });
   });
 
