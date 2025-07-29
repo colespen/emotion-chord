@@ -358,19 +358,25 @@ export class ChordGenerator {
     const notes = chord.notes;
     if (notes.length <= 4) return notes;
 
-    // For extended chords, prioritize: root, 3rd, 7th, then extensions
-    const root = notes[0];
-    const third = notes[1];
-    const seventh = notes[3];
-
-    // For high tension, include altered tones
+    // For extended chords, we want to include all notes for full harmonic richness
+    // But we can optimize the voicing for playability and sound quality
+    
     if (emotion.tension > 0.7) {
-      // Include all notes for maximum dissonance
-      return notes.slice(0, 5); // Limit to 5 notes max
+      // Include all notes for maximum dissonance and complexity
+      return notes; // Return ALL notes, not limited to 5
+    } else if (notes.length === 5) {
+      // For 5-note chords (9th chords), include all notes
+      return notes;
+    } else if (notes.length === 6) {
+      // For 6-note chords (11th chords), include all notes
+      return notes;
     } else {
-      // Standard voicing: root, 3rd, 7th, and one extension
-      const extension = notes[4] || notes[2]; // 9th or 5th
-      return [root, third, seventh, extension].filter(Boolean);
+      // For very extended chords (7+ notes), we might selectively omit the 5th
+      // but still include most notes for harmonic completeness
+      return notes.filter((_note: string, index: number) => {
+        // Keep root, 3rd, 7th, and all extensions, potentially omit 5th if needed
+        return index !== 2 || notes.length <= 7; // Only omit 5th for 8+ note chords
+      });
     }
   }
 
