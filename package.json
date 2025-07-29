@@ -1,0 +1,46 @@
+{
+  "name": "emotion-chord",
+  "version": "1.0.0",
+  "description": "AI-powered emotion to musical chord generator",
+  "private": true,
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "dev": "concurrently \"pnpm dev:api\" \"pnpm dev:web\"",
+    "dev:api": "pnpm --filter api dev",
+    "dev:web": "pnpm --filter web dev",
+    "build": "pnpm build:api && pnpm build:web",
+    "build:api": "pnpm --filter api build",
+    "build:web": "pnpm --filter web build",
+    "start": "concurrently \"pnpm start:api\" \"pnpm start:web\"",
+    "start:api": "pnpm --filter api start",
+    "start:web": "pnpm --filter web start",
+    "lint": "pnpm --filter \"*\" lint",
+    "typecheck": "pnpm --filter \"*\" typecheck",
+    "clean": "pnpm --filter \"*\" clean && rm -rf node_modules",
+    "install:all": "pnpm install"
+  },
+  "keywords": [
+    "emotion",
+    "music",
+    "chord",
+    "ai",
+    "openai",
+    "audio",
+    "synthesis",
+    "tone.js",
+    "next.js",
+    "hono"
+  ],
+  "author": "Spencer Cole",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "pnpm": ">=8.0.0"
+  },
+  "packageManager": "pnpm@8.15.0"
+}
