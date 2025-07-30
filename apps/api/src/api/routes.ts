@@ -2,30 +2,50 @@ import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
-import { EmotionChordService } from "../services/emotionChordService.js";
-
-// Validate required environment variables
-const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
-if (!OPENAI_API_KEY) {
-  throw new Error("OPENAI_API_KEY environment variable is required");
-}
+import { AdvancedEmotionChordService } from "../services/emotionChordService.js";
 
 const app = new Hono();
 
-// Enable CORS for Next.js frontend
+// Enable CORS
 app.use("/*", cors());
 
 // Initialize service
-const emotionChordService = new EmotionChordService(OPENAI_API_KEY);
+const emotionChordService = new AdvancedEmotionChordService(
+  process.env.OPENAI_API_KEY!,
+  process.env.SPOTIFY_CLIENT_ID,
+  process.env.SPOTIFY_CLIENT_SECRET
+);
 
-// Request validation schema
+// Request schemas
 const EmotionRequestSchema = z.object({
   emotion: z.string().min(1).max(500),
+  options: z
+    .object({
+      culturalPreference: z
+        .enum(["western", "indian", "arabic", "universal"])
+        .optional(),
+      stylePreference: z
+        .enum(["classical", "jazz", "contemporary", "experimental"])
+        .optional(),
+      includeProgression: z.boolean().optional(),
+      includeCulturalAlternatives: z.boolean().optional(),
+    })
+    .optional(),
 });
 
 // Health check
-app.get("/health", (c) => {
-  return c.json({ status: "ok", timestamp: new Date().toISOString() });
+app.get("/api/health", (c) => {
+  return c.json({
+    status: "ok",
+    version: "2.0.0",
+    features: {
+      advancedHarmony: true,
+      culturalMappings: true,
+      spotifyIntegration: false, // Disabled due to API restrictions
+      gems: true,
+      syntheticAcousticFeatures: true, // New feature replacing Spotify
+    },
+  });
 });
 
 // Main endpoint
@@ -34,16 +54,44 @@ app.post(
   zValidator("json", EmotionRequestSchema),
   async (c) => {
     try {
-      const { emotion } = c.req.valid("json");
+      const { emotion, options } = c.req.valid("json");
 
       const result = await emotionChordService.generateChordFromEmotion(
-        emotion
+        emotion,
+        options
       );
 
       return c.json(result);
     } catch (error) {
       console.error("Error generating chord:", error);
       return c.json({ error: "Failed to generate chord from emotion" }, 500);
+    }
+  }
+);
+
+// Batch processing endpoint
+app.post(
+  "/api/batch",
+  zValidator(
+    "json",
+    z.object({
+      emotions: z.array(z.string()).max(10),
+    })
+  ),
+  async (c) => {
+    try {
+      const { emotions } = c.req.valid("json");
+
+      const results = await Promise.all(
+        emotions.map((emotion) =>
+          emotionChordService.generateChordFromEmotion(emotion)
+        )
+      );
+
+      return c.json({ results });
+    } catch (error) {
+      console.error("Batch processing error:", error);
+      return c.json({ error: "Failed to process batch" }, 500);
     }
   }
 );

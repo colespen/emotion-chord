@@ -1,11 +1,18 @@
 import * as Tone from "tone";
-import type { ChordSuggestion, EmotionAnalysis } from "@/types/emotion-chord";
+import type { AdvancedChordSuggestion, ChordProgression, AdvancedEmotionAnalysis } from "@/types/emotion-chord";
 
 export class AudioService {
   private static synth: Tone.PolySynth | null = null;
   private static isInitialized = false;
   private static arpeggioLoop: Tone.Loop | null = null;
   private static isArpeggioPlaying = false;
+  
+  // Progression playback state
+  private static progressionSequence: Tone.Sequence | null = null;
+  private static isProgressionPlaying = false;
+  private static isProgressionLooping = false;
+  private static currentProgression: ChordProgression | null = null;
+  private static currentChordIndex = -1;
 
   static async initialize(): Promise<void> {
     if (this.isInitialized) return;
@@ -80,8 +87,39 @@ export class AudioService {
     return noteDelay;
   }
 
+  static getChordFrequencies(chord: AdvancedChordSuggestion): number[] {
+    // Prioritize midiNotes (correct chord tones) over voicing notes
+    if (chord.midiNotes && chord.midiNotes.length > 0) {
+      return chord.midiNotes.map(this.midiToFrequency);
+    } else if (chord.voicing?.notes && chord.voicing.notes.length > 0) {
+      return chord.voicing.notes.map(this.midiToFrequency);
+    } else {
+      // Fallback to converting string notes to MIDI
+      const noteToMidi: Record<string, number> = {
+        'C': 60, 'C#': 61, 'Db': 61, 'D': 62, 'D#': 63, 'Eb': 63,
+        'E': 64, 'F': 65, 'F#': 66, 'Gb': 66, 'G': 67, 'G#': 68,
+        'Ab': 68, 'A': 69, 'A#': 70, 'Bb': 70, 'B': 71
+      };
+      return chord.notes.map(note => {
+        const midiNote = noteToMidi[note] || 60;
+        return this.midiToFrequency(midiNote + 12); // Add octave
+      });
+    }
+  }
+
+  static getDynamicsVelocity(dynamics?: string): number {
+    switch (dynamics) {
+      case 'pp': return 0.2;
+      case 'p': return 0.4;
+      case 'mf': return 0.6;
+      case 'f': return 0.8;
+      case 'ff': return 1.0;
+      default: return 0.6;
+    }
+  }
+
   static async playChord(
-    chord: ChordSuggestion,
+    chord: AdvancedChordSuggestion,
     duration: string = "2n"
   ): Promise<void> {
     // Auto-initialize if not already done
@@ -92,16 +130,17 @@ export class AudioService {
       throw new Error("Audio synthesizer not initialized");
     }
 
-    // Convert MIDI notes to frequencies
-    const frequencies = chord.voicing.map(this.midiToFrequency);
+    // Get frequencies from the advanced chord structure
+    const frequencies = this.getChordFrequencies(chord);
+    const velocity = this.getDynamicsVelocity(chord.dynamics);
 
-    // Play the chord with controlled timing
-    this.synth.triggerAttackRelease(frequencies, duration);
+    // Play the chord with controlled timing and dynamics
+    this.synth.triggerAttackRelease(frequencies, duration, undefined, velocity);
   }
 
   static async playArpeggio(
-    chord: ChordSuggestion,
-    emotion?: EmotionAnalysis,
+    chord: AdvancedChordSuggestion,
+    emotion?: AdvancedEmotionAnalysis,
     noteLength: string = "8n"
   ): Promise<void> {
     // Auto-initialize if not already done
@@ -112,7 +151,8 @@ export class AudioService {
       throw new Error("Audio synthesizer not initialized");
     }
 
-    const frequencies = chord.voicing.map(this.midiToFrequency);
+    const frequencies = this.getChordFrequencies(chord);
+    const velocity = this.getDynamicsVelocity(chord.dynamics);
 
     // Calculate timing based on emotion's suggested tempo
     const noteDelay = emotion
@@ -125,7 +165,7 @@ export class AudioService {
     // Play notes in sequence with tempo-appropriate delay
     frequencies.forEach((freq, index) => {
       Tone.getTransport().schedule((time) => {
-        this.synth!.triggerAttackRelease(freq, noteLength, time);
+        this.synth!.triggerAttackRelease(freq, noteLength, time, velocity);
       }, `+${index * noteDelay}`);
     });
 
@@ -139,8 +179,8 @@ export class AudioService {
   }
 
   static async toggleArpeggioLoop(
-    chord: ChordSuggestion,
-    emotion?: EmotionAnalysis,
+    chord: AdvancedChordSuggestion,
+    emotion?: AdvancedEmotionAnalysis,
     noteLength: string = "8n"
   ): Promise<boolean> {
     console.log("toggleArpeggioLoop called with emotion:", emotion);
@@ -161,7 +201,8 @@ export class AudioService {
     }
 
     // Start the infinite arpeggio loop
-    const frequencies = chord.voicing.map(this.midiToFrequency);
+    const frequencies = this.getChordFrequencies(chord);
+    const velocity = this.getDynamicsVelocity(chord.dynamics);
     let currentIndex = 0;
     let direction = 1; // 1 for up, -1 for down
 
@@ -178,7 +219,8 @@ export class AudioService {
       this.synth!.triggerAttackRelease(
         frequencies[currentIndex],
         noteLength,
-        time
+        time,
+        velocity
       );
 
       // Move to next note
@@ -201,6 +243,118 @@ export class AudioService {
     return true;
   }
 
+  static async playProgression(
+    progression: ChordProgression,
+    loop = false
+  ): Promise<void> {
+    await this.initialize();
+    await this.startAudioContext();
+
+    if (!this.synth) {
+      throw new Error("Audio synthesizer not initialized");
+    }
+
+    // Stop any existing progression
+    this.stopProgression();
+
+    this.currentProgression = progression;
+    this.isProgressionLooping = loop;
+    
+    // Set tempo
+    Tone.getTransport().bpm.value = progression.tempo;
+
+    // Create chord events for the sequence
+    const events = progression.chords.map((chord, index) => ({
+      time: index * 4, // Assume 4 beats per chord for now
+      chord,
+      index
+    }));
+
+    // Create and start sequence
+    this.progressionSequence = new Tone.Sequence(
+      (time, data) => {
+        this.currentChordIndex = data.index;
+        
+        // For now, use a simple chord symbol to frequency conversion
+        // This would need to be expanded to handle the full chord data
+        const frequencies = [220, 277, 330, 415]; // Simplified Am chord
+        const duration = `${data.chord.duration}n` as Tone.Unit.Time;
+        
+        this.synth!.triggerAttackRelease(frequencies, duration, time);
+      },
+      events,
+      '4n'
+    );
+
+    this.progressionSequence.loop = loop;
+    if (loop) {
+      this.progressionSequence.loopEnd = progression.chords.length * 4; // Total beats
+    }
+
+    this.progressionSequence.start();
+    Tone.getTransport().start();
+    this.isProgressionPlaying = true;
+  }
+
+  static pauseProgression(): void {
+    if (this.isProgressionPlaying) {
+      Tone.getTransport().pause();
+      this.isProgressionPlaying = false;
+    }
+  }
+
+  static resumeProgression(): void {
+    if (!this.isProgressionPlaying && this.progressionSequence) {
+      Tone.getTransport().start();
+      this.isProgressionPlaying = true;
+    }
+  }
+
+  static stopProgression(): void {
+    if (this.progressionSequence) {
+      this.progressionSequence.stop();
+      this.progressionSequence.dispose();
+      this.progressionSequence = null;
+    }
+    Tone.getTransport().stop();
+    this.isProgressionPlaying = false;
+    this.isProgressionLooping = false;
+    this.currentChordIndex = -1;
+    this.currentProgression = null;
+  }
+
+  static toggleProgressionLoop(): boolean {
+    if (this.progressionSequence) {
+      this.isProgressionLooping = !this.isProgressionLooping;
+      this.progressionSequence.loop = this.isProgressionLooping;
+    }
+    return this.isProgressionLooping;
+  }
+
+  static nextChord(): number {
+    if (this.currentProgression && this.currentChordIndex < this.currentProgression.chords.length - 1) {
+      this.currentChordIndex++;
+      // TODO: Update transport position
+    }
+    return this.currentChordIndex;
+  }
+
+  static previousChord(): number {
+    if (this.currentChordIndex > 0) {
+      this.currentChordIndex--;
+      // TODO: Update transport position
+    }
+    return this.currentChordIndex;
+  }
+
+  static selectChord(index: number): number {
+    if (this.currentProgression && index >= 0 && index < this.currentProgression.chords.length) {
+      this.currentChordIndex = index;
+      // TODO: Update transport position to match chord
+    }
+    return this.currentChordIndex;
+  }
+
   static stopArpeggioLoop(): void {
     if (this.arpeggioLoop) {
       this.arpeggioLoop.stop();
@@ -215,16 +369,26 @@ export class AudioService {
     return this.isArpeggioPlaying;
   }
 
+  static getProgressionState(): { isPlaying: boolean; isLooping: boolean; currentChord: number } {
+    return {
+      isPlaying: this.isProgressionPlaying,
+      isLooping: this.isProgressionLooping,
+      currentChord: this.currentChordIndex,
+    };
+  }
+
   static stopAll(): void {
     if (this.synth) {
       this.synth.releaseAll();
     }
     this.stopArpeggioLoop();
+    this.stopProgression();
     Tone.getTransport().stop();
     Tone.getTransport().cancel();
   }
 
   static dispose(): void {
+    this.stopAll();
     if (this.synth) {
       this.synth.dispose();
       this.synth = null;

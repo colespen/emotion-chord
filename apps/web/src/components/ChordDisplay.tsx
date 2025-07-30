@@ -2,11 +2,11 @@ import React from 'react';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Play, Square, Music } from 'lucide-react';
-import type { ChordSuggestion } from '@/types/emotion-chord';
-import { formatConfidence, formatEmotionalResonance } from '@/lib/utils';
+import type { AdvancedChordSuggestion } from '@/types/emotion-chord';
+import { formatEmotionalResonance } from '@/lib/utils';
 
 interface ChordDisplayProps {
-  chord: ChordSuggestion;
+  chord: AdvancedChordSuggestion;
   isPrimary?: boolean;
   isPlaying?: boolean;
   isArpeggioLooping?: boolean;
@@ -123,7 +123,7 @@ export function ChordDisplay({
           <div>
             <h4 className="font-medium text-gray-900 mb-2">Voicing</h4>
             <div className="text-xs text-gray-600 font-mono">
-              {chord.voicing.join(', ')}
+              {chord.voicing.voicingType} ({chord.voicing.density})
             </div>
           </div>
         </div>
@@ -131,16 +131,16 @@ export function ChordDisplay({
         {/* Metrics */}
         <div className="grid grid-cols-2 gap-4 pt-4 border-t border-gray-200">
           <div>
-            <h4 className="font-medium text-gray-900 mb-1">Confidence</h4>
+            <h4 className="font-medium text-gray-900 mb-1">Harmonic Complexity</h4>
             <div className="flex items-center gap-2">
               <div className="flex-1 bg-gray-200 rounded-full h-2">
                 <div
-                  className="h-2 bg-green-500 rounded-full"
-                  style={{ width: `${chord.confidence * 100}%` }}
+                  className="h-2 bg-blue-500 rounded-full"
+                  style={{ width: `${chord.harmonicComplexity * 100}%` }}
                 />
               </div>
               <span className="text-xs text-gray-600">
-                {formatConfidence(chord.confidence)}
+                {Math.round(chord.harmonicComplexity * 100)}%
               </span>
             </div>
           </div>
@@ -160,11 +160,11 @@ export function ChordDisplay({
           </div>
         </div>
 
-        {/* Musical Justification */}
+        {/* Emotional Justification */}
         <div>
-          <h4 className="font-medium text-gray-900 mb-2">Musical Justification</h4>
+          <h4 className="font-medium text-gray-900 mb-2">Emotional Justification</h4>
           <p className="text-sm text-gray-600 bg-gray-50 p-3 rounded-md">
-            {chord.musicalJustification}
+            {chord.emotionalJustification}
           </p>
         </div>
       </CardContent>
