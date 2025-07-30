@@ -18,9 +18,9 @@ export function EmotionAnalysisDisplay({ emotion }: EmotionAnalysisDisplayProps)
   const complexityPercentage = Math.round(emotion.complexity * 100);
 
   return (
-    <Card>
+    <Card className="bg-[#161b22] border-[#30363d]">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
+        <CardTitle className="flex items-center gap-2 text-[#f0f6fc]">
           <span className="text-lg">🧠</span>
           Emotion Analysis
         </CardTitle>
@@ -28,7 +28,7 @@ export function EmotionAnalysisDisplay({ emotion }: EmotionAnalysisDisplayProps)
       <CardContent className="space-y-4">
         {/* Primary Emotion */}
         <div>
-          <h4 className="font-medium text-gray-900 mb-1">Primary Emotion</h4>
+          <h4 className="font-medium text-[#f0f6fc] mb-1">Primary Emotion</h4>
           <span className={`text-lg font-semibold capitalize ${getEmotionColor(emotion.valence)}`}>
             {emotion.primaryEmotion}
           </span>
@@ -37,12 +37,12 @@ export function EmotionAnalysisDisplay({ emotion }: EmotionAnalysisDisplayProps)
         {/* Secondary Emotions */}
         {emotion.secondaryEmotions.length > 0 && (
           <div>
-            <h4 className="font-medium text-gray-900 mb-2">Secondary Emotions</h4>
+            <h4 className="font-medium text-[#f0f6fc] mb-2">Secondary Emotions</h4>
             <div className="flex flex-wrap gap-2">
               {emotion.secondaryEmotions.map((secondary, index) => (
                 <span
                   key={index}
-                  className="px-2 py-1 bg-gray-100 text-gray-700 rounded-md text-sm capitalize"
+                  className="px-2 py-1 bg-[#21262d] text-[#f0f6fc] border border-[#30363d] rounded-md text-sm capitalize"
                 >
                   {secondary}
                 </span>
@@ -54,30 +54,30 @@ export function EmotionAnalysisDisplay({ emotion }: EmotionAnalysisDisplayProps)
         {/* Emotional Metrics */}
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <h4 className="font-medium text-gray-900 mb-2">Valence</h4>
+            <h4 className="font-medium text-[#f0f6fc] mb-2">Valence</h4>
             <div className="space-y-1">
-              <div className="flex justify-between text-sm">
+              <div className="flex justify-between text-sm text-[#7d8590]">
                 <span>Negative</span>
                 <span>Positive</span>
               </div>
-              <div className="w-full bg-gray-200 rounded-full h-2">
+              <div className="w-full bg-[#21262d] rounded-full h-2">
                 <div
                   className={`h-2 rounded-full transition-all ${
-                    emotion.valence > 0 ? 'bg-green-500' : 'bg-red-500'
+                    emotion.valence > 0 ? 'bg-[#238636]' : 'bg-[#da3633]'
                   }`}
                   style={{ width: `${valencePercentage}%` }}
                 />
               </div>
-              <div className="text-xs text-gray-600">
+              <div className="text-xs text-[#7d8590]">
                 {emotion.valence > 0 ? '+' : ''}{emotion.valence.toFixed(2)}
               </div>
             </div>
           </div>
 
           <div>
-            <h4 className="font-medium text-gray-900 mb-2">Arousal</h4>
+            <h4 className="font-medium text-[#f0f6fc] mb-2">Arousal</h4>
             <div className="space-y-1">
-              <div className="flex justify-between text-sm">
+              <div className="flex justify-between text-sm text-[#7d8590]">
                 <span>Calm</span>
                 <span>Energetic</span>
               </div>
@@ -87,45 +87,45 @@ export function EmotionAnalysisDisplay({ emotion }: EmotionAnalysisDisplayProps)
                   style={{ width: `${arousalPercentage}%` }}
                 />
               </div>
-              <div className="text-xs text-gray-600">
+              <div className="text-xs text-[#7d8590]">
                 {getArousalIntensity(emotion.arousal)}
               </div>
             </div>
           </div>
 
           <div>
-            <h4 className="font-medium text-gray-900 mb-2">Tension</h4>
+            <h4 className="font-medium text-[#f0f6fc] mb-2">Tension</h4>
             <div className="space-y-1">
-              <div className="flex justify-between text-sm">
+              <div className="flex justify-between text-sm text-[#7d8590]">
                 <span>Relaxed</span>
                 <span>Tense</span>
               </div>
-              <div className="w-full bg-gray-200 rounded-full h-2">
+              <div className="w-full bg-[#21262d] rounded-full h-2">
                 <div
-                  className="h-2 bg-orange-500 rounded-full transition-all"
+                  className="h-2 bg-[#fb8500] rounded-full transition-all"
                   style={{ width: `${tensionPercentage}%` }}
                 />
               </div>
-              <div className="text-xs text-gray-600">
+              <div className="text-xs text-[#7d8590]">
                 {getTensionLevel(emotion.tension)}
               </div>
             </div>
           </div>
 
           <div>
-            <h4 className="font-medium text-gray-900 mb-2">Complexity</h4>
+            <h4 className="font-medium text-[#f0f6fc] mb-2">Complexity</h4>
             <div className="space-y-1">
-              <div className="flex justify-between text-sm">
+              <div className="flex justify-between text-sm text-[#7d8590]">
                 <span>Simple</span>
                 <span>Complex</span>
               </div>
-              <div className="w-full bg-gray-200 rounded-full h-2">
+              <div className="w-full bg-[#21262d] rounded-full h-2">
                 <div
-                  className="h-2 bg-purple-500 rounded-full transition-all"
+                  className="h-2 bg-[#8b5cf6] rounded-full transition-all"
                   style={{ width: `${complexityPercentage}%` }}
                 />
               </div>
-              <div className="text-xs text-gray-600">
+              <div className="text-xs text-[#7d8590]">
                 {emotion.complexity.toFixed(2)}
               </div>
             </div>
@@ -133,16 +133,16 @@ export function EmotionAnalysisDisplay({ emotion }: EmotionAnalysisDisplayProps)
         </div>
 
         {/* Musical Properties */}
-        <div className="grid grid-cols-2 gap-4 pt-4 border-t border-gray-200">
+        <div className="grid grid-cols-2 gap-4 pt-4 border-t border-[#30363d]">
           <div>
-            <h4 className="font-medium text-gray-900 mb-1">Musical Mode</h4>
-            <span className="text-sm text-gray-600 capitalize">
+            <h4 className="font-medium text-[#f0f6fc] mb-1">Musical Mode</h4>
+            <span className="text-sm text-[#7d8590] capitalize">
               {emotion.musicalMode}
             </span>
           </div>
           <div>
-            <h4 className="font-medium text-gray-900 mb-1">Suggested Tempo</h4>
-            <span className="text-sm text-gray-600">
+            <h4 className="font-medium text-[#f0f6fc] mb-1">Suggested Tempo</h4>
+            <span className="text-sm text-[#7d8590]">
               {emotion.suggestedTempo} BPM
             </span>
           </div>

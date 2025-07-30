@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
@@ -17,7 +17,11 @@ export const metadata: Metadata = {
   description: "Transform your emotions into musical chords using AI-powered emotion analysis and Tone.js audio synthesis.",
   keywords: ["emotion", "music", "chord", "AI", "synthesis", "audio"],
   authors: [{ name: "Spencer Cole" }],
-  viewport: "width=device-width, initial-scale=1",
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
 };
 
 export default function RootLayout({

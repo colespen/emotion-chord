@@ -25,9 +25,9 @@ export class AudioService {
       volume: -8, // Additional volume reduction at synth level
       envelope: {
         attack: 0.02,
-        decay: 0.2,
-        sustain: 0.4,
-        release: 1.5,
+        decay: 0.2,  // Slightly faster decay
+        sustain: 0.65, // Lower sustain level
+        release: 1.2, // Longer release for better chord sustain
       },
       oscillator: {
         type: "triangle", // Softer waveform than sawtooth
@@ -107,6 +107,34 @@ export class AudioService {
     }
   }
 
+  /**
+   * Get frequencies for arpeggiator sorted from lowest to highest pitch
+   * This ensures arpeggio always plays notes in ascending pitch order
+   * regardless of the original voicing arrangement
+   */
+  static getArpeggioFrequencies(chord: AdvancedChordSuggestion): number[] {
+    // Get the frequencies in their original order
+    let frequencies: number[] = [];
+    
+    if (chord.midiNotes && chord.midiNotes.length > 0) {
+      console.log(`Using midiNotes for arpeggio: [${chord.midiNotes.join(', ')}]`);
+      frequencies = chord.midiNotes.map(this.midiToFrequency);
+    } else if (chord.voicing?.notes && chord.voicing.notes.length > 0) {
+      console.log(`Using voicing.notes for arpeggio: [${chord.voicing.notes.join(', ')}]`);
+      frequencies = chord.voicing.notes.map(this.midiToFrequency);
+    } else {
+      // Fallback: use the same logic as getChordFrequencies
+      console.log(`Using fallback chord frequencies for arpeggio`);
+      frequencies = this.getChordFrequencies(chord);
+    }
+    
+    // Sort frequencies from lowest to highest for arpeggio
+    const sortedFrequencies = [...frequencies].sort((a, b) => a - b);
+    console.log(`Arpeggio frequencies sorted low to high: [${sortedFrequencies.map(f => f.toFixed(2)).join(', ')}]`);
+    
+    return sortedFrequencies;
+  }
+
   static getDynamicsVelocity(dynamics?: string): number {
     switch (dynamics) {
       case 'pp': return 0.2;
@@ -120,7 +148,7 @@ export class AudioService {
 
   static async playChord(
     chord: AdvancedChordSuggestion,
-    duration: string = "2n"
+    duration: string = "4n"  // Shorter default duration (quarter note instead of half note)
   ): Promise<void> {
     // Auto-initialize if not already done
     await this.initialize();
@@ -151,8 +179,10 @@ export class AudioService {
       throw new Error("Audio synthesizer not initialized");
     }
 
-    const frequencies = this.getChordFrequencies(chord);
+    const frequencies = this.getArpeggioFrequencies(chord);
     const velocity = this.getDynamicsVelocity(chord.dynamics);
+
+    console.log(`Playing single arpeggio from lowest to highest frequency`);
 
     // Calculate timing based on emotion's suggested tempo
     const noteDelay = emotion
@@ -201,10 +231,12 @@ export class AudioService {
     }
 
     // Start the infinite arpeggio loop
-    const frequencies = this.getChordFrequencies(chord);
+    const frequencies = this.getArpeggioFrequencies(chord);
     const velocity = this.getDynamicsVelocity(chord.dynamics);
     let currentIndex = 0;
     let direction = 1; // 1 for up, -1 for down
+
+    console.log(`Arpeggio will play from lowest to highest frequency`);
 
     // Calculate timing based on emotion's suggested tempo
     const arpeggioSpeed = emotion

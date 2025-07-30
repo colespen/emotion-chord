@@ -7,28 +7,35 @@ import type { AdvancedChordSuggestion, VoicingInfo } from '@/types/emotion-chord
 import {
   Music,
   Play,
-  Pause,
+  Square,
   Info,
-  Volume2,
-  Repeat,
   ChevronDown,
   ChevronUp,
   Sparkles,
   Globe
 } from 'lucide-react';
 
-// Helper function to convert MIDI note numbers to note names
-function midiToNoteName(midiNote: number): string {
+// Helper function to get proper note names considering chord context
+function getContextualNoteName(midiNote: number, chordSymbol: string): string {
   const noteNames = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+  const flatNoteNames = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B'];
+  
   const octave = Math.floor(midiNote / 12) - 1;
   const noteIndex = midiNote % 12;
-  return noteNames[noteIndex] + (octave >= 0 ? octave : '');
+  
+  // Use flat notation for flat-based chords (Bb, Eb, Ab, Db, Gb)
+  const useFlatNotation = /^(Bb|Eb|Ab|Db|Gb|F)/.test(chordSymbol);
+  
+  const selectedNames = useFlatNotation ? flatNoteNames : noteNames;
+  return selectedNames[noteIndex] + (octave >= 0 ? octave : '');
 }
 
-// Helper function to get the actual played notes in order
+// Helper function to get the actual played notes in the order they're heard (lowest to highest)
 function getPlayedNotes(chord: AdvancedChordSuggestion): string[] {
   if (chord.midiNotes && chord.midiNotes.length > 0) {
-    return chord.midiNotes.map(midiToNoteName);
+    // Sort MIDI notes from lowest to highest (this is the order you actually hear them)
+    const sortedMidiNotes = [...chord.midiNotes].sort((a, b) => a - b);
+    return sortedMidiNotes.map(midiNote => getContextualNoteName(midiNote, chord.symbol));
   }
   return chord.notes; // fallback to theoretical notes
 }
@@ -37,24 +44,22 @@ interface AdvancedChordDisplayProps {
   chord: AdvancedChordSuggestion;
   isPlaying?: boolean;
   isArpeggioLooping?: boolean;
-  isLooping?: boolean;
   onPlay?: () => void;
   onPlayArpeggio?: () => void;
-  onLoop?: () => void;
   onStop?: () => void;
   showDetails?: boolean;
+  showEmotionalContext?: boolean;
 }
 
 export function AdvancedChordDisplay({ 
   chord, 
   isPlaying = false,
   isArpeggioLooping = false,
-  isLooping = false,
   onPlay,
   onPlayArpeggio,
-  onLoop,
   onStop,
-  showDetails = false 
+  showDetails = false,
+  showEmotionalContext = false
 }: AdvancedChordDisplayProps) {
   const [expanded, setExpanded] = useState(false);
 
@@ -73,16 +78,16 @@ export function AdvancedChordDisplay({
   };
 
   const getComplexityColor = (complexity: number): string => {
-    if (complexity < 0.3) return 'text-green-600';
-    if (complexity < 0.7) return 'text-yellow-600';
-    return 'text-red-600';
+    if (complexity < 0.3) return 'text-[#238636]';
+    if (complexity < 0.7) return 'text-[#fb8500]';
+    return 'text-[#da3633]';
   };
 
   const getResonanceColor = (resonance: number): string => {
-    if (resonance > 0.8) return 'text-purple-600';
-    if (resonance > 0.6) return 'text-blue-600';
-    if (resonance > 0.4) return 'text-indigo-600';
-    return 'text-gray-600';
+    if (resonance > 0.8) return 'text-[#8b5cf6]';
+    if (resonance > 0.6) return 'text-[#2563eb]';
+    if (resonance > 0.4) return 'text-[#6366f1]';
+    return 'text-[#7d8590]';
   };
 
   const formatMidiNotes = (notes: number[]): string => {
@@ -95,16 +100,16 @@ export function AdvancedChordDisplay({
   };
 
   return (
-    <Card className="w-full p-6 space-y-4">
+    <Card className="w-full p-6 space-y-4 bg-[#161b22] border-[#30363d]">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="p-2 bg-gradient-to-r from-purple-100 to-blue-100 rounded-full">
-            <Music className="w-6 h-6 text-purple-600" />
+          <div className="p-2 bg-[#238636] rounded-full">
+            <Music className="w-6 h-6 text-white" />
           </div>
           <div>
-            <h3 className="text-xl font-bold text-gray-900">{chord.symbol}</h3>
-            <p className="text-sm text-gray-600">
+            <h3 className="text-xl font-bold text-[#f0f6fc]">{chord.symbol}</h3>
+            <p className="text-sm text-[#7d8590]">
               {chord.root} {chord.quality}
             </p>
           </div>
@@ -114,86 +119,55 @@ export function AdvancedChordDisplay({
         <div className="flex items-center gap-2">
           {onPlay && (
             <Button
-              onClick={onPlay}
+              onClick={isPlaying ? onStop : onPlay}
               variant={isPlaying ? 'secondary' : 'primary'}
               size="sm"
               className="flex items-center gap-2"
             >
-              {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
-              {isPlaying ? 'Playing' : 'Play'}
+              {isPlaying ? <Square className="w-4 h-4" /> : <Play className="w-4 h-4" />}
+              {isPlaying ? 'Stop' : 'Play'}
             </Button>
           )}
 
           {onPlayArpeggio && (
             <Button
-              onClick={onPlayArpeggio}
+              onClick={isArpeggioLooping ? onStop : onPlayArpeggio}
               variant={isArpeggioLooping ? 'secondary' : 'outline'}
               size="sm"
               className="flex items-center gap-2"
             >
-              <Music className="w-4 h-4" />
-              {isArpeggioLooping ? 'Stop Arp' : 'Arpeggio'}
-            </Button>
-          )}
-
-          {onLoop && (
-            <Button
-              onClick={onLoop}
-              variant={isLooping ? 'secondary' : 'outline'}
-              size="sm"
-              className="flex items-center gap-2"
-            >
-              <Repeat className="w-4 h-4" />
-              {isLooping ? 'Looping' : 'Loop'}
-            </Button>
-          )}
-
-          {onStop && (isPlaying || isLooping || isArpeggioLooping) && (
-            <Button
-              onClick={onStop}
-              variant="outline"
-              size="sm"
-              className="flex items-center gap-2"
-            >
-              <Volume2 className="w-4 h-4" />
-              Stop
+              {isArpeggioLooping ? <Square className="w-4 h-4" /> : <Music className="w-4 h-4" />}
+              {isArpeggioLooping ? 'Stop' : 'Arpeggio'}
             </Button>
           )}
         </div>
       </div>
 
       {/* Quick Info */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-        <div className="text-center p-3 bg-gray-50 rounded-lg">
-          <div className="text-xs text-gray-500 uppercase tracking-wide">Played Notes</div>
-          <div className="font-semibold text-gray-900">
+      <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="text-center p-3 bg-[#0d1117] border border-[#30363d] rounded-lg">
+          <div className="text-xs text-[#7d8590] uppercase tracking-wide">Played Notes</div>
+          <div className="font-semibold text-[#f0f6fc]">
             {getPlayedNotes(chord).join(' - ')}
           </div>
         </div>
 
-        <div className="text-center p-3 bg-gray-50 rounded-lg">
-          <div className="text-xs text-gray-500 uppercase tracking-wide">Theoretical</div>
-          <div className="font-semibold text-gray-900">
+        <div className="text-center p-3 bg-[#0d1117] border border-[#30363d] rounded-lg">
+          <div className="text-xs text-[#7d8590] uppercase tracking-wide">Theoretical</div>
+          <div className="font-semibold text-[#f0f6fc]">
             {chord.notes.join(' - ')}
           </div>
         </div>
 
-        <div className="text-center p-3 bg-gray-50 rounded-lg">
-          <div className="text-xs text-gray-500 uppercase tracking-wide">Voicing</div>
-          <div className="font-semibold text-gray-900 capitalize">
-            {chord.voicing.voicingType}
-          </div>
-        </div>
-
-        <div className="text-center p-3 bg-gray-50 rounded-lg">
-          <div className="text-xs text-gray-500 uppercase tracking-wide">Complexity</div>
+        <div className="text-center p-3 bg-[#0d1117] border border-[#30363d] rounded-lg">
+          <div className="text-xs text-[#7d8590] uppercase tracking-wide">Complexity</div>
           <div className={`font-semibold ${getComplexityColor(chord.harmonicComplexity)}`}>
             {Math.round(chord.harmonicComplexity * 100)}%
           </div>
         </div>
 
-        <div className="text-center p-3 bg-gray-50 rounded-lg">
-          <div className="text-xs text-gray-500 uppercase tracking-wide">Resonance</div>
+        <div className="text-center p-3 bg-[#0d1117] border border-[#30363d] rounded-lg">
+          <div className="text-xs text-[#7d8590] uppercase tracking-wide">Resonance</div>
           <div className={`font-semibold ${getResonanceColor(chord.emotionalResonance)}`}>
             {Math.round(chord.emotionalResonance * 100)}%
           </div>
@@ -201,26 +175,28 @@ export function AdvancedChordDisplay({
       </div>
 
       {/* Emotional Justification */}
-      <div className="p-4 bg-gradient-to-r from-purple-50 to-blue-50 rounded-lg">
-        <div className="flex items-start gap-2">
-          <Sparkles className="w-5 h-5 text-purple-600 mt-0.5 flex-shrink-0" />
-          <div>
-            <h4 className="font-semibold text-gray-900 mb-1">Emotional Context</h4>
-            <p className="text-gray-700 text-sm leading-relaxed">
-              {chord.emotionalJustification}
-            </p>
+      {showEmotionalContext && (
+        <div className="p-4 bg-[#161b22] border border-[#30363d] rounded-lg">
+          <div className="flex items-start gap-2">
+            <Sparkles className="w-5 h-5 text-[#238636] mt-0.5 flex-shrink-0" />
+            <div>
+              <h4 className="font-semibold text-[#f0f6fc] mb-1">Emotional Context</h4>
+              <p className="text-[#7d8590] text-sm leading-relaxed">
+                {chord.emotionalJustification}
+              </p>
+            </div>
           </div>
         </div>
-      </div>
+      )}
 
       {/* Cultural Reference */}
       {chord.culturalReference && (
-        <div className="p-4 bg-gradient-to-r from-amber-50 to-orange-50 rounded-lg">
+        <div className="p-4 bg-[#161b22] border border-[#30363d] rounded-lg">
           <div className="flex items-start gap-2">
-            <Globe className="w-5 h-5 text-amber-600 mt-0.5 flex-shrink-0" />
+            <Globe className="w-5 h-5 text-[#fb8500] mt-0.5 flex-shrink-0" />
             <div>
-              <h4 className="font-semibold text-gray-900 mb-1">Cultural Reference</h4>
-              <p className="text-gray-700 text-sm leading-relaxed">
+              <h4 className="font-semibold text-[#f0f6fc] mb-1">Cultural Reference</h4>
+              <p className="text-[#7d8590] text-sm leading-relaxed">
                 {chord.culturalReference}
               </p>
             </div>
@@ -243,29 +219,29 @@ export function AdvancedChordDisplay({
           </Button>
 
           {expanded && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-gray-50 rounded-lg">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-[#0d1117] border border-[#30363d] rounded-lg">
               {/* Harmonic Analysis */}
               <div className="space-y-3">
-                <h4 className="font-semibold text-gray-900">Harmonic Analysis</h4>
+                <h4 className="font-semibold text-[#f0f6fc]">Harmonic Analysis</h4>
                 
                 <div className="space-y-2">
                   <div className="flex justify-between">
-                    <span className="text-sm text-gray-600">Function:</span>
-                    <span className="text-sm font-medium capitalize">
+                    <span className="text-sm text-[#7d8590]">Function:</span>
+                    <span className="text-sm font-medium capitalize text-[#f0f6fc]">
                       {chord.harmonicFunction || 'Color'}
                     </span>
                   </div>
                   
                   <div className="flex justify-between">
-                    <span className="text-sm text-gray-600">Dissonance:</span>
-                    <span className="text-sm font-medium">
+                    <span className="text-sm text-[#7d8590]">Dissonance:</span>
+                    <span className="text-sm font-medium text-[#f0f6fc]">
                       {Math.round(chord.dissonanceLevel * 100)}%
                     </span>
                   </div>
                   
                   <div className="flex justify-between">
-                    <span className="text-sm text-gray-600">Intervals:</span>
-                    <span className="text-sm font-medium">
+                    <span className="text-sm text-[#7d8590]">Intervals:</span>
+                    <span className="text-sm font-medium text-[#f0f6fc]">
                       {chord.intervals.join(', ')}
                     </span>
                   </div>
@@ -274,14 +250,14 @@ export function AdvancedChordDisplay({
                 {/* Theoretical Context */}
                 {chord.theoreticalContext && (
                   <div className="space-y-2">
-                    <h5 className="font-medium text-gray-800">Features:</h5>
+                    <h5 className="font-medium text-[#f0f6fc]">Features:</h5>
                     <div className="flex flex-wrap gap-1">
                       {Object.entries(chord.theoreticalContext)
                         .filter(([, value]) => value)
                         .map(([key]) => (
                           <span
                             key={key}
-                            className="px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded-full"
+                            className="px-2 py-1 text-xs bg-[#238636] text-white rounded-full"
                           >
                             {key.replace(/([A-Z])/g, ' $1').toLowerCase()}
                           </span>
@@ -293,34 +269,34 @@ export function AdvancedChordDisplay({
 
               {/* Voicing Details */}
               <div className="space-y-3">
-                <h4 className="font-semibold text-gray-900">Voicing Details</h4>
+                <h4 className="font-semibold text-[#f0f6fc]">Voicing Details</h4>
                 
                 <div className="space-y-2">
                   <div className="flex justify-between">
-                    <span className="text-sm text-gray-600">Type:</span>
-                    <span className="text-sm font-medium capitalize">
+                    <span className="text-sm text-[#7d8590]">Type:</span>
+                    <span className="text-sm font-medium capitalize text-[#f0f6fc]">
                       {chord.voicing.voicingType}
                     </span>
                   </div>
                   
                   <div className="flex justify-between">
-                    <span className="text-sm text-gray-600">Density:</span>
-                    <span className="text-sm font-medium capitalize">
+                    <span className="text-sm text-[#7d8590]">Density:</span>
+                    <span className="text-sm font-medium capitalize text-[#f0f6fc]">
                       {chord.voicing.density}
                     </span>
                   </div>
                   
                   <div className="flex justify-between">
-                    <span className="text-sm text-gray-600">Register:</span>
-                    <span className="text-sm font-medium capitalize">
+                    <span className="text-sm text-[#7d8590]">Register:</span>
+                    <span className="text-sm font-medium capitalize text-[#f0f6fc]">
                       {chord.voicing.register}
                     </span>
                   </div>
                   
                   {chord.voicing.voiceLeadingScore && (
                     <div className="flex justify-between">
-                      <span className="text-sm text-gray-600">Voice Leading:</span>
-                      <span className="text-sm font-medium">
+                      <span className="text-sm text-[#7d8590]">Voice Leading:</span>
+                      <span className="text-sm font-medium text-[#f0f6fc]">
                         {Math.round(chord.voicing.voiceLeadingScore * 100)}%
                       </span>
                     </div>
@@ -328,8 +304,8 @@ export function AdvancedChordDisplay({
                 </div>
 
                 <div className="space-y-1">
-                  <span className="text-sm text-gray-600">Description:</span>
-                  <p className="text-xs text-gray-700 leading-relaxed">
+                  <span className="text-sm text-[#7d8590]">Description:</span>
+                  <p className="text-xs text-[#f0f6fc] leading-relaxed">
                     {getVoicingDescription(chord.voicing)}
                   </p>
                 </div>
@@ -337,13 +313,13 @@ export function AdvancedChordDisplay({
 
               {/* Performance Hints */}
               <div className="md:col-span-2 space-y-3">
-                <h4 className="font-semibold text-gray-900">Performance Guidelines</h4>
+                <h4 className="font-semibold text-[#f0f6fc]">Performance Guidelines</h4>
                 
                 <div className="grid grid-cols-3 gap-4">
                   {chord.timbre && (
                     <div className="text-center">
-                      <div className="text-xs text-gray-500 uppercase tracking-wide">Timbre</div>
-                      <div className="font-medium text-gray-900 capitalize">
+                      <div className="text-xs text-[#7d8590] uppercase tracking-wide">Timbre</div>
+                      <div className="font-medium text-[#f0f6fc] capitalize">
                         {chord.timbre.replace(/_/g, ' ')}
                       </div>
                     </div>
@@ -351,8 +327,8 @@ export function AdvancedChordDisplay({
                   
                   {chord.dynamics && (
                     <div className="text-center">
-                      <div className="text-xs text-gray-500 uppercase tracking-wide">Dynamics</div>
-                      <div className="font-medium text-gray-900 uppercase">
+                      <div className="text-xs text-[#7d8590] uppercase tracking-wide">Dynamics</div>
+                      <div className="font-medium text-[#f0f6fc] uppercase">
                         {chord.dynamics}
                       </div>
                     </div>
@@ -360,8 +336,8 @@ export function AdvancedChordDisplay({
                   
                   {chord.articulation && (
                     <div className="text-center">
-                      <div className="text-xs text-gray-500 uppercase tracking-wide">Articulation</div>
-                      <div className="font-medium text-gray-900 capitalize">
+                      <div className="text-xs text-[#7d8590] uppercase tracking-wide">Articulation</div>
+                      <div className="font-medium text-[#f0f6fc] capitalize">
                         {chord.articulation}
                       </div>
                     </div>
@@ -370,8 +346,8 @@ export function AdvancedChordDisplay({
 
                 {/* MIDI Notes */}
                 <div className="space-y-1">
-                  <span className="text-sm text-gray-600">MIDI Notes (Voicing):</span>
-                  <p className="text-xs font-mono text-gray-700 bg-white p-2 rounded border">
+                  <span className="text-sm text-[#7d8590]">MIDI Notes (Voicing):</span>
+                  <p className="text-xs font-mono text-[#f0f6fc] bg-[#161b22] p-2 rounded border border-[#30363d]">
                     {formatMidiNotes(chord.voicing.notes)}
                   </p>
                 </div>

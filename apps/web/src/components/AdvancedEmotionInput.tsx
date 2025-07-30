@@ -12,7 +12,6 @@ import {
   Settings, 
   ChevronDown, 
   ChevronUp,
-  Lightbulb,
   Shuffle
 } from 'lucide-react';
 
@@ -79,16 +78,16 @@ export const AdvancedEmotionInput: React.FC<AdvancedEmotionInputProps> = ({
   };
 
   return (
-    <Card className="w-full max-w-2xl mx-auto p-6 space-y-6">
+    <Card className="w-full max-w-2xl mx-auto p-6 space-y-6 bg-[#0d1117] border-[#30363d]">
       {/* Header */}
       <div className="text-center space-y-2">
         <div className="flex items-center justify-center gap-2">
-          <Sparkles className="w-6 h-6 text-purple-600" />
-          <h2 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
+          <Sparkles className="w-6 h-6 text-[#238636]" />
+          <h2 className="text-2xl font-bold text-[#f0f6fc]">
             Emotion to Chord
           </h2>
         </div>
-        <p className="text-gray-600">
+        <p className="text-[#7d8590]">
           Describe your emotion in detail for the most accurate musical interpretation
         </p>
       </div>
@@ -96,7 +95,7 @@ export const AdvancedEmotionInput: React.FC<AdvancedEmotionInputProps> = ({
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Main Emotion Input */}
         <div className="space-y-2">
-          <label htmlFor="emotion" className="block text-sm font-medium text-gray-700">
+          <label htmlFor="emotion" className="block text-sm font-medium text-[#f0f6fc]">
             Emotion Description
           </label>
           <div className="relative">
@@ -106,20 +105,20 @@ export const AdvancedEmotionInput: React.FC<AdvancedEmotionInputProps> = ({
               value={emotion}
               onChange={(e) => setEmotion(e.target.value)}
               placeholder="e.g., transcendent wonder with a touch of melancholy..."
-              className="w-full pr-10"
+              className="w-full pr-10 bg-[#0d1117] border-[#30363d] text-[#f0f6fc] placeholder:text-[#7d8590] focus:border-[#238636] focus:ring-[#238636]"
               disabled={disabled}
               maxLength={500}
             />
             <button
               type="button"
               onClick={handleRandomExample}
-              className="absolute right-2 top-1/2 transform -translate-y-1/2 p-1 text-gray-400 hover:text-gray-600"
+              className="absolute right-2 top-1/2 transform -translate-y-1/2 p-1 text-[#7d8590] hover:text-[#f0f6fc]"
               title="Random example"
             >
               <Shuffle className="w-4 h-4" />
             </button>
           </div>
-          <div className="text-xs text-gray-500">
+          <div className="text-xs text-[#6e7681]">
             {emotion.length}/500 characters
           </div>
         </div>
@@ -131,18 +130,18 @@ export const AdvancedEmotionInput: React.FC<AdvancedEmotionInputProps> = ({
             variant="outline"
             size="sm"
             onClick={() => setShowExamples(!showExamples)}
-            className="w-full flex items-center justify-center gap-2"
+            className="w-full flex items-center justify-center gap-2 bg-[#21262d] border-[#30363d] text-[#f0f6fc] hover:bg-[#30363d]"
           >
-            <Lightbulb className="w-4 h-4" />
+            <Sparkles className="w-4 h-4" />
             {showExamples ? 'Hide Examples' : 'Show Example Emotions'}
             {showExamples ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
           </Button>
 
           {showExamples && (
-            <div className="grid grid-cols-1 gap-3 p-4 bg-gray-50 rounded-lg">
+            <div className="grid grid-cols-1 gap-3 p-4 bg-[#161b22] border border-[#30363d] rounded-lg">
               {Object.entries(examples).map(([category, categoryExamples]) => (
                 <div key={category}>
-                  <h4 className="text-sm font-medium text-gray-700 mb-2 capitalize">
+                  <h4 className="text-sm font-medium text-[#f0f6fc] mb-2 capitalize">
                     {category} Emotions
                   </h4>
                   <div className="grid grid-cols-1 gap-1">
@@ -151,7 +150,7 @@ export const AdvancedEmotionInput: React.FC<AdvancedEmotionInputProps> = ({
                         key={index}
                         type="button"
                         onClick={() => handleExampleClick(example)}
-                        className="text-left text-sm p-2 rounded bg-white hover:bg-blue-50 border border-gray-200 hover:border-blue-300 transition-colors"
+                        className="text-left text-sm p-2 rounded bg-[#0d1117] hover:bg-[#21262d] border border-[#30363d] hover:border-[#238636] transition-colors text-[#f0f6fc]"
                       >
                         {example}
                       </button>
@@ -170,7 +169,7 @@ export const AdvancedEmotionInput: React.FC<AdvancedEmotionInputProps> = ({
             variant="outline"
             size="sm"
             onClick={() => setShowAdvanced(!showAdvanced)}
-            className="w-full flex items-center justify-center gap-2"
+            className="w-full flex items-center justify-center gap-2 bg-[#21262d] border-[#30363d] text-[#f0f6fc] hover:bg-[#30363d]"
           >
             <Settings className="w-4 h-4" />
             Advanced Options
@@ -178,17 +177,17 @@ export const AdvancedEmotionInput: React.FC<AdvancedEmotionInputProps> = ({
           </Button>
 
           {showAdvanced && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-gray-50 rounded-lg">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-[#161b22] border border-[#30363d] rounded-lg">
               {/* Cultural Preference */}
               <div className="space-y-2">
-                <label className="block text-sm font-medium text-gray-700">
+                <label className="block text-sm font-medium text-[#f0f6fc]">
                   <Globe className="w-4 h-4 inline mr-1" />
                   Cultural Context
                 </label>
                 <select
                   value={culturalPreference}
                   onChange={(e) => setCulturalPreference(e.target.value)}
-                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full p-2 border border-[#30363d] rounded-md focus:ring-2 focus:ring-[#238636] focus:border-[#238636] bg-[#0d1117] text-[#f0f6fc]"
                   disabled={disabled}
                 >
                   <option value="universal">Universal</option>
@@ -200,14 +199,14 @@ export const AdvancedEmotionInput: React.FC<AdvancedEmotionInputProps> = ({
 
               {/* Style Preference */}
               <div className="space-y-2">
-                <label className="block text-sm font-medium text-gray-700">
+                <label className="block text-sm font-medium text-[#f0f6fc]">
                   <Music className="w-4 h-4 inline mr-1" />
                   Musical Style
                 </label>
                 <select
                   value={stylePreference}
                   onChange={(e) => setStylePreference(e.target.value)}
-                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full p-2 border border-[#30363d] rounded-md focus:ring-2 focus:ring-[#238636] focus:border-[#238636] bg-[#0d1117] text-[#f0f6fc]"
                   disabled={disabled}
                 >
                   <option value="contemporary">Contemporary</option>
@@ -224,10 +223,10 @@ export const AdvancedEmotionInput: React.FC<AdvancedEmotionInputProps> = ({
                     type="checkbox"
                     checked={includeProgression}
                     onChange={(e) => setIncludeProgression(e.target.checked)}
-                    className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    className="rounded border-[#30363d] text-[#238636] focus:ring-[#238636] bg-[#0d1117]"
                     disabled={disabled}
                   />
-                  <span className="text-sm text-gray-700">
+                  <span className="text-sm text-[#f0f6fc]">
                     Include chord progression
                   </span>
                 </label>
@@ -237,10 +236,10 @@ export const AdvancedEmotionInput: React.FC<AdvancedEmotionInputProps> = ({
                     type="checkbox"
                     checked={includeCulturalAlternatives}
                     onChange={(e) => setIncludeCulturalAlternatives(e.target.checked)}
-                    className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    className="rounded border-[#30363d] text-[#238636] focus:ring-[#238636] bg-[#0d1117]"
                     disabled={disabled}
                   />
-                  <span className="text-sm text-gray-700">
+                  <span className="text-sm text-[#f0f6fc]">
                     Include cultural alternatives (Raga/Maqam)
                   </span>
                 </label>
@@ -252,7 +251,7 @@ export const AdvancedEmotionInput: React.FC<AdvancedEmotionInputProps> = ({
         {/* Submit Button */}
         <Button
           type="submit"
-          className="w-full"
+          className="w-full bg-[#238636] hover:bg-[#2ea043] text-white border-[#238636]"
           disabled={disabled || loading || !emotion.trim()}
           size="lg"
         >

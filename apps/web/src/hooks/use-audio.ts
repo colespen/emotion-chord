@@ -10,8 +10,10 @@ interface UseAudioState {
   arpeggioChord: string | null;
   isProgressionPlaying: boolean;
   isProgressionLooping: boolean;
+  isPlayingAllChords: boolean;
   currentChord: number;
   error: string | null;
+  abortController: AbortController | null;
 }
 
 export function useAudio() {
@@ -23,8 +25,10 @@ export function useAudio() {
     arpeggioChord: null,
     isProgressionPlaying: false,
     isProgressionLooping: false,
+    isPlayingAllChords: false,
     currentChord: -1,
     error: null,
+    abortController: null,
   });
 
   const initializeAudio = useCallback(async () => {
@@ -131,7 +135,119 @@ export function useAudio() {
     setState(prev => ({ ...prev, currentChord: newIndex }));
   }, []);
 
+  const playAllChords = useCallback(async (chords: AdvancedChordSuggestion[]) => {
+    if (chords.length === 0) return;
+    
+    // Cancel any existing loop first
+    setState(prev => {
+      if (prev.abortController) {
+        prev.abortController.abort();
+      }
+      return prev;
+    });
+    
+    // Create new abort controller for this loop
+    const abortController = new AbortController();
+    const signal = abortController.signal;
+    
+    setState(prev => ({ 
+      ...prev, 
+      isPlayingAllChords: true, 
+      error: null,
+      abortController 
+    }));
+    
+    try {
+      // Auto-initialize audio on first play
+      await AudioService.initialize();
+      setState(prev => ({ ...prev, isInitialized: true }));
+      
+      // Helper function for abortable sleep
+      const abortableSleep = (ms: number): Promise<void> => {
+        return new Promise((resolve, reject) => {
+          if (signal.aborted) {
+            reject(new Error('Aborted'));
+            return;
+          }
+          
+          const timeout = setTimeout(() => {
+            if (signal.aborted) {
+              reject(new Error('Aborted'));
+            } else {
+              resolve();
+            }
+          }, ms);
+          
+          signal.addEventListener('abort', () => {
+            clearTimeout(timeout);
+            reject(new Error('Aborted'));
+          });
+        });
+      };
+      
+      // Loop continuously until aborted
+      while (!signal.aborted) {
+        // Play each chord in sequence
+        for (let i = 0; i < chords.length && !signal.aborted; i++) {
+          const chord = chords[i];
+          
+          if (signal.aborted) break;
+          
+          setState(prev => ({ ...prev, playingChord: chord.symbol }));
+          
+          await AudioService.playChord(chord);
+          
+          if (signal.aborted) break;
+          
+          // Shorter chord duration for quicker progression
+          await abortableSleep(1200);
+          
+          if (signal.aborted) break;
+          
+          setState(prev => ({ ...prev, playingChord: null }));
+          
+          // No gap between chords for seamless flow
+        }
+        
+        if (signal.aborted) break;
+        
+        // No extra delay - loop immediately for consistent timing
+      }
+      
+    } catch (error) {
+      // Don't treat abort as an error
+      if (error instanceof Error && error.message === 'Aborted') {
+        return;
+      }
+      
+      const errorMessage = error instanceof Error ? error.message : 'Failed to play chord sequence';
+      setState(prev => ({ 
+        ...prev, 
+        isPlayingAllChords: false,
+        playingChord: null,
+        abortController: null,
+        error: errorMessage 
+      }));
+    } finally {
+      // Clean up state when loop ends (naturally or aborted)
+      setState(prev => ({ 
+        ...prev, 
+        isPlayingAllChords: false,
+        playingChord: null,
+        abortController: null
+      }));
+    }
+  }, []);
+
   const stopAudio = useCallback(() => {
+    // Abort any running chord loop
+    setState(prev => {
+      if (prev.abortController) {
+        prev.abortController.abort();
+      }
+      return prev;
+    });
+    
     AudioService.stopAll();
     setState(prev => ({ 
       ...prev, 
@@ -141,18 +257,30 @@ export function useAudio() {
       arpeggioChord: null,
       isProgressionPlaying: false,
       isProgressionLooping: false,
+      isPlayingAllChords: false,
+      abortController: null,
       currentChord: -1
     }));
   }, []);
 
   useEffect(() => {
     return () => {
+      // Abort any running operations
+      setState(prev => {
+        if (prev.abortController) {
+          prev.abortController.abort();
+        }
+        return prev;
+      });
+      
       AudioService.dispose();
     };
   }, []);
 
+  const { abortController, ...publicState } = state;
+
   return {
-    ...state,
+    ...publicState,
     initializeAudio,
     playChord,
     toggleArpeggio,
@@ -164,6 +292,7 @@ export function useAudio() {
     nextChord,
     previousChord,
     selectChord,
+    playAllChords,
     stopAudio,
   };
 }
