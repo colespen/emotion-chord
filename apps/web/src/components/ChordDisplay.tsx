@@ -1,9 +1,9 @@
-import React from 'react';
-import { Button } from '@/components/ui/Button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
-import { Play, Square, Music } from 'lucide-react';
-import type { AdvancedChordSuggestion } from '@/types/emotion-chord';
-import { formatEmotionalResonance } from '@/lib/utils';
+import React from "react";
+import { Button } from "@/components/ui/Button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
+import { Play, Square, Music } from "lucide-react";
+import type { AdvancedChordSuggestion } from "@/types/emotion-chord";
+import { formatEmotionalResonance } from "@/lib/utils";
 
 interface ChordDisplayProps {
   chord: AdvancedChordSuggestion;
@@ -25,7 +25,7 @@ export function ChordDisplay({
   onStop,
 }: ChordDisplayProps) {
   return (
-    <Card className={isPrimary ? 'ring-2 ring-blue-500 bg-blue-50' : ''}>
+    <Card className={isPrimary ? "ring-2 ring-blue-500 bg-blue-50" : ""}>
       <CardHeader>
         <CardTitle className="flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -51,7 +51,7 @@ export function ChordDisplay({
               ) : (
                 <Play className="h-4 w-4" />
               )}
-              {isPlaying ? 'Stop' : 'Chord'}
+              {isPlaying ? "Stop" : "Chord"}
             </Button>
             <Button
               size="sm"
@@ -64,7 +64,7 @@ export function ChordDisplay({
               ) : (
                 <Music className="h-4 w-4" />
               )}
-              {isArpeggioLooping ? 'Stop Loop' : 'Arpeggio'}
+              {isArpeggioLooping ? "Stop Loop" : "Arpeggio"}
             </Button>
           </div>
         </CardTitle>
@@ -112,7 +112,7 @@ export function ChordDisplay({
           <div>
             <h4 className="font-medium text-gray-900 mb-2">MIDI Notes</h4>
             <div className="text-xs text-gray-600 font-mono">
-              {chord.midiNotes.join(', ')}
+              {chord.midiNotes.join(", ")}
             </div>
           </div>
           <div>

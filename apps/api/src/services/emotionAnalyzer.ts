@@ -25,9 +25,7 @@ const AdvancedEmotionSchema = z.object({
       transcendence: z.number().optional(),
     })
     .optional(),
-  culturalContext: z
-    .enum(["western", "indian", "arabic", "universal"])
-    .optional(),
+  culturalContext: z.enum(["western", "indian", "arabic", "universal"]).optional(),
   harmonicStyle: z
     .enum(["classical", "jazz", "contemporary", "experimental"])
     .optional(),
@@ -86,7 +84,7 @@ ${context ? `Context: ${JSON.stringify(context)}` : ""}`;
 
       const content = response.choices[0]?.message?.content;
       if (!content) throw new Error("No response from OpenAI");
-      
+
       let parsed;
       try {
         parsed = JSON.parse(content);
@@ -94,12 +92,12 @@ ${context ? `Context: ${JSON.stringify(context)}` : ""}`;
         console.error("Failed to parse OpenAI response as JSON:", parseError);
         throw new Error("Invalid JSON response from OpenAI");
       }
-      
+
       const result = AdvancedEmotionSchema.safeParse(parsed);
       if (!result.success) {
         console.error("Schema validation failed:", result.error.issues);
         const fallbackData = {
-          primaryEmotion: parsed.primaryEmotion || input.split(' ')[0] || "neutral",
+          primaryEmotion: parsed.primaryEmotion || input.split(" ")[0] || "neutral",
           secondaryEmotions: parsed.secondaryEmotions || [],
           emotionalIntensity: parsed.emotionalIntensity || 0.5,
           valence: parsed.valence || 0,
@@ -108,12 +106,11 @@ ${context ? `Context: ${JSON.stringify(context)}` : ""}`;
           complexity: parsed.complexity || 0.5,
           musicalMode: parsed.musicalMode || "major",
           suggestedTempo: parsed.suggestedTempo || 120,
-          ...parsed
+          ...parsed,
         };
-        console.log("Using fallback data:", fallbackData);
         return AdvancedEmotionSchema.parse(fallbackData);
       }
-      
+
       return result.data;
     } catch (error) {
       console.error("Error analyzing emotion:", error);

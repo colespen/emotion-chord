@@ -1,31 +1,25 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import { AdvancedEmotionInput } from '@/components/AdvancedEmotionInput';
-import { AdvancedChordDisplay } from '@/components/AdvancedChordDisplay';
-import { ChordProgressionDisplay } from '@/components/ChordProgressionDisplay';
-import { EmotionAnalysisDisplay } from '@/components/EmotionAnalysisDisplay';
-import { Card } from '@/components/ui/Card';
-import { Button } from '@/components/ui/Button';
-import { useEmotionChord } from '@/hooks/use-emotion-chord';
-import type { AdvancedChordSuggestion } from '@/types/emotion-chord';
-import { useAudio } from '@/hooks/use-audio';
-import {
-  Music,
-  Volume2,
-  RefreshCw,
-  PlayCircle,
-  Square
-} from 'lucide-react';
+import React, { useState } from "react";
+import { AdvancedEmotionInput } from "@/components/AdvancedEmotionInput";
+import { AdvancedChordDisplay } from "@/components/AdvancedChordDisplay";
+import { ChordProgressionDisplay } from "@/components/ChordProgressionDisplay";
+import { EmotionAnalysisDisplay } from "@/components/EmotionAnalysisDisplay";
+import { Card } from "@/components/ui/Card";
+import { Button } from "@/components/ui/Button";
+import { useEmotionChord } from "@/hooks/use-emotion-chord";
+import type { AdvancedChordSuggestion } from "@/types/emotion-chord";
+import { useAudio } from "@/hooks/use-audio";
+import { Music, Volume2, RefreshCw, PlayCircle, Square } from "lucide-react";
 
 export default function Home() {
-  const [lastEmotion, setLastEmotion] = useState<string>('');
+  const [lastEmotion, setLastEmotion] = useState<string>("");
   const { data, loading, error, generateChord, clearData } = useEmotionChord();
   const audio = useAudio();
 
   const handleEmotionSubmit = (emotion: string) => {
     setLastEmotion(emotion);
-    // For now, just use the emotion since the API doesn't support options yet
+    // for now, just use the emotion since the api doesn't support options yet
     generateChord(emotion);
   };
 
@@ -82,23 +76,31 @@ export default function Home() {
               </div>
               <div>
                 <h1 className="text-2xl font-bold text-[#f0f6fc]">Emotion Chord</h1>
-                <p className="text-sm text-[#7d8590]">Transform emotions into harmonious music</p>
+                <p className="text-sm text-[#7d8590]">
+                  Transform emotions into harmonious music
+                </p>
               </div>
             </div>
-            
+
             <div className="flex items-center gap-2">
               {data && (
                 <Button
                   onClick={handlePlayAllChords}
-                  variant={audio.isPlayingAllChords ? 'secondary' : 'outline'}
+                  variant={audio.isPlayingAllChords ? "secondary" : "outline"}
                   size="sm"
                   className="flex items-center gap-2 bg-[#21262d] border-[#30363d] text-[#f0f6fc] hover:bg-[#30363d]"
                 >
-                  {audio.isPlayingAllChords ? <Square className="w-4 h-4" /> : <PlayCircle className="w-4 h-4" />}
-                  {audio.isPlayingAllChords ? 'Stop Loop' : 'Loop Chords'}
+                  {audio.isPlayingAllChords ? (
+                    <Square className="w-4 h-4" />
+                  ) : (
+                    <PlayCircle className="w-4 h-4" />
+                  )}
+                  {audio.isPlayingAllChords ? "Stop Loop" : "Loop Chords"}
                 </Button>
               )}
-              {(audio.isPlaying || audio.isProgressionPlaying || audio.isPlayingAllChords) && (
+              {(audio.isPlaying ||
+                audio.isProgressionPlaying ||
+                audio.isPlayingAllChords) && (
                 <Button
                   onClick={audio.stopAudio}
                   variant="outline"
@@ -130,14 +132,16 @@ export default function Home() {
             <Card className="p-6 bg-[#161b22] border-[#da3633]">
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="text-lg font-semibold text-[#da3633]">Something went wrong</h3>
+                  <h3 className="text-lg font-semibold text-[#da3633]">
+                    Something went wrong
+                  </h3>
                   <p className="text-[#f0f6fc] mt-1">{error}</p>
                 </div>
                 <div className="flex gap-2">
                   {lastEmotion && (
-                    <Button 
-                      onClick={handleRetry} 
-                      variant="outline" 
+                    <Button
+                      onClick={handleRetry}
+                      variant="outline"
                       size="sm"
                       className="bg-[#21262d] border-[#30363d] text-[#f0f6fc] hover:bg-[#30363d]"
                     >
@@ -145,9 +149,9 @@ export default function Home() {
                       Retry
                     </Button>
                   )}
-                  <Button 
-                    onClick={clearData} 
-                    variant="outline" 
+                  <Button
+                    onClick={clearData}
+                    variant="outline"
                     size="sm"
                     className="bg-[#21262d] border-[#30363d] text-[#f0f6fc] hover:bg-[#30363d]"
                   >
@@ -184,7 +188,9 @@ export default function Home() {
               {/* Alternative Chords */}
               {data.alternativeChords && data.alternativeChords.length > 0 && (
                 <div className="space-y-4">
-                  <h2 className="text-2xl font-bold text-[#f0f6fc]">Alternative Suggestions</h2>
+                  <h2 className="text-2xl font-bold text-[#f0f6fc]">
+                    Alternative Suggestions
+                  </h2>
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     {data.alternativeChords.map((chord, index) => (
                       <AdvancedChordDisplay
@@ -206,7 +212,9 @@ export default function Home() {
               {/* Chord Progression */}
               {data.chordProgression && (
                 <div className="space-y-4">
-                  <h2 className="text-2xl font-bold text-[#f0f6fc]">Emotional Chord Progression</h2>
+                  <h2 className="text-2xl font-bold text-[#f0f6fc]">
+                    Emotional Chord Progression
+                  </h2>
                   <ChordProgressionDisplay
                     progression={data.chordProgression}
                     currentChord={audio.currentChord}
@@ -228,28 +236,36 @@ export default function Home() {
                   <h2 className="text-2xl font-bold text-[#f0f6fc]">
                     Cultural Musical Alternatives
                   </h2>
-                  
+
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     {/* Indian Raga */}
                     {data.culturalAlternatives.indian && (
                       <Card className="p-6 bg-[#161b22] border-[#30363d]">
                         <div className="mb-4">
-                          <h3 className="text-lg font-bold text-[#f0f6fc]">Indian Classical</h3>
+                          <h3 className="text-lg font-bold text-[#f0f6fc]">
+                            Indian Classical
+                          </h3>
                         </div>
-                        
+
                         <div className="space-y-3">
                           <div>
-                            <h4 className="font-semibold text-[#f0f6fc]">{data.culturalAlternatives.indian.name}</h4>
-                            <p className="text-sm text-[#7d8590]">{data.culturalAlternatives.indian.emotion}</p>
+                            <h4 className="font-semibold text-[#f0f6fc]">
+                              {data.culturalAlternatives.indian.name}
+                            </h4>
+                            <p className="text-sm text-[#7d8590]">
+                              {data.culturalAlternatives.indian.emotion}
+                            </p>
                           </div>
-                          
+
                           <div>
-                            <span className="text-sm font-medium text-[#f0f6fc]">Notes: </span>
+                            <span className="text-sm font-medium text-[#f0f6fc]">
+                              Notes:{" "}
+                            </span>
                             <span className="text-sm text-[#7d8590]">
-                              {data.culturalAlternatives.indian.notes.join(' - ')}
+                              {data.culturalAlternatives.indian.notes.join(" - ")}
                             </span>
                           </div>
-                          
+
                           <p className="text-sm text-[#7d8590] italic">
                             {data.culturalAlternatives.indian.characteristic}
                           </p>
@@ -261,31 +277,43 @@ export default function Home() {
                     {data.culturalAlternatives.arabic && (
                       <Card className="p-6 bg-[#161b22] border-[#30363d]">
                         <div className="mb-4">
-                          <h3 className="text-lg font-bold text-[#f0f6fc]">Arabic Maqam</h3>
+                          <h3 className="text-lg font-bold text-[#f0f6fc]">
+                            Arabic Maqam
+                          </h3>
                         </div>
-                        
+
                         <div className="space-y-3">
                           <div>
-                            <h4 className="font-semibold text-[#f0f6fc]">{data.culturalAlternatives.arabic.name}</h4>
-                            <p className="text-sm text-[#7d8590]">{data.culturalAlternatives.arabic.emotion}</p>
+                            <h4 className="font-semibold text-[#f0f6fc]">
+                              {data.culturalAlternatives.arabic.name}
+                            </h4>
+                            <p className="text-sm text-[#7d8590]">
+                              {data.culturalAlternatives.arabic.emotion}
+                            </p>
                           </div>
-                          
+
                           <div>
-                            <span className="text-sm font-medium text-[#f0f6fc]">Notes: </span>
+                            <span className="text-sm font-medium text-[#f0f6fc]">
+                              Notes:{" "}
+                            </span>
                             <span className="text-sm text-[#7d8590]">
-                              {data.culturalAlternatives.arabic.notes.join(' - ')}
+                              {data.culturalAlternatives.arabic.notes.join(" - ")}
                             </span>
                           </div>
-                          
+
                           {data.culturalAlternatives.arabic.quarterTones && (
                             <div>
-                              <span className="text-sm font-medium text-[#f0f6fc]">Quarter Tones: </span>
+                              <span className="text-sm font-medium text-[#f0f6fc]">
+                                Quarter Tones:{" "}
+                              </span>
                               <span className="text-sm text-[#7d8590]">
-                                {data.culturalAlternatives.arabic.quarterTones.join(', ')}
+                                {data.culturalAlternatives.arabic.quarterTones.join(
+                                  ", "
+                                )}
                               </span>
                             </div>
                           )}
-                          
+
                           <p className="text-sm text-[#7d8590] italic">
                             {data.culturalAlternatives.arabic.characteristic}
                           </p>
@@ -305,10 +333,12 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="text-center">
             <p className="text-[#7d8590] text-sm">
-              Powered by advanced AI emotion recognition, GEMS framework, and cross-cultural music theory
+              Powered by advanced AI emotion recognition, GEMS framework, and
+              cross-cultural music theory
             </p>
             <p className="text-[#6e7681] text-xs mt-2">
-              Built with Next.js 15, TypeScript, and Tone.js for real-time audio synthesis
+              Built with Next.js 15, TypeScript, and Tone.js for real-time audio
+              synthesis
             </p>
           </div>
         </div>

@@ -1,11 +1,7 @@
-import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
-import type { EmotionAnalysis } from '@/types/emotion-chord';
-import {
-  getEmotionColor,
-  getArousalIntensity,
-  getTensionLevel,
-} from '@/lib/utils';
+import React from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
+import type { EmotionAnalysis } from "@/types/emotion-chord";
+import { getEmotionColor, getArousalIntensity, getTensionLevel } from "@/lib/utils";
 
 interface EmotionAnalysisDisplayProps {
   emotion: EmotionAnalysis;
@@ -29,7 +25,9 @@ export function EmotionAnalysisDisplay({ emotion }: EmotionAnalysisDisplayProps)
         {/* Primary Emotion */}
         <div>
           <h4 className="font-medium text-[#f0f6fc] mb-1">Primary Emotion</h4>
-          <span className={`text-lg font-semibold capitalize ${getEmotionColor(emotion.valence)}`}>
+          <span
+            className={`text-lg font-semibold capitalize ${getEmotionColor(emotion.valence)}`}
+          >
             {emotion.primaryEmotion}
           </span>
         </div>
@@ -63,13 +61,14 @@ export function EmotionAnalysisDisplay({ emotion }: EmotionAnalysisDisplayProps)
               <div className="w-full bg-[#21262d] rounded-full h-2">
                 <div
                   className={`h-2 rounded-full transition-all ${
-                    emotion.valence > 0 ? 'bg-[#238636]' : 'bg-[#da3633]'
+                    emotion.valence > 0 ? "bg-[#238636]" : "bg-[#da3633]"
                   }`}
                   style={{ width: `${valencePercentage}%` }}
                 />
               </div>
               <div className="text-xs text-[#7d8590]">
-                {emotion.valence > 0 ? '+' : ''}{emotion.valence.toFixed(2)}
+                {emotion.valence > 0 ? "+" : ""}
+                {emotion.valence.toFixed(2)}
               </div>
             </div>
           </div>
@@ -142,9 +141,7 @@ export function EmotionAnalysisDisplay({ emotion }: EmotionAnalysisDisplayProps)
           </div>
           <div>
             <h4 className="font-medium text-[#f0f6fc] mb-1">Suggested Tempo</h4>
-            <span className="text-sm text-[#7d8590]">
-              {emotion.suggestedTempo} BPM
-            </span>
+            <span className="text-sm text-[#7d8590]">{emotion.suggestedTempo} BPM</span>
           </div>
         </div>
       </CardContent>

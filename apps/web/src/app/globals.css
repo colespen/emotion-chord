@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 :root {
-  /* GitHub Dark Color Palette */
+  /* Dark Color Palette */
   --background: #0d1117;
   --foreground: #f0f6fc;
   --muted: #21262d;

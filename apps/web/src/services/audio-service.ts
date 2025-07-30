@@ -1,5 +1,9 @@
 import * as Tone from "tone";
-import type { AdvancedChordSuggestion, ChordProgression, AdvancedEmotionAnalysis } from "@/types/emotion-chord";
+import type {
+  AdvancedChordSuggestion,
+  ChordProgression,
+  AdvancedEmotionAnalysis,
+} from "@/types/emotion-chord";
 
 export class AudioService {
   private static synth: Tone.PolySynth | null = null;
@@ -78,11 +82,25 @@ export class AudioService {
       return chord.voicing.notes.map(this.midiToFrequency);
     } else {
       const noteToMidi: Record<string, number> = {
-        'C': 60, 'C#': 61, 'Db': 61, 'D': 62, 'D#': 63, 'Eb': 63,
-        'E': 64, 'F': 65, 'F#': 66, 'Gb': 66, 'G': 67, 'G#': 68,
-        'Ab': 68, 'A': 69, 'A#': 70, 'Bb': 70, 'B': 71
+        C: 60,
+        "C#": 61,
+        Db: 61,
+        D: 62,
+        "D#": 63,
+        Eb: 63,
+        E: 64,
+        F: 65,
+        "F#": 66,
+        Gb: 66,
+        G: 67,
+        "G#": 68,
+        Ab: 68,
+        A: 69,
+        "A#": 70,
+        Bb: 70,
+        B: 71,
       };
-      return chord.notes.map(note => {
+      return chord.notes.map((note) => {
         const midiNote = noteToMidi[note] || 60;
         return this.midiToFrequency(midiNote + 12);
       });
@@ -92,7 +110,7 @@ export class AudioService {
   // get arpeggio frequencies sorted from low to high
   static getArpeggioFrequencies(chord: AdvancedChordSuggestion): number[] {
     let frequencies: number[] = [];
-    
+
     if (chord.midiNotes && chord.midiNotes.length > 0) {
       frequencies = chord.midiNotes.map(this.midiToFrequency);
     } else if (chord.voicing?.notes && chord.voicing.notes.length > 0) {
@@ -100,18 +118,24 @@ export class AudioService {
     } else {
       frequencies = this.getChordFrequencies(chord);
     }
-    
+
     return [...frequencies].sort((a, b) => a - b);
   }
 
   static getDynamicsVelocity(dynamics?: string): number {
     switch (dynamics) {
-      case 'pp': return 0.2;
-      case 'p': return 0.4;
-      case 'mf': return 0.6;
-      case 'f': return 0.8;
-      case 'ff': return 1.0;
-      default: return 0.6;
+      case "pp":
+        return 0.2;
+      case "p":
+        return 0.4;
+      case "mf":
+        return 0.6;
+      case "f":
+        return 0.8;
+      case "ff":
+        return 1.0;
+      default:
+        return 0.6;
     }
   }
 
@@ -152,17 +176,23 @@ export class AudioService {
     Tone.getTransport().cancel();
 
     frequencies.forEach((freq, index) => {
-      Tone.getTransport().schedule((time) => {
-        this.synth!.triggerAttackRelease(freq, noteLength, time, velocity);
-      }, `+${index * noteDelay}`);
+      Tone.getTransport().schedule(
+        (time) => {
+          this.synth!.triggerAttackRelease(freq, noteLength, time, velocity);
+        },
+        `+${index * noteDelay}`
+      );
     });
 
     Tone.getTransport().start();
 
-    Tone.getTransport().schedule(() => {
-      Tone.getTransport().stop();
-      Tone.getTransport().cancel();
-    }, `+${frequencies.length * noteDelay + 1}`);
+    Tone.getTransport().schedule(
+      () => {
+        Tone.getTransport().stop();
+        Tone.getTransport().cancel();
+      },
+      `+${frequencies.length * noteDelay + 1}`
+    );
   }
 
   static async toggleArpeggioLoop(
@@ -232,27 +262,27 @@ export class AudioService {
 
     this.currentProgression = progression;
     this.isProgressionLooping = loop;
-    
+
     Tone.getTransport().bpm.value = progression.tempo;
 
     const events = progression.chords.map((chord, index) => ({
       time: index * 4,
       chord,
-      index
+      index,
     }));
 
     this.progressionSequence = new Tone.Sequence(
       (time, data) => {
         this.currentChordIndex = data.index;
-        
+
         // simplified chord frequencies - should be expanded
         const frequencies = [220, 277, 330, 415];
         const duration = `${data.chord.duration}n` as Tone.Unit.Time;
-        
+
         this.synth!.triggerAttackRelease(frequencies, duration, time);
       },
       events,
-      '4n'
+      "4n"
     );
 
     this.progressionSequence.loop = loop;
@@ -301,7 +331,10 @@ export class AudioService {
   }
 
   static nextChord(): number {
-    if (this.currentProgression && this.currentChordIndex < this.currentProgression.chords.length - 1) {
+    if (
+      this.currentProgression &&
+      this.currentChordIndex < this.currentProgression.chords.length - 1
+    ) {
       this.currentChordIndex++;
     }
     return this.currentChordIndex;
@@ -315,7 +348,11 @@ export class AudioService {
   }
 
   static selectChord(index: number): number {
-    if (this.currentProgression && index >= 0 && index < this.currentProgression.chords.length) {
+    if (
+      this.currentProgression &&
+      index >= 0 &&
+      index < this.currentProgression.chords.length
+    ) {
       this.currentChordIndex = index;
     }
     return this.currentChordIndex;
@@ -335,7 +372,11 @@ export class AudioService {
     return this.isArpeggioPlaying;
   }
 
-  static getProgressionState(): { isPlaying: boolean; isLooping: boolean; currentChord: number } {
+  static getProgressionState(): {
+    isPlaying: boolean;
+    isLooping: boolean;
+    currentChord: number;
+  } {
     return {
       isPlaying: this.isProgressionPlaying,
       isLooping: this.isProgressionLooping,

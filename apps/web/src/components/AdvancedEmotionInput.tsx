@@ -8,7 +8,7 @@ import { EmotionChordApiService } from "@/services/emotion-chord-api";
 import {
   Sparkles,
   Music,
-  Globe,
+  // globe,
   Settings,
   ChevronDown,
   ChevronUp,
@@ -36,13 +36,10 @@ export const AdvancedEmotionInput: React.FC<AdvancedEmotionInputProps> = ({
 }) => {
   const [emotion, setEmotion] = useState("");
   const [showAdvanced, setShowAdvanced] = useState(false);
-  const [culturalPreference, setCulturalPreference] =
-    useState<string>("universal");
-  const [stylePreference, setStylePreference] =
-    useState<string>("contemporary");
+  const [culturalPreference, setCulturalPreference] = useState<string>("universal");
+  const [stylePreference, setStylePreference] = useState<string>("contemporary");
   const [includeProgression, setIncludeProgression] = useState(true);
-  const [includeCulturalAlternatives, setIncludeCulturalAlternatives] =
-    useState(true);
+  const [includeCulturalAlternatives, setIncludeCulturalAlternatives] = useState(true);
   const [showExamples, setShowExamples] = useState(false);
 
   const examples = EmotionChordApiService.getEmotionExamples();
@@ -91,8 +88,7 @@ export const AdvancedEmotionInput: React.FC<AdvancedEmotionInputProps> = ({
 
   const handleRandomExample = () => {
     const allExamples = Object.values(examples).flat();
-    const randomExample =
-      allExamples[Math.floor(Math.random() * allExamples.length)];
+    const randomExample = allExamples[Math.floor(Math.random() * allExamples.length)];
     setEmotion(randomExample);
   };
 
@@ -102,23 +98,17 @@ export const AdvancedEmotionInput: React.FC<AdvancedEmotionInputProps> = ({
       <div className="text-center space-y-2">
         <div className="flex items-center justify-center gap-2">
           <Sparkles className="w-6 h-6 text-[#238636]" />
-          <h2 className="text-2xl font-bold text-[#f0f6fc]">
-            Emotion to Chord
-          </h2>
+          <h2 className="text-2xl font-bold text-[#f0f6fc]">Emotion to Chord</h2>
         </div>
         <p className="text-[#7d8590]">
-          Describe your emotion in detail for the most accurate musical
-          interpretation
+          Describe your emotion in detail for the most accurate musical interpretation
         </p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Main Emotion Input */}
         <div className="space-y-2">
-          <label
-            htmlFor="emotion"
-            className="block text-sm font-medium text-[#f0f6fc]"
-          >
+          <label htmlFor="emotion" className="block text-sm font-medium text-[#f0f6fc]">
             Emotion Description
           </label>
           <div className="relative">
@@ -141,9 +131,7 @@ export const AdvancedEmotionInput: React.FC<AdvancedEmotionInputProps> = ({
               <Shuffle className="w-4 h-4" />
             </button>
           </div>
-          <div className="text-xs text-[#6e7681]">
-            {emotion.length}/500 characters
-          </div>
+          <div className="text-xs text-[#6e7681]">{emotion.length}/500 characters</div>
         </div>
 
         {/* Examples Toggle - OMIT EXAMPLES - DONT NEED RIGHT NOW. */}

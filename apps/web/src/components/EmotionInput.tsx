@@ -1,7 +1,18 @@
-import React, { useState } from 'react';
-import { Button } from '@/components/ui/Button';
-import { Textarea } from '@/components/ui/Input';
-import { Send } from 'lucide-react';
+import React, { useState } from "react";
+import { Button } from "@/components/ui/Button";
+import { Textarea } from "@/components/ui/Input";
+import { Send } from "lucide-react";
+
+const suggestions = [
+  "I feel overwhelmed by my responsibilities",
+  "Excited about new possibilities",
+  "Nostalgic about childhood memories",
+  "Anxious about the future",
+  "Peaceful and content",
+  "Frustrated with current situation",
+  "Hopeful despite challenges",
+  "Melancholic on a rainy day",
+];
 
 interface EmotionInputProps {
   onSubmit: (emotion: string) => void;
@@ -9,7 +20,7 @@ interface EmotionInputProps {
 }
 
 export function EmotionInput({ onSubmit, loading }: EmotionInputProps) {
-  const [emotion, setEmotion] = useState('');
+  const [emotion, setEmotion] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -18,22 +29,14 @@ export function EmotionInput({ onSubmit, loading }: EmotionInputProps) {
     }
   };
 
-  const suggestions = [
-    'I feel overwhelmed by my responsibilities',
-    'Excited about new possibilities',
-    'Nostalgic about childhood memories',
-    'Anxious about the future',
-    'Peaceful and content',
-    'Frustrated with current situation',
-    'Hopeful despite challenges',
-    'Melancholic on a rainy day',
-  ];
-
   return (
     <div className="space-y-4">
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label htmlFor="emotion" className="block text-sm font-medium text-gray-700 mb-2">
+          <label
+            htmlFor="emotion"
+            className="block text-sm font-medium text-gray-700 mb-2"
+          >
             Describe your emotion or feeling
           </label>
           <Textarea
@@ -48,7 +51,7 @@ export function EmotionInput({ onSubmit, loading }: EmotionInputProps) {
             {emotion.length}/500 characters
           </div>
         </div>
-        
+
         <Button
           type="submit"
           loading={loading}

@@ -9,29 +9,34 @@ Emotion Chord is a full-stack application that analyzes emotional text input and
 ## Architecture
 
 **Monorepo Structure:**
+
 - `apps/api/` - Hono-based REST API with OpenAI integration
 - `apps/web/` - Next.js 15 frontend with Tone.js audio synthesis
 
 ## Features
 
 ### 🧠 Emotion Analysis
+
 - Natural language emotion processing via OpenAI
 - GEMS framework integration (Geneva Emotional Music Scale)
 - Valence, arousal, tension, and complexity mapping
 
 ### 🎼 Musical Intelligence
+
 - Advanced chord generation with voice leading
 - Multiple voicing types (close, open, drop2, quartal, etc.)
 - Harmonic progression analysis with Roman numeral notation
 - Cultural musical alternatives (Indian raga, Arabic maqam)
 
 ### 🔊 Real-time Audio
+
 - Interactive chord playback with Tone.js
 - Arpeggio patterns with emotion-based tempo
 - Chord progression sequencing and looping
 - Professional audio effects chain (reverb, compression, filtering)
 
 ### 🎨 Modern UI
+
 - GitHub-inspired dark theme
 - Responsive design for all devices
 - Real-time chord visualization
@@ -59,12 +64,14 @@ pnpm dev
 ```
 
 **Access:**
+
 - Web App: http://localhost:3000
 - API: http://localhost:3001
 
 ## API Usage
 
 ### Generate Chord from Emotion
+
 ```bash
 POST http://localhost:3001/api/emotion-to-chord
 Content-Type: application/json
@@ -81,6 +88,7 @@ Content-Type: application/json
 ```
 
 ### Response Structure
+
 ```json
 {
   "emotion": {
@@ -115,6 +123,7 @@ Content-Type: application/json
 ## Tech Stack
 
 ### Backend (API)
+
 - **Runtime**: Node.js 18+
 - **Framework**: Hono (lightweight, fast)
 - **AI**: OpenAI GPT-4 for emotion analysis
@@ -123,6 +132,7 @@ Content-Type: application/json
 - **Language**: TypeScript
 
 ### Frontend (Web)
+
 - **Framework**: Next.js 15 with React 19
 - **Audio**: Tone.js synthesis engine
 - **Styling**: Tailwind CSS with GitHub theme
@@ -132,12 +142,14 @@ Content-Type: application/json
 ## Environment Variables
 
 ### API (`apps/api/.env`)
+
 ```env
 OPENAI_API_KEY=your_openai_api_key_here
 PORT=3001
 ```
 
 ### Web (`apps/web/.env`)
+
 ```env
 NEXT_PUBLIC_API_URL=http://localhost:3001
 ```

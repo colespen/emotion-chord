@@ -19,7 +19,11 @@
     "lint": "pnpm --filter \"*\" lint",
     "typecheck": "pnpm --filter \"*\" typecheck",
     "clean": "pnpm --filter \"*\" clean && rm -rf node_modules",
-    "install:all": "pnpm install"
+    "install:all": "pnpm install",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "format:api": "prettier --write apps/api",
+    "format:web": "prettier --write apps/web"
   },
   "keywords": [
     "emotion",
@@ -36,7 +40,8 @@
   "author": "Spencer Cole",
   "license": "MIT",
   "devDependencies": {
-    "concurrently": "^8.2.2"
+    "concurrently": "^8.2.2",
+    "prettier": "^3.6.2"
   },
   "engines": {
     "node": ">=18.0.0",

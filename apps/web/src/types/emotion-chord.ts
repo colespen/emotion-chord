@@ -1,16 +1,16 @@
-// Updated types to match the advanced API structure
+// updated types to match the advanced API structure
 
 export interface AdvancedEmotionAnalysis {
-  // Core emotion data
+  // core emotion data
   primaryEmotion: string;
   secondaryEmotions: string[];
   emotionalIntensity: number; // 0-1
 
-  // Russell's Circumplex Model
+  // russell's Circumplex Model
   valence: number; // -1 to 1
   arousal: number; // 0 to 1
 
-  // GEMS (Geneva Emotional Music Scale) dimensions
+  // gEMS (Geneva Emotional Music Scale) dimensions
   gems?: {
     joy?: number;
     sadness?: number;
@@ -23,17 +23,17 @@ export interface AdvancedEmotionAnalysis {
     transcendence?: number;
   };
 
-  // Musical characteristics
+  // musical characteristics
   tension: number; // 0 to 1
   complexity: number; // 0 to 1
   musicalMode: string;
   suggestedTempo: number;
 
-  // Cultural/stylistic preferences
+  // cultural/stylistic preferences
   culturalContext?: "western" | "indian" | "arabic" | "universal";
   harmonicStyle?: "classical" | "jazz" | "contemporary" | "experimental";
 
-  // Acoustic features (from Spotify/Essentia analysis if available)
+  // acoustic features (from Spotify/Essentia analysis if available)
   acousticFeatures?: {
     energy?: number;
     danceability?: number;
@@ -63,25 +63,25 @@ export interface VoicingInfo {
 }
 
 export interface AdvancedChordSuggestion {
-  // Basic chord info
+  // basic chord info
   symbol: string;
   root: string;
   quality: string;
   notes: string[];
   intervals: string[];
 
-  // MIDI representation
+  // mIDI representation
   midiNotes: number[];
 
-  // Advanced voicing with voice leading
+  // advanced voicing with voice leading
   voicing: VoicingInfo;
 
-  // Harmonic characteristics
+  // harmonic characteristics
   harmonicFunction?: string; // tonic, dominant, subdominant, etc.
   harmonicComplexity: number; // 0-1
   dissonanceLevel: number; // 0-1
 
-  // Cultural/theoretical context
+  // cultural/theoretical context
   theoreticalContext?: {
     isPolychord?: boolean;
     isQuartal?: boolean;
@@ -92,12 +92,12 @@ export interface AdvancedChordSuggestion {
     extendedHarmony?: boolean;
   };
 
-  // Emotional mapping
+  // emotional mapping
   emotionalResonance: number; // 0-1
   emotionalJustification: string;
   culturalReference?: string; // e.g., "Similar to Raga Bhairav's austere quality"
 
-  // Audio generation hints
+  // audio generation hints
   timbre?: string; // piano, strings, synth, etc.
   dynamics?: string; // pp, p, mf, f, ff
   articulation?: string; // legato, staccato, etc.
@@ -116,9 +116,9 @@ export interface ChordProgression {
   mode?: string;
   tempo: number; // BPM
   totalDuration: number; // in beats
-  type: 'ascending' | 'descending' | 'circular' | 'static' | 'modal' | 'chromatic';
+  type: "ascending" | "descending" | "circular" | "static" | "modal" | "chromatic";
   complexity: number; // 0-1
-  tensionCurve: 'rising' | 'falling' | 'arch' | 'valley' | 'plateau';
+  tensionCurve: "rising" | "falling" | "arch" | "valley" | "plateau";
   emotionalJourney: string; // Description of emotional journey
   romanNumerals?: string[];
   features?: string[]; // e.g., ['secondary_dominants', 'modal_interchange']
@@ -163,7 +163,7 @@ export interface EmotionChordResponse {
   };
 }
 
-// API Request/Response types
+// api request/response types
 export interface EmotionRequest {
   emotion: string;
   options?: {
@@ -198,6 +198,6 @@ export interface HealthCheckResponse {
   };
 }
 
-// Legacy types for backward compatibility
+// legacy types for backward compatibility
 export type EmotionAnalysis = AdvancedEmotionAnalysis;
 export type ChordSuggestion = AdvancedChordSuggestion;

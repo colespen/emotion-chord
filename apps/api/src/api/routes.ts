@@ -6,17 +6,17 @@ import { AdvancedEmotionChordService } from "../services/emotionChordService.js"
 
 const app = new Hono();
 
-// Enable CORS
+// enable CORS
 app.use("/*", cors());
 
-// Initialize service
+// initialize service
 const emotionChordService = new AdvancedEmotionChordService(
   process.env.OPENAI_API_KEY!,
   process.env.SPOTIFY_CLIENT_ID,
   process.env.SPOTIFY_CLIENT_SECRET
 );
 
-// Request schemas
+// request schemas
 const EmotionRequestSchema = z.object({
   emotion: z.string().min(1).max(500),
   options: z
@@ -33,7 +33,7 @@ const EmotionRequestSchema = z.object({
     .optional(),
 });
 
-// Health check
+// health check
 app.get("/api/health", (c) => {
   return c.json({
     status: "ok",
@@ -41,14 +41,14 @@ app.get("/api/health", (c) => {
     features: {
       advancedHarmony: true,
       culturalMappings: true,
-      spotifyIntegration: false, // Disabled due to API restrictions
+      spotifyIntegration: false, // disabled due to API restrictions
       gems: true,
-      syntheticAcousticFeatures: true, // New feature replacing Spotify
+      syntheticAcousticFeatures: true, // new feature replacing Spotify
     },
   });
 });
 
-// Main endpoint
+// main endpoint
 app.post(
   "/api/emotion-to-chord",
   zValidator("json", EmotionRequestSchema),
@@ -69,7 +69,7 @@ app.post(
   }
 );
 
-// Batch processing endpoint
+// batch processing endpoint
 app.post(
   "/api/batch",
   zValidator(
@@ -83,9 +83,7 @@ app.post(
       const { emotions } = c.req.valid("json");
 
       const results = await Promise.all(
-        emotions.map((emotion) =>
-          emotionChordService.generateChordFromEmotion(emotion)
-        )
+        emotions.map((emotion) => emotionChordService.generateChordFromEmotion(emotion))
       );
 
       return c.json({ results });

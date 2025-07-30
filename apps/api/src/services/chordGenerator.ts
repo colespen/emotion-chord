@@ -19,17 +19,17 @@ export class AdvancedChordGenerator {
       instrumentRange?: [number, number];
     }
   ): AdvancedChordSuggestion {
-    // Select chord based on emotion
+    // select chord based on emotion
     const chordData = this.selectChordFromEmotion(emotion, options);
 
-    // Generate sophisticated voicing
+    // generate sophisticated voicing
     const voicing = this.generateAdvancedVoicing(
       chordData.chord,
       emotion,
       options?.voicingStyle
     );
 
-    // Calculate harmonic characteristics
+    // calculate harmonic characteristics
     const harmonicAnalysis = this.analyzeHarmony(chordData.chord, emotion);
 
     return {
@@ -62,16 +62,19 @@ export class AdvancedChordGenerator {
     context?: any;
     culturalReference?: string;
   } {
-    // Check for specific GEMS emotions first
+    // check for specific gems emotions first
     if (emotion.gems) {
       const dominantGems = this.getDominantGEMS(emotion.gems);
       if (dominantGems && dominantGems in ADVANCED_EMOTION_MAPPINGS.gems) {
-        const gemsMapping = ADVANCED_EMOTION_MAPPINGS.gems[dominantGems as keyof typeof ADVANCED_EMOTION_MAPPINGS.gems];
+        const gemsMapping =
+          ADVANCED_EMOTION_MAPPINGS.gems[
+            dominantGems as keyof typeof ADVANCED_EMOTION_MAPPINGS.gems
+          ];
         const qualities = gemsMapping.chordQualities;
         const quality = qualities[Math.floor(Math.random() * qualities.length)];
         const root = options?.preferredRoot || this.selectRoot(emotion);
 
-        // Handle special chord types
+        // handle special chord types
         if (quality === "quartal") {
           return this.generateQuartalChord(root, emotion);
         } else if (quality === "spectral") {
@@ -89,12 +92,12 @@ export class AdvancedChordGenerator {
       }
     }
 
-    // Check for high tension/complexity emotions
+    // check for high tension/complexity emotions
     if (emotion.tension > 0.7 && emotion.complexity > 0.6) {
       return this.generateAdvancedHarmony(emotion, options);
     }
 
-    // Default to sophisticated selection based on valence/arousal
+    // default to sophisticated selection based on valence/arousal
     return this.selectFromValenceArousal(emotion, options);
   }
 
@@ -102,7 +105,7 @@ export class AdvancedChordGenerator {
     const notes: string[] = [root];
     const intervals = ["1P", "4P", "4P", "4P"];
 
-    // Build quartal stack
+    // build quartal stack
     let currentNote = root;
     for (let i = 0; i < 3; i++) {
       currentNote = Note.transpose(currentNote, "4P");
@@ -125,16 +128,13 @@ export class AdvancedChordGenerator {
     };
   }
 
-  private generateSpectralChord(
-    root: string,
-    emotion: AdvancedEmotionAnalysis
-  ) {
-    // Generate based on harmonic series
+  private generateSpectralChord(root: string, emotion: AdvancedEmotionAnalysis) {
+    // generate based on harmonic series
     const fundamentalMidi = Note.midi(root + "2") || 36;
     const harmonics = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13];
     const notes: string[] = [];
 
-    // Select harmonics based on emotion
+    // select harmonics based on emotion
     const selectedHarmonics =
       (emotion.gems?.transcendence ?? 0) > 0.7
         ? harmonics.slice(6) // Higher harmonics for transcendence
@@ -166,7 +166,7 @@ export class AdvancedChordGenerator {
   }
 
   private generatePolychord(_root: string, emotion: AdvancedEmotionAnalysis) {
-    // Select polychord based on emotion
+    // select polychord based on emotion
     const polychordMap = {
       dramatic: ["C/F#", "D♭/C", "E♭/E"],
       mystical: ["D/E♭", "F/G♭", "E/F"],
@@ -177,8 +177,8 @@ export class AdvancedChordGenerator {
       emotion.tension > 0.7
         ? "dramatic"
         : (emotion.gems?.wonder ?? 0) > 0.7
-        ? "mystical"
-        : "expansive";
+          ? "mystical"
+          : "expansive";
 
     const options = polychordMap[type];
     const selected = options[Math.floor(Math.random() * options.length)];
@@ -200,23 +200,17 @@ export class AdvancedChordGenerator {
         extendedHarmony: true,
       },
       culturalReference:
-        type === "dramatic"
-          ? "Stravinsky Rite of Spring"
-          : "Modern film scoring",
+        type === "dramatic" ? "Stravinsky Rite of Spring" : "Modern film scoring",
     };
   }
 
-  private generateAdvancedHarmony(
-    emotion: AdvancedEmotionAnalysis,
-    options?: any
-  ) {
+  private generateAdvancedHarmony(emotion: AdvancedEmotionAnalysis, options?: any) {
     const root = options?.preferredRoot || this.selectRoot(emotion);
 
-    // For high tension, use altered dominants or diminished
+    // for high tension, use altered dominants or diminished
     if (emotion.tension > 0.8) {
       const alterations = ["7b9", "7#9", "7alt", "13b9#11"];
-      const quality =
-        alterations[Math.floor(Math.random() * alterations.length)];
+      const quality = alterations[Math.floor(Math.random() * alterations.length)];
       return {
         symbol: root + quality,
         chord: this.buildAlteredChord(root, quality),
@@ -227,12 +221,12 @@ export class AdvancedChordGenerator {
       };
     }
 
-    // For complex emotions, use modal interchange
+    // for complex emotions, use modal interchange
     if (emotion.complexity > 0.7) {
       return this.generateModalInterchange(root, emotion);
     }
 
-    // Default to extended harmony
+    // default to extended harmony
     const qualities = ["maj7#11", "m11", "maj13", "m13"];
     const quality = qualities[Math.floor(Math.random() * qualities.length)];
 
@@ -250,7 +244,7 @@ export class AdvancedChordGenerator {
     const notes = [...baseChord.notes];
     const intervals = [...baseChord.intervals];
 
-    // Add alterations based on quality
+    // add alterations based on quality
     if (quality.includes("b9")) {
       notes.push(Note.transpose(root, "2m"));
       intervals.push("9m");
@@ -276,11 +270,8 @@ export class AdvancedChordGenerator {
     };
   }
 
-  private generateModalInterchange(
-    root: string,
-    emotion: AdvancedEmotionAnalysis
-  ) {
-    // Borrow chords from parallel modes
+  private generateModalInterchange(root: string, emotion: AdvancedEmotionAnalysis) {
+    // borrow chords from parallel modes
     const borrowings = {
       melancholic: {
         chord: "m6",
@@ -308,10 +299,10 @@ export class AdvancedChordGenerator {
       (emotion.gems?.sadness ?? 0) > 0.7
         ? "melancholic"
         : (emotion.gems?.nostalgia ?? 0) > 0.7
-        ? "nostalgic"
-        : emotion.tension > 0.7
-        ? "dark"
-        : "mystical";
+          ? "nostalgic"
+          : emotion.tension > 0.7
+            ? "dark"
+            : "mystical";
 
     const borrowed = borrowings[emotionType];
 
@@ -326,28 +317,25 @@ export class AdvancedChordGenerator {
     };
   }
 
-  private selectFromValenceArousal(
-    emotion: AdvancedEmotionAnalysis,
-    options?: any
-  ) {
+  private selectFromValenceArousal(emotion: AdvancedEmotionAnalysis, options?: any) {
     const root = options?.preferredRoot || this.selectRoot(emotion);
     let quality = "";
 
-    // Quadrant-based selection
+    // quadrant-based selection
     if (emotion.valence > 0.5 && emotion.arousal > 0.5) {
-      // Happy, excited
+      // happy, excited
       const qualities = ["maj7", "maj9", "6/9", "maj13"];
       quality = qualities[Math.floor(Math.random() * qualities.length)];
     } else if (emotion.valence > 0.5 && emotion.arousal < 0.5) {
-      // Peaceful, content
+      // peaceful, content
       const qualities = ["maj7", "add9", "sus2", "maj6"];
       quality = qualities[Math.floor(Math.random() * qualities.length)];
     } else if (emotion.valence < -0.5 && emotion.arousal > 0.5) {
-      // Angry, anxious
+      // angry, anxious
       const qualities = ["7b9", "m7b5", "dim7", "7alt"];
       quality = qualities[Math.floor(Math.random() * qualities.length)];
     } else {
-      // Sad, melancholic
+      // sad, melancholic
       const qualities = ["m7", "m9", "m6", "mMaj7"];
       quality = qualities[Math.floor(Math.random() * qualities.length)];
     }
@@ -391,7 +379,7 @@ export class AdvancedChordGenerator {
       return this.generateStandardVoicing(chord, emotion);
     }
 
-    // Drop 2: Take second voice from top and drop it an octave
+    // drop 2: take second voice from top and drop it an octave
     const closePosition = notes.map(
       (note: string, i: number) => Note.midi(note + (4 + Math.floor(i / 3))) || 60
     );
@@ -422,14 +410,14 @@ export class AdvancedChordGenerator {
       return this.generateStandardVoicing(chord, emotion);
     }
 
-    // Remove root, focus on 3, 7, extensions
+    // remove root, focus on 3, 7, extensions
     const importantNotes = notes.slice(1); // Remove root
     const voicing = importantNotes.map((note: string, i: number) => {
       const octave = 3 + Math.floor(i / 2);
       return Note.midi(note + octave) || 60;
     });
 
-    // Add bass note separately
+    // add bass note separately
     const bassNote = Note.midi(chord.root + "2") || 36;
 
     return {
@@ -449,7 +437,7 @@ export class AdvancedChordGenerator {
     const root = chord.root || "C";
     const rootMidi = Note.midi(root + "4") || 60;
 
-    // Create cluster based on emotion intensity
+    // create cluster based on emotion intensity
     const clusterSize = Math.floor(3 + emotion.tension * 4);
     const notes: number[] = [];
 
@@ -474,7 +462,7 @@ export class AdvancedChordGenerator {
     const rootMidi = Note.midi(root + "3") || 48;
     const notes: number[] = [rootMidi];
 
-    // Stack fourths
+    // stack fourths
     let current = rootMidi;
     for (let i = 0; i < 3; i++) {
       current += 5; // Perfect fourth
@@ -497,7 +485,7 @@ export class AdvancedChordGenerator {
     const notes = chord.notes || [];
     const voicing: number[] = [];
 
-    // Spread notes across wide range
+    // spread notes across wide range
     notes.forEach((note: string, i: number) => {
       const octave = 2 + i; // Each note in different octave
       const midi = Note.midi(note + octave) || 60;
@@ -535,7 +523,7 @@ export class AdvancedChordGenerator {
   }
 
   private selectVoicingStyle(emotion: AdvancedEmotionAnalysis): string {
-    // Select based on GEMS emotions
+    // select based on gems emotions
     if (emotion.gems) {
       const gems = emotion.gems;
       if (gems.tension && gems.tension > 0.7) return "cluster";
@@ -544,12 +532,12 @@ export class AdvancedChordGenerator {
       if (gems.nostalgia && gems.nostalgia > 0.7) return "rootless";
     }
 
-    // Select based on style preference
+    // select based on style preference
     if (emotion.harmonicStyle === "jazz") return "drop2";
     if (emotion.harmonicStyle === "contemporary") return "quartal";
     if (emotion.harmonicStyle === "experimental") return "cluster";
 
-    // Default based on complexity
+    // default based on complexity
     return emotion.complexity > 0.5 ? "open" : "close";
   }
 
@@ -568,7 +556,7 @@ export class AdvancedChordGenerator {
 
     this.previousVoicing = voicing;
 
-    // Convert to 0-1 score (lower movement = higher score)
+    // convert to 0-1 score (lower movement = higher score)
     return Math.max(0, 1 - totalMovement / (voices * 12));
   }
 
@@ -576,7 +564,7 @@ export class AdvancedChordGenerator {
     const intervals = chord.intervals || [];
     const notes = chord.notes || [];
 
-    // Calculate dissonance based on intervals
+    // calculate dissonance based on intervals
     let dissonance = 0;
     const dissonantIntervals = ["2m", "2A", "4A", "5d", "7M", "7d"];
     intervals.forEach((interval: string) => {
@@ -585,10 +573,10 @@ export class AdvancedChordGenerator {
       }
     });
 
-    // Calculate complexity
+    // calculate complexity
     const complexity = Math.min(1, notes.length / 7);
 
-    // Determine function
+    // determine function
     let harmonicFunction = "color";
     if (chord.quality?.includes("7")) harmonicFunction = "dominant";
     if (chord.quality?.includes("maj")) harmonicFunction = "tonic";
@@ -616,16 +604,16 @@ export class AdvancedChordGenerator {
   }
 
   private selectRoot(emotion: AdvancedEmotionAnalysis): string {
-    // Cultural context influences root selection
+    // cultural context influences root selection
     if (emotion.culturalContext === "indian") {
-      // Indian music often centers on Sa (C) or Pa (G)
+      // indian music often centers on sa (c) or pa (g)
       return emotion.valence > 0 ? "C" : "G";
     } else if (emotion.culturalContext === "arabic") {
-      // Arabic music often uses D as tonic
+      // arabic music often uses d as tonic
       return "D";
     }
 
-    // Western root selection based on emotion
+    // western root selection based on emotion
     const brightRoots = ["C", "G", "D", "A", "E"];
     const darkRoots = ["F", "Bb", "Eb", "Ab", "Db"];
     const ambiguousRoots = ["B", "F#", "C#"];
@@ -639,18 +627,15 @@ export class AdvancedChordGenerator {
     }
   }
 
-  private calculateResonance(
-    emotion: AdvancedEmotionAnalysis,
-    chordData: any
-  ): number {
+  private calculateResonance(emotion: AdvancedEmotionAnalysis, chordData: any): number {
     let resonance = 0.5;
 
-    // Check GEMS alignment
+    // check gems alignment
     if (emotion.gems && chordData.context?.gems) {
       resonance += 0.3;
     }
 
-    // Check cultural alignment
+    // check cultural alignment
     if (chordData.culturalReference) {
       resonance += 0.2;
     }
@@ -664,25 +649,21 @@ export class AdvancedChordGenerator {
   ): string {
     const parts: string[] = [];
 
-    // Emotion-based justification
+    // emotion-based justification
     parts.push(
-      `This ${chordData.chord.quality || "chord"} reflects the ${
-        emotion.primaryEmotion
-      } emotion`
+      `This ${chordData.chord.quality || "chord"} reflects the ${emotion.primaryEmotion} emotion`
     );
 
-    // Technical justification
+    // technical justification
     if (chordData.context?.isQuartal) {
       parts.push("using quartal harmony for modern, open sound");
     } else if (chordData.context?.isPolychord) {
       parts.push("through polychordal tension");
     } else if (chordData.context?.modalInterchange) {
-      parts.push(
-        `borrowed from ${chordData.context.borrowedFrom || "parallel mode"}`
-      );
+      parts.push(`borrowed from ${chordData.context.borrowedFrom || "parallel mode"}`);
     }
 
-    // GEMS justification
+    // gems justification
     if (emotion.gems) {
       const dominant = this.getDominantGEMS(emotion.gems);
       if (dominant) {
@@ -694,8 +675,7 @@ export class AdvancedChordGenerator {
   }
 
   private suggestTimbre(emotion: AdvancedEmotionAnalysis): string {
-    if (emotion.gems?.tenderness && emotion.gems.tenderness > 0.7)
-      return "strings";
+    if (emotion.gems?.tenderness && emotion.gems.tenderness > 0.7) return "strings";
     if (emotion.gems?.power && emotion.gems.power > 0.7) return "brass";
     if (emotion.gems?.wonder && emotion.gems.wonder > 0.7) return "synth_pad";
     if (
@@ -717,8 +697,7 @@ export class AdvancedChordGenerator {
 
   private suggestArticulation(emotion: AdvancedEmotionAnalysis): string {
     if (emotion.gems?.tension && emotion.gems.tension > 0.7) return "staccato";
-    if (emotion.gems?.peacefulness && emotion.gems.peacefulness > 0.7)
-      return "legato";
+    if (emotion.gems?.peacefulness && emotion.gems.peacefulness > 0.7) return "legato";
     if (emotion.arousal > 0.7) return "marcato";
     return "normal";
   }
@@ -730,7 +709,7 @@ export class AdvancedChordGenerator {
     const alternatives: AdvancedChordSuggestion[] = [];
     const usedSymbols = new Set<string>();
 
-    // Generate diverse alternatives
+    // generate diverse alternatives
     const voicingStyles = ["drop2", "rootless", "quartal", "spread"];
     const roots = ["C", "F", "G", "D", "A", "E", "B", "Bb", "Eb", "Ab"];
 
@@ -760,16 +739,16 @@ export class AdvancedChordGenerator {
     const romanNumerals: string[] = [];
     const voiceLeading: any[] = [];
 
-    // Reset voice leading tracking
+    // reset voice leading tracking
     this.previousVoicing = null;
 
-    // Generate progression based on emotion
+    // generate progression based on emotion
     for (let i = 0; i < length; i++) {
       const chord = this.generateChord(emotion);
       chords.push(chord.symbol);
 
       if (i > 0) {
-        // Track voice leading
+        // track voice leading
         voiceLeading.push({
           fromChord: chords[i - 1],
           toChord: chord.symbol,

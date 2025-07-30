@@ -1,6 +1,6 @@
-// Extended emotion-to-harmony mappings based on research
+// extended emotion-to-harmony mappings based on research
 export const ADVANCED_EMOTION_MAPPINGS = {
-  // GEMS-based mappings
+  // gEMS-based mappings
   gems: {
     joy: {
       chordQualities: ["maj7", "maj9", "maj13", "6/9", "add9", "maj7#11"],
@@ -49,7 +49,7 @@ export const ADVANCED_EMOTION_MAPPINGS = {
     },
   },
 
-  // Cross-cultural mappings
+  // cross-cultural mappings
   cultural: {
     indian: {
       Hamsadhwani: { emotion: "joy", notes: ["C", "D", "E", "G", "B"] },
@@ -87,7 +87,7 @@ export const ADVANCED_EMOTION_MAPPINGS = {
     },
   },
 
-  // Advanced harmonic concepts
+  // advanced harmonic concepts
   advancedHarmony: {
     polychords: {
       dramatic_tension: ["C/F#", "E♭/E", "D♭/C", "A♭/A"],
@@ -109,7 +109,7 @@ export const ADVANCED_EMOTION_MAPPINGS = {
   },
 };
 
-// Voice leading algorithms
+// voice leading algorithms
 export const VOICE_LEADING_RULES = {
   classical: {
     maxInterval: 8, // Maximum interval jump in semitones
@@ -132,7 +132,7 @@ export const VOICE_LEADING_RULES = {
   },
 };
 
-// Acoustic feature to emotion mappings (based on Spotify research)
+// acoustic feature to emotion mappings (based on Spotify research)
 export const ACOUSTIC_EMOTION_MAPPINGS = {
   highValenceHighArousal: {
     energy: [0.7, 1.0],

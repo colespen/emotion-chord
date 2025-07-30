@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-// Quick test script for the emotion-to-chord API
+// quick test script for the emotion-to-chord api
 async function testEmotionToChord() {
   const testData = {
     emotion: "transcendent wonder with a touch of melancholy",
@@ -8,8 +8,8 @@ async function testEmotionToChord() {
       culturalPreference: "universal",
       stylePreference: "contemporary",
       includeProgression: true,
-      includeCulturalAlternatives: true
-    }
+      includeCulturalAlternatives: true,
+    },
   };
 
   try {
@@ -34,18 +34,17 @@ async function testEmotionToChord() {
     console.log("Primary Chord:", result.primaryChord?.symbol);
     console.log("Acoustic Features:", result.emotion?.acousticFeatures);
     console.log("GEMS:", result.emotion?.gems);
-    
-    console.log("\n🎵 Full response saved to test-output.json");
-    
-    // Save to file for inspection
-    await import('fs').then(fs => {
-      fs.writeFileSync('test-output.json', JSON.stringify(result, null, 2));
-    });
 
+    console.log("\n🎵 Full response saved to test-output.json");
+
+    // save to file for inspection
+    await import("fs").then((fs) => {
+      fs.writeFileSync("test-output.json", JSON.stringify(result, null, 2));
+    });
   } catch (error) {
     console.error("❌ Test failed:", error.message);
   }
 }
 
-// Run the test
+// run the test
 testEmotionToChord();

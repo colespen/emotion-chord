@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import { Card } from '@/components/ui/Card';
-import { Button } from '@/components/ui/Button';
-import type { AdvancedChordSuggestion, VoicingInfo } from '@/types/emotion-chord';
+import React, { useState } from "react";
+import { Card } from "@/components/ui/Card";
+import { Button } from "@/components/ui/Button";
+import type { AdvancedChordSuggestion, VoicingInfo } from "@/types/emotion-chord";
 import {
   Music,
   Play,
@@ -12,30 +12,32 @@ import {
   ChevronDown,
   ChevronUp,
   Sparkles,
-  Globe
-} from 'lucide-react';
+  Globe,
+} from "lucide-react";
 
-// Helper function to get proper note names considering chord context
+const noteNames = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
+const flatNoteNames = ["C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B"];
+
+// helper function to get proper note names considering chord context
 function getContextualNoteName(midiNote: number, chordSymbol: string): string {
-  const noteNames = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
-  const flatNoteNames = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B'];
-  
   const octave = Math.floor(midiNote / 12) - 1;
   const noteIndex = midiNote % 12;
-  
-  // Use flat notation for flat-based chords (Bb, Eb, Ab, Db, Gb)
+
+  // use flat notation for flat-based chords (Bb, Eb, Ab, Db, Gb)
   const useFlatNotation = /^(Bb|Eb|Ab|Db|Gb|F)/.test(chordSymbol);
-  
+
   const selectedNames = useFlatNotation ? flatNoteNames : noteNames;
-  return selectedNames[noteIndex] + (octave >= 0 ? octave : '');
+  return selectedNames[noteIndex] + (octave >= 0 ? octave : "");
 }
 
-// Helper function to get the actual played notes in the order they're heard (lowest to highest)
+// helper function to get the actual played notes in the order they're heard (lowest to highest)
 function getPlayedNotes(chord: AdvancedChordSuggestion): string[] {
   if (chord.midiNotes && chord.midiNotes.length > 0) {
-    // Sort MIDI notes from lowest to highest (this is the order you actually hear them)
+    // sort MIDI notes from lowest to highest (this is the order you actually hear them)
     const sortedMidiNotes = [...chord.midiNotes].sort((a, b) => a - b);
-    return sortedMidiNotes.map(midiNote => getContextualNoteName(midiNote, chord.symbol));
+    return sortedMidiNotes.map((midiNote) =>
+      getContextualNoteName(midiNote, chord.symbol)
+    );
   }
   return chord.notes; // fallback to theoretical notes
 }
@@ -51,52 +53,53 @@ interface AdvancedChordDisplayProps {
   showEmotionalContext?: boolean;
 }
 
-export function AdvancedChordDisplay({ 
-  chord, 
+export function AdvancedChordDisplay({
+  chord,
   isPlaying = false,
   isArpeggioLooping = false,
   onPlay,
   onPlayArpeggio,
   onStop,
   showDetails = false,
-  showEmotionalContext = false
+  showEmotionalContext = false,
 }: AdvancedChordDisplayProps) {
   const [expanded, setExpanded] = useState(false);
 
   const getVoicingDescription = (voicing: VoicingInfo): string => {
     const descriptions: Record<string, string> = {
-      close: 'Close voicing (notes within an octave)',
-      open: 'Open voicing (notes spread across octaves)',
-      drop2: 'Drop 2 voicing (second voice dropped an octave)',
-      drop3: 'Drop 3 voicing (third voice dropped an octave)',
-      rootless: 'Rootless voicing (sophisticated jazz style)',
-      cluster: 'Cluster voicing (adjacent tones for texture)',
-      quartal: 'Quartal voicing (stacked fourths)',
-      spread: 'Spread voicing (wide range distribution)',
+      close: "Close voicing (notes within an octave)",
+      open: "Open voicing (notes spread across octaves)",
+      drop2: "Drop 2 voicing (second voice dropped an octave)",
+      drop3: "Drop 3 voicing (third voice dropped an octave)",
+      rootless: "Rootless voicing (sophisticated jazz style)",
+      cluster: "Cluster voicing (adjacent tones for texture)",
+      quartal: "Quartal voicing (stacked fourths)",
+      spread: "Spread voicing (wide range distribution)",
     };
     return descriptions[voicing.voicingType] || voicing.voicingType;
   };
 
   const getComplexityColor = (complexity: number): string => {
-    if (complexity < 0.3) return 'text-[#238636]';
-    if (complexity < 0.7) return 'text-[#fb8500]';
-    return 'text-[#da3633]';
+    if (complexity < 0.3) return "text-[#238636]";
+    if (complexity < 0.7) return "text-[#fb8500]";
+    return "text-[#da3633]";
   };
 
   const getResonanceColor = (resonance: number): string => {
-    if (resonance > 0.8) return 'text-[#8b5cf6]';
-    if (resonance > 0.6) return 'text-[#2563eb]';
-    if (resonance > 0.4) return 'text-[#6366f1]';
-    return 'text-[#7d8590]';
+    if (resonance > 0.8) return "text-[#8b5cf6]";
+    if (resonance > 0.6) return "text-[#2563eb]";
+    if (resonance > 0.4) return "text-[#6366f1]";
+    return "text-[#7d8590]";
   };
 
   const formatMidiNotes = (notes: number[]): string => {
-    return notes.map(note => {
-      const noteNames = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
-      const octave = Math.floor(note / 12) - 1;
-      const noteName = noteNames[note % 12];
-      return `${noteName}${octave}`;
-    }).join(' - ');
+    return notes
+      .map((note) => {
+        const octave = Math.floor(note / 12) - 1;
+        const noteName = noteNames[note % 12];
+        return `${noteName}${octave}`;
+      })
+      .join(" - ");
   };
 
   return (
@@ -120,24 +123,32 @@ export function AdvancedChordDisplay({
           {onPlay && (
             <Button
               onClick={isPlaying ? onStop : onPlay}
-              variant={isPlaying ? 'secondary' : 'primary'}
+              variant={isPlaying ? "secondary" : "primary"}
               size="sm"
               className="flex items-center gap-2"
             >
-              {isPlaying ? <Square className="w-4 h-4" /> : <Play className="w-4 h-4" />}
-              {isPlaying ? 'Stop' : 'Play'}
+              {isPlaying ? (
+                <Square className="w-4 h-4" />
+              ) : (
+                <Play className="w-4 h-4" />
+              )}
+              {isPlaying ? "Stop" : "Play"}
             </Button>
           )}
 
           {onPlayArpeggio && (
             <Button
               onClick={isArpeggioLooping ? onStop : onPlayArpeggio}
-              variant={isArpeggioLooping ? 'secondary' : 'outline'}
+              variant={isArpeggioLooping ? "secondary" : "outline"}
               size="sm"
               className="flex items-center gap-2"
             >
-              {isArpeggioLooping ? <Square className="w-4 h-4" /> : <Music className="w-4 h-4" />}
-              {isArpeggioLooping ? 'Stop' : 'Arpeggio'}
+              {isArpeggioLooping ? (
+                <Square className="w-4 h-4" />
+              ) : (
+                <Music className="w-4 h-4" />
+              )}
+              {isArpeggioLooping ? "Stop" : "Arpeggio"}
             </Button>
           )}
         </div>
@@ -146,29 +157,39 @@ export function AdvancedChordDisplay({
       {/* Quick Info */}
       <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="text-center p-3 bg-[#0d1117] border border-[#30363d] rounded-lg">
-          <div className="text-xs text-[#7d8590] uppercase tracking-wide">Played Notes</div>
+          <div className="text-xs text-[#7d8590] uppercase tracking-wide">
+            Played Notes
+          </div>
           <div className="font-semibold text-[#f0f6fc]">
-            {getPlayedNotes(chord).join(' - ')}
+            {getPlayedNotes(chord).join(" - ")}
           </div>
         </div>
 
         <div className="text-center p-3 bg-[#0d1117] border border-[#30363d] rounded-lg">
-          <div className="text-xs text-[#7d8590] uppercase tracking-wide">Theoretical</div>
-          <div className="font-semibold text-[#f0f6fc]">
-            {chord.notes.join(' - ')}
+          <div className="text-xs text-[#7d8590] uppercase tracking-wide">
+            Theoretical
           </div>
+          <div className="font-semibold text-[#f0f6fc]">{chord.notes.join(" - ")}</div>
         </div>
 
         <div className="text-center p-3 bg-[#0d1117] border border-[#30363d] rounded-lg">
-          <div className="text-xs text-[#7d8590] uppercase tracking-wide">Complexity</div>
-          <div className={`font-semibold ${getComplexityColor(chord.harmonicComplexity)}`}>
+          <div className="text-xs text-[#7d8590] uppercase tracking-wide">
+            Complexity
+          </div>
+          <div
+            className={`font-semibold ${getComplexityColor(chord.harmonicComplexity)}`}
+          >
             {Math.round(chord.harmonicComplexity * 100)}%
           </div>
         </div>
 
         <div className="text-center p-3 bg-[#0d1117] border border-[#30363d] rounded-lg">
-          <div className="text-xs text-[#7d8590] uppercase tracking-wide">Resonance</div>
-          <div className={`font-semibold ${getResonanceColor(chord.emotionalResonance)}`}>
+          <div className="text-xs text-[#7d8590] uppercase tracking-wide">
+            Resonance
+          </div>
+          <div
+            className={`font-semibold ${getResonanceColor(chord.emotionalResonance)}`}
+          >
             {Math.round(chord.emotionalResonance * 100)}%
           </div>
         </div>
@@ -214,8 +235,12 @@ export function AdvancedChordDisplay({
             className="w-full flex items-center justify-center gap-2"
           >
             <Info className="w-4 h-4" />
-            {expanded ? 'Hide' : 'Show'} Technical Details
-            {expanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+            {expanded ? "Hide" : "Show"} Technical Details
+            {expanded ? (
+              <ChevronUp className="w-4 h-4" />
+            ) : (
+              <ChevronDown className="w-4 h-4" />
+            )}
           </Button>
 
           {expanded && (
@@ -223,26 +248,26 @@ export function AdvancedChordDisplay({
               {/* Harmonic Analysis */}
               <div className="space-y-3">
                 <h4 className="font-semibold text-[#f0f6fc]">Harmonic Analysis</h4>
-                
+
                 <div className="space-y-2">
                   <div className="flex justify-between">
                     <span className="text-sm text-[#7d8590]">Function:</span>
                     <span className="text-sm font-medium capitalize text-[#f0f6fc]">
-                      {chord.harmonicFunction || 'Color'}
+                      {chord.harmonicFunction || "Color"}
                     </span>
                   </div>
-                  
+
                   <div className="flex justify-between">
                     <span className="text-sm text-[#7d8590]">Dissonance:</span>
                     <span className="text-sm font-medium text-[#f0f6fc]">
                       {Math.round(chord.dissonanceLevel * 100)}%
                     </span>
                   </div>
-                  
+
                   <div className="flex justify-between">
                     <span className="text-sm text-[#7d8590]">Intervals:</span>
                     <span className="text-sm font-medium text-[#f0f6fc]">
-                      {chord.intervals.join(', ')}
+                      {chord.intervals.join(", ")}
                     </span>
                   </div>
                 </div>
@@ -259,7 +284,7 @@ export function AdvancedChordDisplay({
                             key={key}
                             className="px-2 py-1 text-xs bg-[#238636] text-white rounded-full"
                           >
-                            {key.replace(/([A-Z])/g, ' $1').toLowerCase()}
+                            {key.replace(/([A-Z])/g, " $1").toLowerCase()}
                           </span>
                         ))}
                     </div>
@@ -270,7 +295,7 @@ export function AdvancedChordDisplay({
               {/* Voicing Details */}
               <div className="space-y-3">
                 <h4 className="font-semibold text-[#f0f6fc]">Voicing Details</h4>
-                
+
                 <div className="space-y-2">
                   <div className="flex justify-between">
                     <span className="text-sm text-[#7d8590]">Type:</span>
@@ -278,21 +303,21 @@ export function AdvancedChordDisplay({
                       {chord.voicing.voicingType}
                     </span>
                   </div>
-                  
+
                   <div className="flex justify-between">
                     <span className="text-sm text-[#7d8590]">Density:</span>
                     <span className="text-sm font-medium capitalize text-[#f0f6fc]">
                       {chord.voicing.density}
                     </span>
                   </div>
-                  
+
                   <div className="flex justify-between">
                     <span className="text-sm text-[#7d8590]">Register:</span>
                     <span className="text-sm font-medium capitalize text-[#f0f6fc]">
                       {chord.voicing.register}
                     </span>
                   </div>
-                  
+
                   {chord.voicing.voiceLeadingScore && (
                     <div className="flex justify-between">
                       <span className="text-sm text-[#7d8590]">Voice Leading:</span>
@@ -314,29 +339,35 @@ export function AdvancedChordDisplay({
               {/* Performance Hints */}
               <div className="md:col-span-2 space-y-3">
                 <h4 className="font-semibold text-[#f0f6fc]">Performance Guidelines</h4>
-                
+
                 <div className="grid grid-cols-3 gap-4">
                   {chord.timbre && (
                     <div className="text-center">
-                      <div className="text-xs text-[#7d8590] uppercase tracking-wide">Timbre</div>
+                      <div className="text-xs text-[#7d8590] uppercase tracking-wide">
+                        Timbre
+                      </div>
                       <div className="font-medium text-[#f0f6fc] capitalize">
-                        {chord.timbre.replace(/_/g, ' ')}
+                        {chord.timbre.replace(/_/g, " ")}
                       </div>
                     </div>
                   )}
-                  
+
                   {chord.dynamics && (
                     <div className="text-center">
-                      <div className="text-xs text-[#7d8590] uppercase tracking-wide">Dynamics</div>
+                      <div className="text-xs text-[#7d8590] uppercase tracking-wide">
+                        Dynamics
+                      </div>
                       <div className="font-medium text-[#f0f6fc] uppercase">
                         {chord.dynamics}
                       </div>
                     </div>
                   )}
-                  
+
                   {chord.articulation && (
                     <div className="text-center">
-                      <div className="text-xs text-[#7d8590] uppercase tracking-wide">Articulation</div>
+                      <div className="text-xs text-[#7d8590] uppercase tracking-wide">
+                        Articulation
+                      </div>
                       <div className="font-medium text-[#f0f6fc] capitalize">
                         {chord.articulation}
                       </div>
@@ -358,4 +389,4 @@ export function AdvancedChordDisplay({
       )}
     </Card>
   );
-};
+}

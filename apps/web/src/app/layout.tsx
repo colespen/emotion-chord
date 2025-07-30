@@ -14,7 +14,8 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Emotion to Chord - AI-Powered Musical Expression",
-  description: "Transform your emotions into musical chords using AI-powered emotion analysis and Tone.js audio synthesis.",
+  description:
+    "Transform your emotions into musical chords using AI-powered emotion analysis and Tone.js audio synthesis.",
   keywords: ["emotion", "music", "chord", "AI", "synthesis", "audio"],
   authors: [{ name: "Spencer Cole" }],
 };
@@ -31,9 +32,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         {children}
       </body>
     </html>

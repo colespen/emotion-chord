@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import { Card } from '@/components/ui/Card';
-import { Button } from '@/components/ui/Button';
-import type { ChordProgression } from '@/types/emotion-chord';
+import React, { useState } from "react";
+import { Card } from "@/components/ui/Card";
+import { Button } from "@/components/ui/Button";
+import type { ChordProgression } from "@/types/emotion-chord";
 import {
   Play,
   Pause,
@@ -14,8 +14,8 @@ import {
   ArrowRight,
   Clock,
   TrendingUp,
-  Sparkles
-} from 'lucide-react';
+  Sparkles,
+} from "lucide-react";
 
 interface ChordProgressionDisplayProps {
   progression: ChordProgression;
@@ -47,7 +47,7 @@ export const ChordProgressionDisplay: React.FC<ChordProgressionDisplayProps> = (
   const formatDuration = (beats: number): string => {
     const measures = Math.floor(beats / 4);
     const remainingBeats = beats % 4;
-    
+
     if (measures > 0 && remainingBeats > 0) {
       return `${measures}m ${remainingBeats}b`;
     } else if (measures > 0) {
@@ -59,20 +59,20 @@ export const ChordProgressionDisplay: React.FC<ChordProgressionDisplayProps> = (
 
   const getProgressionTypeColor = (type: string): string => {
     const colors: Record<string, string> = {
-      'ascending': 'text-[#238636] bg-[#238636]/10',
-      'descending': 'text-[#2563eb] bg-[#2563eb]/10',
-      'circular': 'text-[#8b5cf6] bg-[#8b5cf6]/10',
-      'static': 'text-[#7d8590] bg-[#7d8590]/10',
-      'modal': 'text-[#6366f1] bg-[#6366f1]/10',
-      'chromatic': 'text-[#da3633] bg-[#da3633]/10',
+      ascending: "text-[#238636] bg-[#238636]/10",
+      descending: "text-[#2563eb] bg-[#2563eb]/10",
+      circular: "text-[#8b5cf6] bg-[#8b5cf6]/10",
+      static: "text-[#7d8590] bg-[#7d8590]/10",
+      modal: "text-[#6366f1] bg-[#6366f1]/10",
+      chromatic: "text-[#da3633] bg-[#da3633]/10",
     };
-    return colors[type] || 'text-[#7d8590] bg-[#7d8590]/10';
+    return colors[type] || "text-[#7d8590] bg-[#7d8590]/10";
   };
 
   const getTensionColor = (tension: number): string => {
-    if (tension < 0.3) return 'bg-[#238636]/20';
-    if (tension < 0.7) return 'bg-[#fb8500]/20';
-    return 'bg-[#da3633]/20';
+    if (tension < 0.3) return "bg-[#238636]/20";
+    if (tension < 0.7) return "bg-[#fb8500]/20";
+    return "bg-[#da3633]/20";
   };
 
   return (
@@ -86,13 +86,16 @@ export const ChordProgressionDisplay: React.FC<ChordProgressionDisplayProps> = (
           <div>
             <h3 className="text-xl font-bold text-[#f0f6fc]">Chord Progression</h3>
             <p className="text-sm text-[#7d8590]">
-              {progression.key} • {progression.chords.length} chords • {formatDuration(progression.totalDuration)}
+              {progression.key} • {progression.chords.length} chords •{" "}
+              {formatDuration(progression.totalDuration)}
             </p>
           </div>
         </div>
 
         {/* Type Badge */}
-        <span className={`px-3 py-1 rounded-full text-sm font-medium ${getProgressionTypeColor(progression.type)}`}>
+        <span
+          className={`px-3 py-1 rounded-full text-sm font-medium ${getProgressionTypeColor(progression.type)}`}
+        >
           {progression.type}
         </span>
       </div>
@@ -114,8 +117,8 @@ export const ChordProgressionDisplay: React.FC<ChordProgressionDisplayProps> = (
               <div
                 className={`p-4 rounded-lg border-2 cursor-pointer transition-all duration-200 ${
                   currentChord === index
-                    ? 'border-blue-500 bg-blue-50 ring-2 ring-blue-200'
-                    : 'border-gray-200 bg-white hover:border-gray-300 hover:shadow-sm'
+                    ? "border-blue-500 bg-blue-50 ring-2 ring-blue-200"
+                    : "border-gray-200 bg-white hover:border-gray-300 hover:shadow-sm"
                 }`}
                 onClick={() => onChordSelect?.(index)}
               >
@@ -185,12 +188,12 @@ export const ChordProgressionDisplay: React.FC<ChordProgressionDisplayProps> = (
 
         <Button
           onClick={isPlaying ? onPause : onPlay}
-          variant={isPlaying ? 'secondary' : 'primary'}
+          variant={isPlaying ? "secondary" : "primary"}
           size="lg"
           className="flex items-center gap-2 px-6"
         >
           {isPlaying ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5" />}
-          {isPlaying ? 'Pause' : 'Play Progression'}
+          {isPlaying ? "Pause" : "Play Progression"}
         </Button>
 
         <Button
@@ -204,12 +207,12 @@ export const ChordProgressionDisplay: React.FC<ChordProgressionDisplayProps> = (
 
         <Button
           onClick={onLoop}
-          variant={isLooping ? 'secondary' : 'outline'}
+          variant={isLooping ? "secondary" : "outline"}
           size="sm"
           className="flex items-center gap-2 ml-3"
         >
           <Repeat className="w-4 h-4" />
-          {isLooping ? 'Looping' : 'Loop'}
+          {isLooping ? "Looping" : "Loop"}
         </Button>
       </div>
 
@@ -234,7 +237,7 @@ export const ChordProgressionDisplay: React.FC<ChordProgressionDisplayProps> = (
         className="w-full flex items-center justify-center gap-2"
       >
         <TrendingUp className="w-4 h-4" />
-        {showAnalysis ? 'Hide' : 'Show'} Harmonic Analysis
+        {showAnalysis ? "Hide" : "Show"} Harmonic Analysis
       </Button>
 
       {/* Detailed Analysis */}
@@ -243,33 +246,44 @@ export const ChordProgressionDisplay: React.FC<ChordProgressionDisplayProps> = (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {/* Key Center */}
             <div className="text-center p-3 bg-[#161b22] border border-[#30363d] rounded-lg">
-              <div className="text-xs text-[#7d8590] uppercase tracking-wide">Key Center</div>
+              <div className="text-xs text-[#7d8590] uppercase tracking-wide">
+                Key Center
+              </div>
               <div className="font-bold text-lg text-[#f0f6fc]">{progression.key}</div>
               {progression.mode && (
-                <div className="text-sm text-[#7d8590] capitalize">{progression.mode}</div>
+                <div className="text-sm text-[#7d8590] capitalize">
+                  {progression.mode}
+                </div>
               )}
             </div>
 
             {/* Complexity */}
             <div className="text-center p-3 bg-[#161b22] border border-[#30363d] rounded-lg">
-              <div className="text-xs text-[#7d8590] uppercase tracking-wide">Complexity</div>
+              <div className="text-xs text-[#7d8590] uppercase tracking-wide">
+                Complexity
+              </div>
               <div className="font-bold text-lg text-[#f0f6fc]">
                 {Math.round(progression.complexity * 100)}%
               </div>
               <div className="text-sm text-[#7d8590]">
-                {progression.complexity < 0.3 ? 'Simple' : 
-                 progression.complexity < 0.7 ? 'Moderate' : 'Complex'}
+                {progression.complexity < 0.3
+                  ? "Simple"
+                  : progression.complexity < 0.7
+                    ? "Moderate"
+                    : "Complex"}
               </div>
             </div>
 
             {/* Tension Curve */}
             <div className="text-center p-3 bg-[#161b22] border border-[#30363d] rounded-lg">
-              <div className="text-xs text-[#7d8590] uppercase tracking-wide">Tension Curve</div>
+              <div className="text-xs text-[#7d8590] uppercase tracking-wide">
+                Tension Curve
+              </div>
               <div className="font-bold text-lg text-[#f0f6fc]">
                 {progression.tensionCurve}
               </div>
               <div className="text-sm text-[#7d8590] capitalize">
-                {progression.tensionCurve.replace('_', ' ')}
+                {progression.tensionCurve.replace("_", " ")}
               </div>
             </div>
           </div>
@@ -283,7 +297,9 @@ export const ChordProgressionDisplay: React.FC<ChordProgressionDisplayProps> = (
                   <span
                     key={index}
                     className={`px-3 py-1 rounded-full text-sm font-mono ${
-                      currentChord === index ? 'bg-[#238636] text-white' : 'bg-[#21262d] text-[#f0f6fc] border border-[#30363d]'
+                      currentChord === index
+                        ? "bg-[#238636] text-white"
+                        : "bg-[#21262d] text-[#f0f6fc] border border-[#30363d]"
                     }`}
                   >
                     {numeral}
@@ -303,7 +319,7 @@ export const ChordProgressionDisplay: React.FC<ChordProgressionDisplayProps> = (
                     key={index}
                     className="px-2 py-1 text-xs bg-indigo-100 text-indigo-800 rounded-full"
                   >
-                    {feature.replace(/([A-Z])/g, ' $1').toLowerCase()}
+                    {feature.replace(/([A-Z])/g, " $1").toLowerCase()}
                   </span>
                 ))}
               </div>
