@@ -1,23 +1,23 @@
-'use client';
+"use client";
 
-import React, { useState, useCallback } from 'react';
-import { Button } from '@/components/ui/Button';
-import { Card } from '@/components/ui/Card';
-import { Input } from '@/components/ui/Input';
-import { EmotionChordApiService } from '@/services/emotion-chord-api';
-import { 
-  Sparkles, 
-  Music, 
-  Globe, 
-  Settings, 
-  ChevronDown, 
+import React, { useState, useCallback } from "react";
+import { Button } from "@/components/ui/Button";
+import { Card } from "@/components/ui/Card";
+import { Input } from "@/components/ui/Input";
+import { EmotionChordApiService } from "@/services/emotion-chord-api";
+import {
+  Sparkles,
+  Music,
+  Globe,
+  Settings,
+  ChevronDown,
   ChevronUp,
-  Shuffle
-} from 'lucide-react';
+  Shuffle,
+} from "lucide-react";
 
 interface AdvancedEmotionInputProps {
   onGenerate: (
-    emotion: string, 
+    emotion: string,
     options?: {
       culturalPreference?: "western" | "indian" | "arabic" | "universal";
       stylePreference?: "classical" | "jazz" | "contemporary" | "experimental";
@@ -34,12 +34,15 @@ export const AdvancedEmotionInput: React.FC<AdvancedEmotionInputProps> = ({
   loading = false,
   disabled = false,
 }) => {
-  const [emotion, setEmotion] = useState('');
+  const [emotion, setEmotion] = useState("");
   const [showAdvanced, setShowAdvanced] = useState(false);
-  const [culturalPreference, setCulturalPreference] = useState<string>('universal');
-  const [stylePreference, setStylePreference] = useState<string>('contemporary');
+  const [culturalPreference, setCulturalPreference] =
+    useState<string>("universal");
+  const [stylePreference, setStylePreference] =
+    useState<string>("contemporary");
   const [includeProgression, setIncludeProgression] = useState(true);
-  const [includeCulturalAlternatives, setIncludeCulturalAlternatives] = useState(true);
+  const [includeCulturalAlternatives, setIncludeCulturalAlternatives] =
+    useState(true);
   const [showExamples, setShowExamples] = useState(false);
 
   const examples = EmotionChordApiService.getEmotionExamples();
@@ -47,7 +50,7 @@ export const AdvancedEmotionInput: React.FC<AdvancedEmotionInputProps> = ({
   const handleSubmit = useCallback(
     (e: React.FormEvent) => {
       e.preventDefault();
-      
+
       const validation = EmotionChordApiService.validateEmotionInput(emotion);
       if (!validation.isValid) {
         alert(validation.error);
@@ -55,15 +58,30 @@ export const AdvancedEmotionInput: React.FC<AdvancedEmotionInputProps> = ({
       }
 
       const options = {
-        culturalPreference: culturalPreference as "western" | "indian" | "arabic" | "universal",
-        stylePreference: stylePreference as "classical" | "jazz" | "contemporary" | "experimental",
+        culturalPreference: culturalPreference as
+          | "western"
+          | "indian"
+          | "arabic"
+          | "universal",
+        stylePreference: stylePreference as
+          | "classical"
+          | "jazz"
+          | "contemporary"
+          | "experimental",
         includeProgression,
         includeCulturalAlternatives,
       };
 
       onGenerate(emotion, options);
     },
-    [emotion, culturalPreference, stylePreference, includeProgression, includeCulturalAlternatives, onGenerate]
+    [
+      emotion,
+      culturalPreference,
+      stylePreference,
+      includeProgression,
+      includeCulturalAlternatives,
+      onGenerate,
+    ]
   );
 
   const handleExampleClick = (exampleEmotion: string) => {
@@ -73,7 +91,8 @@ export const AdvancedEmotionInput: React.FC<AdvancedEmotionInputProps> = ({
 
   const handleRandomExample = () => {
     const allExamples = Object.values(examples).flat();
-    const randomExample = allExamples[Math.floor(Math.random() * allExamples.length)];
+    const randomExample =
+      allExamples[Math.floor(Math.random() * allExamples.length)];
     setEmotion(randomExample);
   };
 
@@ -88,14 +107,18 @@ export const AdvancedEmotionInput: React.FC<AdvancedEmotionInputProps> = ({
           </h2>
         </div>
         <p className="text-[#7d8590]">
-          Describe your emotion in detail for the most accurate musical interpretation
+          Describe your emotion in detail for the most accurate musical
+          interpretation
         </p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Main Emotion Input */}
         <div className="space-y-2">
-          <label htmlFor="emotion" className="block text-sm font-medium text-[#f0f6fc]">
+          <label
+            htmlFor="emotion"
+            className="block text-sm font-medium text-[#f0f6fc]"
+          >
             Emotion Description
           </label>
           <div className="relative">
@@ -123,9 +146,9 @@ export const AdvancedEmotionInput: React.FC<AdvancedEmotionInputProps> = ({
           </div>
         </div>
 
-        {/* Examples Toggle */}
+        {/* Examples Toggle - OMIT EXAMPLES - DONT NEED RIGHT NOW. */}
         <div className="space-y-2">
-          <Button
+          {/* <Button
             type="button"
             variant="outline"
             size="sm"
@@ -133,9 +156,13 @@ export const AdvancedEmotionInput: React.FC<AdvancedEmotionInputProps> = ({
             className="w-full flex items-center justify-center gap-2 bg-[#21262d] border-[#30363d] text-[#f0f6fc] hover:bg-[#30363d]"
           >
             <Sparkles className="w-4 h-4" />
-            {showExamples ? 'Hide Examples' : 'Show Example Emotions'}
-            {showExamples ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-          </Button>
+            {showExamples ? "Hide Examples" : "Show Example Emotions"}
+            {showExamples ? (
+              <ChevronUp className="w-4 h-4" />
+            ) : (
+              <ChevronDown className="w-4 h-4" />
+            )}
+          </Button> */}
 
           {showExamples && (
             <div className="grid grid-cols-1 gap-3 p-4 bg-[#161b22] border border-[#30363d] rounded-lg">
@@ -173,13 +200,17 @@ export const AdvancedEmotionInput: React.FC<AdvancedEmotionInputProps> = ({
           >
             <Settings className="w-4 h-4" />
             Advanced Options
-            {showAdvanced ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+            {showAdvanced ? (
+              <ChevronUp className="w-4 h-4" />
+            ) : (
+              <ChevronDown className="w-4 h-4" />
+            )}
           </Button>
 
           {showAdvanced && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-[#161b22] border border-[#30363d] rounded-lg">
-              {/* Cultural Preference */}
-              <div className="space-y-2">
+              {/* Cultural Preference - OMIT FOR NOW UNTIL FIXED. */}
+              {/* <div className="space-y-2">
                 <label className="block text-sm font-medium text-[#f0f6fc]">
                   <Globe className="w-4 h-4 inline mr-1" />
                   Cultural Context
@@ -195,7 +226,7 @@ export const AdvancedEmotionInput: React.FC<AdvancedEmotionInputProps> = ({
                   <option value="indian">Indian (Raga)</option>
                   <option value="arabic">Arabic (Maqam)</option>
                 </select>
-              </div>
+              </div> */}
 
               {/* Style Preference */}
               <div className="space-y-2">
@@ -216,8 +247,8 @@ export const AdvancedEmotionInput: React.FC<AdvancedEmotionInputProps> = ({
                 </select>
               </div>
 
-              {/* Additional Options */}
-              <div className="space-y-3 md:col-span-2">
+              {/* Additional Options - OMIT FOR NOW UNTIL FIXED. */}
+              {/* <div className="space-y-3 md:col-span-2">
                 <label className="flex items-center space-x-2">
                   <input
                     type="checkbox"
@@ -235,7 +266,9 @@ export const AdvancedEmotionInput: React.FC<AdvancedEmotionInputProps> = ({
                   <input
                     type="checkbox"
                     checked={includeCulturalAlternatives}
-                    onChange={(e) => setIncludeCulturalAlternatives(e.target.checked)}
+                    onChange={(e) =>
+                      setIncludeCulturalAlternatives(e.target.checked)
+                    }
                     className="rounded border-[#30363d] text-[#238636] focus:ring-[#238636] bg-[#0d1117]"
                     disabled={disabled}
                   />
@@ -243,7 +276,7 @@ export const AdvancedEmotionInput: React.FC<AdvancedEmotionInputProps> = ({
                     Include cultural alternatives (Raga/Maqam)
                   </span>
                 </label>
-              </div>
+              </div> */}
             </div>
           )}
         </div>

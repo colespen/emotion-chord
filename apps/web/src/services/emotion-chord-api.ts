@@ -111,7 +111,7 @@ export class EmotionChordApiService {
         "the serenity of a Japanese tea ceremony",
         "the passionate intensity of flamenco",
         "the mystical depth of Sufi meditation",
-        "the communal joy of an African celebration"
+        "the communal joy of an Senegalese celebration"
       ],
       sophisticated: [
         "sophisticated nostalgia tinged with hope",
