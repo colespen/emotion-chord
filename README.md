@@ -1,6 +1,6 @@
 # 🎵 Emotion Chord
 
-Transform emotions into musical chords using AI-powered emotion analysis, advanced music theory, and real-time audio synthesis.
+Transform emotions into musical chords using AI-powered emotion analysis, advanced music theory, & real-time audio synthesis!
 
 ## Overview
 
@@ -37,7 +37,7 @@ Emotion Chord is a full-stack application that analyzes emotional text input and
 
 ### 🎨 Modern UI
 
-- GitHub-inspired dark theme
+- Next.js 15 + React 19
 - Responsive design for all devices
 - Real-time chord visualization
 - Interactive music theory displays
