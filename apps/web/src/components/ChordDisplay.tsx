@@ -70,7 +70,6 @@ export function ChordDisplay({
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        {/* Basic Chord Info */}
         <div className="grid grid-cols-2 gap-4">
           <div>
             <h4 className="font-medium text-gray-900 mb-1">Root Note</h4>
@@ -82,7 +81,6 @@ export function ChordDisplay({
           </div>
         </div>
 
-        {/* Notes */}
         <div>
           <h4 className="font-medium text-gray-900 mb-2">Notes</h4>
           <div className="flex flex-wrap gap-2">
@@ -96,8 +94,6 @@ export function ChordDisplay({
             ))}
           </div>
         </div>
-
-        {/* Intervals */}
         <div>
           <h4 className="font-medium text-gray-900 mb-2">Intervals</h4>
           <div className="flex flex-wrap gap-2">
@@ -112,7 +108,6 @@ export function ChordDisplay({
           </div>
         </div>
 
-        {/* MIDI Info */}
         <div className="grid grid-cols-2 gap-4">
           <div>
             <h4 className="font-medium text-gray-900 mb-2">MIDI Notes</h4>
@@ -128,7 +123,6 @@ export function ChordDisplay({
           </div>
         </div>
 
-        {/* Metrics */}
         <div className="grid grid-cols-2 gap-4 pt-4 border-t border-gray-200">
           <div>
             <h4 className="font-medium text-gray-900 mb-1">Harmonic Complexity</h4>

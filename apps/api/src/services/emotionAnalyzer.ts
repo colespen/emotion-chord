@@ -48,63 +48,27 @@ export class AdvancedEmotionAnalyzer {
       previousEmotions?: string[];
     }
   ): Promise<AdvancedEmotionAnalysis> {
-    const systemPrompt = `You are an advanced music psychology expert combining multiple emotion theories:
+    const systemPrompt = `analyze emotion and return comprehensive JSON with all required fields:
 
-1. Russell's Circumplex Model (valence/arousal)
-2. Geneva Emotional Music Scale (GEMS) - 9 music-specific emotions
-3. Cross-cultural emotion mappings (Indian raga, Arabic maqam)
-4. Modern music psychology research
+Core dimensions:
+- primaryEmotion: main emotion (string)
+- secondaryEmotions: related emotions array
+- emotionalIntensity: overall intensity (0-1)
+- valence: pleasure dimension (-1 to 1)
+- arousal: activation dimension (0-1)
+- tension: calculated as arousal * (1 - valence) / 2 (0-1)
+- complexity: emotional nuance/layers (0-1)
 
-Analyze the given emotion and return a comprehensive JSON object with ALL of the following fields (no fields should be missing):
+Musical parameters:
+- musicalMode: "major", "minor", "dorian", "mixolydian", "lydian", "phrygian", "locrian", "chromatic", "atonal"
+- suggestedTempo: BPM matching emotion (40-200)
 
-REQUIRED Core dimensions:
-- primaryEmotion: Main emotion identified (string)
-- secondaryEmotions: Related emotions array (e.g., ["melancholy", "longing"])
-- emotionalIntensity: Overall intensity (number 0-1)
-- valence: Pleasure dimension (number -1 to 1)
-- arousal: Activation dimension (number 0 to 1)
-- tension: Calculated as arousal * (1 - valence) / 2 (number 0-1)
-- complexity: Emotional nuance/layers (number 0-1)
+Optional GEMS dimensions (0-1 each if relevant):
+- gems: object with applicable emotions: joy, sadness, tension, wonder, peacefulness, power, tenderness, nostalgia, transcendence
 
-REQUIRED Musical parameters:
-- musicalMode: one of "major", "minor", "dorian", "mixolydian", "lydian", "phrygian", "locrian", "chromatic", "atonal"
-- suggestedTempo: BPM matching the emotion (number 40-200)
-
-OPTIONAL GEMS dimensions (include if relevant, 0-1 each):
-- gems: object with any of these emotions that apply:
-  - joy: Happiness, elation, gaiety
-  - sadness: Melancholy, grief, sorrow  
-  - tension: Stress, agitation, nervousness
-  - wonder: Amazement, awe, dazzled
-  - peacefulness: Calm, relaxed, serene
-  - power: Strong, triumphant, energetic
-  - tenderness: Gentle, soft, mellow
-  - nostalgia: Dreamy, melancholic longing
-  - transcendence: Inspired, spiritual, thrilled
-
-OPTIONAL Context:
-- culturalContext: "western", "indian", "arabic", or "universal"
-- harmonicStyle: "classical", "jazz", "contemporary", or "experimental"
-
-EXAMPLE OUTPUT:
-{
-  "primaryEmotion": "wonder",
-  "secondaryEmotions": ["transcendence", "melancholy"],
-  "emotionalIntensity": 0.8,
-  "valence": 0.3,
-  "arousal": 0.7,
-  "tension": 0.25,
-  "complexity": 0.9,
-  "musicalMode": "lydian",
-  "suggestedTempo": 80,
-  "gems": {
-    "wonder": 0.9,
-    "transcendence": 0.8,
-    "sadness": 0.3
-  },
-  "culturalContext": "universal",
-  "harmonicStyle": "contemporary"
-}
+Optional Context:
+- culturalContext: "western", "indian", "arabic", "universal"
+- harmonicStyle: "classical", "jazz", "contemporary", "experimental"
 
 ${context ? `Context: ${JSON.stringify(context)}` : ""}`;
 
@@ -122,8 +86,6 @@ ${context ? `Context: ${JSON.stringify(context)}` : ""}`;
 
       const content = response.choices[0]?.message?.content;
       if (!content) throw new Error("No response from OpenAI");
-
-      console.log("Raw OpenAI response:", content);
       
       let parsed;
       try {
@@ -132,14 +94,10 @@ ${context ? `Context: ${JSON.stringify(context)}` : ""}`;
         console.error("Failed to parse OpenAI response as JSON:", parseError);
         throw new Error("Invalid JSON response from OpenAI");
       }
-
-      console.log("Parsed OpenAI response:", parsed);
       
-      // Use safeParse to get better error information
       const result = AdvancedEmotionSchema.safeParse(parsed);
       if (!result.success) {
         console.error("Schema validation failed:", result.error.issues);
-        // Provide fallback values for missing required fields
         const fallbackData = {
           primaryEmotion: parsed.primaryEmotion || input.split(' ')[0] || "neutral",
           secondaryEmotions: parsed.secondaryEmotions || [],

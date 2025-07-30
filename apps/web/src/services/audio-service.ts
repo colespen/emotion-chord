@@ -6,8 +6,6 @@ export class AudioService {
   private static isInitialized = false;
   private static arpeggioLoop: Tone.Loop | null = null;
   private static isArpeggioPlaying = false;
-  
-  // Progression playback state
   private static progressionSequence: Tone.Sequence | null = null;
   private static isProgressionPlaying = false;
   private static isProgressionLooping = false;
@@ -17,36 +15,32 @@ export class AudioService {
   static async initialize(): Promise<void> {
     if (this.isInitialized) return;
 
-    // Set master volume to prevent distortion
-    Tone.getDestination().volume.value = -12; // Reduce master volume by 12dB
+    Tone.getDestination().volume.value = -12;
 
-    // Create a polyphonic synthesizer for playing chords
     this.synth = new Tone.PolySynth(Tone.Synth, {
-      volume: -8, // Additional volume reduction at synth level
+      volume: -8,
       envelope: {
         attack: 0.02,
-        decay: 0.2,  // Slightly faster decay
-        sustain: 0.65, // Lower sustain level
-        release: 1.2, // Longer release for better chord sustain
+        decay: 0.2,
+        sustain: 0.65,
+        release: 1.2,
       },
       oscillator: {
-        type: "triangle", // Softer waveform than sawtooth
+        type: "triangle",
       },
     });
 
-    // Apply effects for richer sound with controlled levels
     const reverb = new Tone.Reverb({
       decay: 1.2,
-      wet: 0.2, // Reduced wet signal to prevent muddiness
+      wet: 0.2,
     });
 
     const filter = new Tone.Filter({
       frequency: 1200,
       type: "lowpass",
-      rolloff: -12, // Gentler filter rolloff
+      rolloff: -12,
     });
 
-    // Add a compressor to control dynamics and prevent clipping
     const compressor = new Tone.Compressor({
       threshold: -12,
       ratio: 3,
@@ -54,7 +48,6 @@ export class AudioService {
       release: 0.1,
     });
 
-    // Signal chain: synth -> filter -> reverb -> compressor -> destination
     this.synth.connect(filter);
     filter.connect(reverb);
     reverb.connect(compressor);
@@ -73,28 +66,17 @@ export class AudioService {
     return Tone.Frequency(midiNote, "midi").toFrequency();
   }
 
-  /**
-   * Calculate arpeggio speed based on tempo (BPM)
-   * Returns the delay in seconds between arpeggio notes
-   */
+  // calculate arpeggio speed based on tempo (BPM)
   static calculateArpeggioSpeed(tempo: number): number {
-    console.log(`Calculating arpeggio speed for tempo: ${tempo} BPM`);
-    // Much more aggressive tempo differences for testing
-    // Slow emotions: 60 BPM = 0.5 seconds between notes
-    // Fast emotions: 160 BPM = 0.125 seconds between notes
-    const noteDelay = 60 / (tempo * 2); // Simplified: 2 subdivisions per beat
-    console.log(`Calculated note delay: ${noteDelay} seconds`);
-    return noteDelay;
+    return 60 / (tempo * 2);
   }
 
   static getChordFrequencies(chord: AdvancedChordSuggestion): number[] {
-    // Prioritize midiNotes (correct chord tones) over voicing notes
     if (chord.midiNotes && chord.midiNotes.length > 0) {
       return chord.midiNotes.map(this.midiToFrequency);
     } else if (chord.voicing?.notes && chord.voicing.notes.length > 0) {
       return chord.voicing.notes.map(this.midiToFrequency);
     } else {
-      // Fallback to converting string notes to MIDI
       const noteToMidi: Record<string, number> = {
         'C': 60, 'C#': 61, 'Db': 61, 'D': 62, 'D#': 63, 'Eb': 63,
         'E': 64, 'F': 65, 'F#': 66, 'Gb': 66, 'G': 67, 'G#': 68,
@@ -102,37 +84,24 @@ export class AudioService {
       };
       return chord.notes.map(note => {
         const midiNote = noteToMidi[note] || 60;
-        return this.midiToFrequency(midiNote + 12); // Add octave
+        return this.midiToFrequency(midiNote + 12);
       });
     }
   }
 
-  /**
-   * Get frequencies for arpeggiator sorted from lowest to highest pitch
-   * This ensures arpeggio always plays notes in ascending pitch order
-   * regardless of the original voicing arrangement
-   */
+  // get arpeggio frequencies sorted from low to high
   static getArpeggioFrequencies(chord: AdvancedChordSuggestion): number[] {
-    // Get the frequencies in their original order
     let frequencies: number[] = [];
     
     if (chord.midiNotes && chord.midiNotes.length > 0) {
-      console.log(`Using midiNotes for arpeggio: [${chord.midiNotes.join(', ')}]`);
       frequencies = chord.midiNotes.map(this.midiToFrequency);
     } else if (chord.voicing?.notes && chord.voicing.notes.length > 0) {
-      console.log(`Using voicing.notes for arpeggio: [${chord.voicing.notes.join(', ')}]`);
       frequencies = chord.voicing.notes.map(this.midiToFrequency);
     } else {
-      // Fallback: use the same logic as getChordFrequencies
-      console.log(`Using fallback chord frequencies for arpeggio`);
       frequencies = this.getChordFrequencies(chord);
     }
     
-    // Sort frequencies from lowest to highest for arpeggio
-    const sortedFrequencies = [...frequencies].sort((a, b) => a - b);
-    console.log(`Arpeggio frequencies sorted low to high: [${sortedFrequencies.map(f => f.toFixed(2)).join(', ')}]`);
-    
-    return sortedFrequencies;
+    return [...frequencies].sort((a, b) => a - b);
   }
 
   static getDynamicsVelocity(dynamics?: string): number {
@@ -148,9 +117,8 @@ export class AudioService {
 
   static async playChord(
     chord: AdvancedChordSuggestion,
-    duration: string = "4n"  // Shorter default duration (quarter note instead of half note)
+    duration: string = "4n"
   ): Promise<void> {
-    // Auto-initialize if not already done
     await this.initialize();
     await this.startAudioContext();
 
@@ -158,11 +126,8 @@ export class AudioService {
       throw new Error("Audio synthesizer not initialized");
     }
 
-    // Get frequencies from the advanced chord structure
     const frequencies = this.getChordFrequencies(chord);
     const velocity = this.getDynamicsVelocity(chord.dynamics);
-
-    // Play the chord with controlled timing and dynamics
     this.synth.triggerAttackRelease(frequencies, duration, undefined, velocity);
   }
 
@@ -171,7 +136,6 @@ export class AudioService {
     emotion?: AdvancedEmotionAnalysis,
     noteLength: string = "8n"
   ): Promise<void> {
-    // Auto-initialize if not already done
     await this.initialize();
     await this.startAudioContext();
 
@@ -181,18 +145,12 @@ export class AudioService {
 
     const frequencies = this.getArpeggioFrequencies(chord);
     const velocity = this.getDynamicsVelocity(chord.dynamics);
-
-    console.log(`Playing single arpeggio from lowest to highest frequency`);
-
-    // Calculate timing based on emotion's suggested tempo
     const noteDelay = emotion
       ? this.calculateArpeggioSpeed(emotion.suggestedTempo)
-      : 0.15; // fallback to default timing (roughly 100 BPM)
+      : 0.15;
 
-    // Clear any existing scheduled events
     Tone.getTransport().cancel();
 
-    // Play notes in sequence with tempo-appropriate delay
     frequencies.forEach((freq, index) => {
       Tone.getTransport().schedule((time) => {
         this.synth!.triggerAttackRelease(freq, noteLength, time, velocity);
@@ -201,7 +159,6 @@ export class AudioService {
 
     Tone.getTransport().start();
 
-    // Stop transport after arpeggio completes
     Tone.getTransport().schedule(() => {
       Tone.getTransport().stop();
       Tone.getTransport().cancel();
@@ -213,10 +170,6 @@ export class AudioService {
     emotion?: AdvancedEmotionAnalysis,
     noteLength: string = "8n"
   ): Promise<boolean> {
-    console.log("toggleArpeggioLoop called with emotion:", emotion);
-    console.log("Emotion suggestedTempo:", emotion?.suggestedTempo);
-
-    // Auto-initialize if not already done
     await this.initialize();
     await this.startAudioContext();
 
@@ -224,30 +177,21 @@ export class AudioService {
       throw new Error("Audio synthesizer not initialized");
     }
 
-    // If already playing, stop the loop
     if (this.isArpeggioPlaying) {
       this.stopArpeggioLoop();
       return false;
     }
 
-    // Start the infinite arpeggio loop
     const frequencies = this.getArpeggioFrequencies(chord);
     const velocity = this.getDynamicsVelocity(chord.dynamics);
     let currentIndex = 0;
-    let direction = 1; // 1 for up, -1 for down
+    let direction = 1;
 
-    console.log(`Arpeggio will play from lowest to highest frequency`);
-
-    // Calculate timing based on emotion's suggested tempo
     const arpeggioSpeed = emotion
       ? this.calculateArpeggioSpeed(emotion.suggestedTempo)
-      : 0.3; // Very slow fallback to make the difference obvious
+      : 0.3;
 
-    console.log(`Using arpeggio speed: ${arpeggioSpeed} seconds between notes`);
-
-    // Create a loop that plays one note at a time
     this.arpeggioLoop = new Tone.Loop((time) => {
-      // Play the current note
       this.synth!.triggerAttackRelease(
         frequencies[currentIndex],
         noteLength,
@@ -255,18 +199,16 @@ export class AudioService {
         velocity
       );
 
-      // Move to next note
       currentIndex += direction;
 
-      // Change direction at boundaries (without repeating boundary notes)
       if (currentIndex >= frequencies.length) {
-        currentIndex = frequencies.length - 2; // Skip the last note
+        currentIndex = frequencies.length - 2;
         direction = -1;
       } else if (currentIndex < 0) {
-        currentIndex = 1; // Skip the first note
+        currentIndex = 1;
         direction = 1;
       }
-    }, arpeggioSpeed); // Use calculated arpeggio speed in seconds
+    }, arpeggioSpeed);
 
     this.arpeggioLoop.start(0);
     Tone.getTransport().start();
@@ -286,30 +228,25 @@ export class AudioService {
       throw new Error("Audio synthesizer not initialized");
     }
 
-    // Stop any existing progression
     this.stopProgression();
 
     this.currentProgression = progression;
     this.isProgressionLooping = loop;
     
-    // Set tempo
     Tone.getTransport().bpm.value = progression.tempo;
 
-    // Create chord events for the sequence
     const events = progression.chords.map((chord, index) => ({
-      time: index * 4, // Assume 4 beats per chord for now
+      time: index * 4,
       chord,
       index
     }));
 
-    // Create and start sequence
     this.progressionSequence = new Tone.Sequence(
       (time, data) => {
         this.currentChordIndex = data.index;
         
-        // For now, use a simple chord symbol to frequency conversion
-        // This would need to be expanded to handle the full chord data
-        const frequencies = [220, 277, 330, 415]; // Simplified Am chord
+        // simplified chord frequencies - should be expanded
+        const frequencies = [220, 277, 330, 415];
         const duration = `${data.chord.duration}n` as Tone.Unit.Time;
         
         this.synth!.triggerAttackRelease(frequencies, duration, time);
@@ -320,7 +257,7 @@ export class AudioService {
 
     this.progressionSequence.loop = loop;
     if (loop) {
-      this.progressionSequence.loopEnd = progression.chords.length * 4; // Total beats
+      this.progressionSequence.loopEnd = progression.chords.length * 4;
     }
 
     this.progressionSequence.start();
@@ -366,7 +303,6 @@ export class AudioService {
   static nextChord(): number {
     if (this.currentProgression && this.currentChordIndex < this.currentProgression.chords.length - 1) {
       this.currentChordIndex++;
-      // TODO: Update transport position
     }
     return this.currentChordIndex;
   }
@@ -374,7 +310,6 @@ export class AudioService {
   static previousChord(): number {
     if (this.currentChordIndex > 0) {
       this.currentChordIndex--;
-      // TODO: Update transport position
     }
     return this.currentChordIndex;
   }
@@ -382,7 +317,6 @@ export class AudioService {
   static selectChord(index: number): number {
     if (this.currentProgression && index >= 0 && index < this.currentProgression.chords.length) {
       this.currentChordIndex = index;
-      // TODO: Update transport position to match chord
     }
     return this.currentChordIndex;
   }

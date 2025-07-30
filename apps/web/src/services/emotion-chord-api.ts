@@ -35,7 +35,7 @@ export class EmotionChordApiService {
   }
 
   /**
-   * Generate chord from emotion with advanced options
+   * generate chord from emotion with advanced options
    */
   static async generateChordFromEmotion(
     emotion: string,
@@ -55,7 +55,7 @@ export class EmotionChordApiService {
   }
 
   /**
-   * Process multiple emotions in batch
+   * process multiple emotions in batch
    */
   static async batchProcessEmotions(
     emotions: string[]
@@ -69,14 +69,14 @@ export class EmotionChordApiService {
   }
 
   /**
-   * Get API health and feature information
+   * get API health and feature information
    */
   static async healthCheck(): Promise<HealthCheckResponse> {
     return this.makeRequest<HealthCheckResponse>('/api/health');
   }
 
   /**
-   * Utility method to validate emotion input
+   * validate emotion input
    */
   static validateEmotionInput(emotion: string): { isValid: boolean; error?: string } {
     if (!emotion.trim()) {
@@ -91,7 +91,7 @@ export class EmotionChordApiService {
   }
 
   /**
-   * Get suggested emotion examples based on category
+   * get suggested emotion examples based on category
    */
   static getEmotionExamples(): Record<string, string[]> {
     return {

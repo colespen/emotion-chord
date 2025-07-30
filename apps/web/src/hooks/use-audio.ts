@@ -45,13 +45,10 @@ export function useAudio() {
     setState(prev => ({ ...prev, isPlaying: true, playingChord: chord.symbol, error: null }));
     
     try {
-      // Auto-initialize audio on first play (handles user interaction requirement)
       await AudioService.playChord(chord);
       
-      // Mark as initialized after successful play
       setState(prev => ({ ...prev, isInitialized: true }));
       
-      // Reset playing state after chord duration
       setTimeout(() => {
         setState(prev => ({ ...prev, isPlaying: false, playingChord: null }));
       }, 2000);
@@ -65,10 +62,8 @@ export function useAudio() {
     setState(prev => ({ ...prev, error: null }));
     
     try {
-      // Auto-initialize audio on first play (handles user interaction requirement)
       const isNowPlaying = await AudioService.toggleArpeggioLoop(chord, emotion);
       
-      // Mark as initialized after successful interaction
       setState(prev => ({ 
         ...prev, 
         isInitialized: true,
@@ -85,7 +80,6 @@ export function useAudio() {
     setState(prev => ({ ...prev, error: null, isProgressionPlaying: true, isProgressionLooping: loop }));
     
     try {
-      // Auto-initialize audio on first play
       await AudioService.playProgression(progression, loop);
       
       setState(prev => ({ ...prev, isInitialized: true }));
@@ -138,7 +132,6 @@ export function useAudio() {
   const playAllChords = useCallback(async (chords: AdvancedChordSuggestion[]) => {
     if (chords.length === 0) return;
     
-    // Cancel any existing loop first
     setState(prev => {
       if (prev.abortController) {
         prev.abortController.abort();
@@ -146,7 +139,6 @@ export function useAudio() {
       return prev;
     });
     
-    // Create new abort controller for this loop
     const abortController = new AbortController();
     const signal = abortController.signal;
     
@@ -158,11 +150,9 @@ export function useAudio() {
     }));
     
     try {
-      // Auto-initialize audio on first play
       await AudioService.initialize();
       setState(prev => ({ ...prev, isInitialized: true }));
       
-      // Helper function for abortable sleep
       const abortableSleep = (ms: number): Promise<void> => {
         return new Promise((resolve, reject) => {
           if (signal.aborted) {
@@ -185,9 +175,7 @@ export function useAudio() {
         });
       };
       
-      // Loop continuously until aborted
       while (!signal.aborted) {
-        // Play each chord in sequence
         for (let i = 0; i < chords.length && !signal.aborted; i++) {
           const chord = chords[i];
           
@@ -199,7 +187,6 @@ export function useAudio() {
           
           if (signal.aborted) break;
           
-          // Shorter chord duration for quicker progression
           await abortableSleep(1200);
           
           if (signal.aborted) break;
@@ -211,11 +198,9 @@ export function useAudio() {
         
         if (signal.aborted) break;
         
-        // No extra delay - loop immediately for consistent timing
       }
       
     } catch (error) {
-      // Don't treat abort as an error
       if (error instanceof Error && error.message === 'Aborted') {
         return;
       }
@@ -229,7 +214,6 @@ export function useAudio() {
         error: errorMessage 
       }));
     } finally {
-      // Clean up state when loop ends (naturally or aborted)
       setState(prev => ({ 
         ...prev, 
         isPlayingAllChords: false,
@@ -240,7 +224,6 @@ export function useAudio() {
   }, []);
 
   const stopAudio = useCallback(() => {
-    // Abort any running chord loop
     setState(prev => {
       if (prev.abortController) {
         prev.abortController.abort();
@@ -277,6 +260,7 @@ export function useAudio() {
     };
   }, []);
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { abortController, ...publicState } = state;
 
   return {
