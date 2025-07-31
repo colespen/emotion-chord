@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
-import type { AdvancedChordSuggestion, VoicingInfo } from "@/types/emotionChord";
+import type { AdvancedChordSuggestion } from "@/types/emotionChord";
 import {
   Music,
   Play,
@@ -15,33 +15,13 @@ import {
   Globe,
 } from "lucide-react";
 import { EmotionChordLogo } from "@/components/ui/EmotionChordLogo";
-
-const noteNames = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
-const flatNoteNames = ["C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B"];
-
-// helper function to get proper note names considering chord context
-function getContextualNoteName(midiNote: number, chordSymbol: string): string {
-  const octave = Math.floor(midiNote / 12) - 1;
-  const noteIndex = midiNote % 12;
-
-  // use flat notation for flat-based chords (Bb, Eb, Ab, Db, Gb)
-  const useFlatNotation = /^(Bb|Eb|Ab|Db|Gb|F)/.test(chordSymbol);
-
-  const selectedNames = useFlatNotation ? flatNoteNames : noteNames;
-  return selectedNames[noteIndex] + (octave >= 0 ? octave : "");
-}
-
-// helper function to get the actual played notes in the order they're heard (lowest to highest)
-function getPlayedNotes(chord: AdvancedChordSuggestion): string[] {
-  if (chord.midiNotes && chord.midiNotes.length > 0) {
-    // sort MIDI notes from lowest to highest (this is the order you actually hear them)
-    const sortedMidiNotes = [...chord.midiNotes].sort((a, b) => a - b);
-    return sortedMidiNotes.map((midiNote) =>
-      getContextualNoteName(midiNote, chord.symbol)
-    );
-  }
-  return chord.notes; // fallback to theoretical notes
-}
+import {
+  getPlayedNotes,
+  formatMidiNotes,
+  getVoicingDescription,
+  getComplexityColor,
+  getResonanceColor,
+} from "@/lib/utils/index";
 
 interface AdvancedChordDisplayProps {
   chord: AdvancedChordSuggestion;
@@ -65,43 +45,6 @@ export function AdvancedChordDisplay({
   showEmotionalContext = false,
 }: AdvancedChordDisplayProps) {
   const [expanded, setExpanded] = useState(false);
-
-  const getVoicingDescription = (voicing: VoicingInfo): string => {
-    const descriptions: Record<string, string> = {
-      close: "Close voicing (notes within an octave)",
-      open: "Open voicing (notes spread across octaves)",
-      drop2: "Drop 2 voicing (second voice dropped an octave)",
-      drop3: "Drop 3 voicing (third voice dropped an octave)",
-      rootless: "Rootless voicing (sophisticated jazz style)",
-      cluster: "Cluster voicing (adjacent tones for texture)",
-      quartal: "Quartal voicing (stacked fourths)",
-      spread: "Spread voicing (wide range distribution)",
-    };
-    return descriptions[voicing.voicingType] || voicing.voicingType;
-  };
-
-  const getComplexityColor = (complexity: number): string => {
-    if (complexity < 0.3) return "text-[#238636]";
-    if (complexity < 0.7) return "text-[#fb8500]";
-    return "text-[#da3633]";
-  };
-
-  const getResonanceColor = (resonance: number): string => {
-    if (resonance > 0.8) return "text-[#8b5cf6]";
-    if (resonance > 0.6) return "text-[#2563eb]";
-    if (resonance > 0.4) return "text-[#6366f1]";
-    return "text-[#7d8590]";
-  };
-
-  const formatMidiNotes = (notes: number[]): string => {
-    return notes
-      .map((note) => {
-        const octave = Math.floor(note / 12) - 1;
-        const noteName = noteNames[note % 12];
-        return `${noteName}${octave}`;
-      })
-      .join(" - ");
-  };
 
   return (
     <Card className="w-full p-6 space-y-4 bg-[#161b22] border-[#30363d]">

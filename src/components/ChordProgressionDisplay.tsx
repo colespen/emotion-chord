@@ -16,6 +16,11 @@ import {
   TrendingUp,
   Sparkles,
 } from "lucide-react";
+import {
+  formatDuration,
+  getProgressionTypeColor,
+  getTensionColor,
+} from "@/lib/utils/index";
 
 interface ChordProgressionDisplayProps {
   progression: ChordProgression;
@@ -43,37 +48,6 @@ export const ChordProgressionDisplay: React.FC<ChordProgressionDisplayProps> = (
   onChordSelect,
 }) => {
   const [showAnalysis, setShowAnalysis] = useState(false);
-
-  const formatDuration = (beats: number): string => {
-    const measures = Math.floor(beats / 4);
-    const remainingBeats = beats % 4;
-
-    if (measures > 0 && remainingBeats > 0) {
-      return `${measures}m ${remainingBeats}b`;
-    } else if (measures > 0) {
-      return `${measures}m`;
-    } else {
-      return `${remainingBeats}b`;
-    }
-  };
-
-  const getProgressionTypeColor = (type: string): string => {
-    const colors: Record<string, string> = {
-      ascending: "text-[#238636] bg-[#238636]/10",
-      descending: "text-[#2563eb] bg-[#2563eb]/10",
-      circular: "text-[#8b5cf6] bg-[#8b5cf6]/10",
-      static: "text-[#7d8590] bg-[#7d8590]/10",
-      modal: "text-[#6366f1] bg-[#6366f1]/10",
-      chromatic: "text-[#da3633] bg-[#da3633]/10",
-    };
-    return colors[type] || "text-[#7d8590] bg-[#7d8590]/10";
-  };
-
-  const getTensionColor = (tension: number): string => {
-    if (tension < 0.3) return "bg-[#238636]/20";
-    if (tension < 0.7) return "bg-[#fb8500]/20";
-    return "bg-[#da3633]/20";
-  };
 
   return (
     <Card className="w-full p-6 space-y-6 bg-[#161b22] border-[#30363d]">
