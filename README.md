@@ -1,4 +1,4 @@
-# 🎵 Emotion Chord
+# Emotion Chord
 
 Transform emotions into musical chords using AI-powered emotion analysis, advanced music theory, & real-time audio synthesis!
 
@@ -160,12 +160,6 @@ SPOTIFY_CLIENT_SECRET=your_spotify_client_secret
 ```bash
 # Start the application in development mode
 pnpm dev
-
-# Start API only
-pnpm --filter api dev
-
-# Start web only
-pnpm --filter web dev
 
 # Build for production
 pnpm build
