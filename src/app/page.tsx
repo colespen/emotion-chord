@@ -63,7 +63,7 @@ export default function Home() {
               <div className="min-w-0">
                 <h1 className="text-lg sm:text-2xl font-bold text-[#f0f6fc] truncate">Emotion Chord</h1>
                 <p className="text-xs sm:text-sm text-[#7d8590] hidden sm:block">
-                  Transform emotions into harmonious music
+                  Transform emotions into killer chords
                 </p>
               </div>
             </div>
