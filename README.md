@@ -46,6 +46,11 @@ Emotion Chord is a full-stack application that analyzes emotional text input and
 - Real-time chord visualization
 - Interactive music theory displays
 
+<p style="display:flex; gap:24px; justify-content:center; flex-wrap:wrap;">
+  <img src="docs/e2c_mobile_1.webp" alt="mobile screenshot 1" width="250" style="border-radius:8px;" />
+  <img src="docs/e2c_mobile_2.webp" alt="mobile screenshot 2" width="250" style="border-radius:8px;" />
+</p>
+
 ## Quick Start
 
 ```bash
