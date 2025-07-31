@@ -31,6 +31,20 @@ const AdvancedEmotionSchema = z.object({
     .optional(),
 });
 
+// Helper function to extract primary emotion from input text
+const extractPrimaryEmotion = (input: string): string | null => {
+  const commonEmotions = [
+    'happy', 'sad', 'angry', 'fear', 'joy', 'love', 'peace', 'calm', 'excited',
+    'nervous', 'confident', 'worried', 'hopeful', 'grateful', 'lonely', 'proud',
+    'disappointed', 'surprised', 'content', 'frustrated', 'relaxed', 'anxious'
+  ];
+  
+  const words = input.toLowerCase().split(/\s+/);
+  return commonEmotions.find(emotion => 
+    words.some(word => word.includes(emotion) || emotion.includes(word))
+  ) || null;
+};
+
 // OpenAI client factory function
 let openaiClient: OpenAI | null = null;
 
@@ -52,69 +66,102 @@ export const analyzeEmotion = async (
 ): Promise<AdvancedEmotionAnalysis> => {
   const openai = createOpenAIClient(apiKey);
   
-  const systemPrompt = `analyze emotion and return comprehensive JSON with all required fields:
+  const systemPrompt = `You must return a valid JSON object with ALL required fields. Return only JSON, no other text.
 
-Core dimensions:
-- primaryEmotion: main emotion (string)
-- secondaryEmotions: related emotions array
-- emotionalIntensity: overall intensity (0-1)
-- valence: pleasure dimension (-1 to 1)
-- arousal: activation dimension (0-1)
-- tension: calculated as arousal * (1 - valence) / 2 (0-1)
-- complexity: emotional nuance/layers (0-1)
+REQUIRED STRUCTURE:
+{
+  "primaryEmotion": "string - main emotion",
+  "secondaryEmotions": ["array", "of", "related", "emotions"],
+  "emotionalIntensity": 0.5,
+  "valence": 0.0,
+  "arousal": 0.5,
+  "tension": 0.25,
+  "complexity": 0.5,
+  "musicalMode": "major",
+  "suggestedTempo": 120
+}
 
-Musical parameters:
-- musicalMode: "major", "minor", "dorian", "mixolydian", "lydian", "phrygian", "locrian", "chromatic", "atonal"
-- suggestedTempo: BPM matching emotion (40-200)
+FIELD DEFINITIONS:
+- primaryEmotion: main emotion as string (REQUIRED)
+- secondaryEmotions: array of related emotions (REQUIRED, can be empty [])
+- emotionalIntensity: intensity 0-1 (REQUIRED)
+- valence: pleasure dimension -1 to 1 (REQUIRED)
+- arousal: activation dimension 0-1 (REQUIRED) 
+- tension: emotional tension 0-1 (REQUIRED)
+- complexity: emotional complexity 0-1 (REQUIRED)
+- musicalMode: "major", "minor", "dorian", "mixolydian", "lydian", "phrygian", "locrian", "chromatic", "atonal" (REQUIRED)
+- suggestedTempo: BPM 40-200 (REQUIRED)
 
-Optional GEMS dimensions (0-1 each if relevant):
-- gems: object with applicable emotions: joy, sadness, tension, wonder, peacefulness, power, tenderness, nostalgia, transcendence
+OPTIONAL FIELDS (include if relevant):
+- gems: {joy: 0.8, sadness: 0.2, tension: 0.3, wonder: 0.5, peacefulness: 0.1, power: 0.7, tenderness: 0.4, nostalgia: 0.6, transcendence: 0.3}
+- culturalContext: "western" | "indian" | "arabic" | "universal"
+- harmonicStyle: "classical" | "jazz" | "contemporary" | "experimental"
 
-Optional Context:
-- culturalContext: "western", "indian", "arabic", "universal"
-- harmonicStyle: "classical", "jazz", "contemporary", "experimental"
+${context ? `Context: ${JSON.stringify(context)}` : ""}
 
-${context ? `Context: ${JSON.stringify(context)}` : ""}`;
+Return complete JSON for emotion analysis.`;
 
   try {
     const response = await openai.chat.completions.create({
       model: "gpt-4o-mini",
       messages: [
         { role: "system", content: systemPrompt },
-        { role: "user", content: `Analyze this emotional input: "${input}"` },
+        { role: "user", content: `Analyze this emotional input and return complete JSON: "${input}"` },
       ],
       response_format: { type: "json_object" },
-      temperature: 0.7,
-      max_tokens: 800,
+      temperature: 0.3, // Lower temperature for more consistent structure
+      max_tokens: 1000,
     });
 
     const content = response.choices[0]?.message?.content;
-    if (!content) throw new Error("No response from OpenAI");
+    if (!content) {
+      console.error("No response from OpenAI");
+      throw new Error("No response from OpenAI");
+    }
 
     let parsed;
     try {
       parsed = JSON.parse(content);
     } catch (parseError) {
       console.error("Failed to parse OpenAI response as JSON:", parseError);
+      console.error("Raw content:", content);
       throw new Error("Invalid JSON response from OpenAI");
     }
 
     const result = AdvancedEmotionSchema.safeParse(parsed);
     if (!result.success) {
       console.error("Schema validation failed:", result.error.issues);
+      console.error("Received data:", JSON.stringify(parsed, null, 2));
+      
+      // Enhanced fallback with better emotion detection
+      const primaryEmotion = parsed.primaryEmotion || 
+                            parsed.emotion || 
+                            parsed.mainEmotion ||
+                            extractPrimaryEmotion(input) ||
+                            "neutral";
+      
       const fallbackData = {
-        primaryEmotion: parsed.primaryEmotion || input.split(" ")[0] || "neutral",
-        secondaryEmotions: parsed.secondaryEmotions || [],
-        emotionalIntensity: parsed.emotionalIntensity || 0.5,
-        valence: parsed.valence || 0,
-        arousal: parsed.arousal || 0.5,
-        tension: parsed.tension || 0.5,
-        complexity: parsed.complexity || 0.5,
-        musicalMode: parsed.musicalMode || "major",
-        suggestedTempo: parsed.suggestedTempo || 120,
-        ...parsed,
+        primaryEmotion,
+        secondaryEmotions: Array.isArray(parsed.secondaryEmotions) ? parsed.secondaryEmotions : [],
+        emotionalIntensity: typeof parsed.emotionalIntensity === 'number' ? parsed.emotionalIntensity : 0.5,
+        valence: typeof parsed.valence === 'number' ? parsed.valence : 0,
+        arousal: typeof parsed.arousal === 'number' ? parsed.arousal : 0.5,
+        tension: typeof parsed.tension === 'number' ? parsed.tension : 0.5,
+        complexity: typeof parsed.complexity === 'number' ? parsed.complexity : 0.5,
+        musicalMode: typeof parsed.musicalMode === 'string' ? parsed.musicalMode : "major",
+        suggestedTempo: typeof parsed.suggestedTempo === 'number' ? parsed.suggestedTempo : 120,
+        // Preserve any additional valid fields
+        ...(parsed.gems && typeof parsed.gems === 'object' ? { gems: parsed.gems } : {}),
+        ...(parsed.culturalContext ? { culturalContext: parsed.culturalContext } : {}),
+        ...(parsed.harmonicStyle ? { harmonicStyle: parsed.harmonicStyle } : {}),
       };
-      return AdvancedEmotionSchema.parse(fallbackData);
+      
+      const fallbackResult = AdvancedEmotionSchema.safeParse(fallbackData);
+      if (!fallbackResult.success) {
+        console.error("Fallback validation also failed:", fallbackResult.error.issues);
+        throw new Error("Unable to create valid emotion analysis");
+      }
+      return fallbackResult.data;
     }
 
     return result.data;

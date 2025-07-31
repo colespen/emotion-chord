@@ -8,6 +8,65 @@ import type { AdvancedEmotionAnalysis } from "../types/emotion";
 import type { ChordOptions, ChordData } from "../types/chordTypes";
 import { ADVANCED_EMOTION_MAPPINGS } from "../config/musicalMappings";
 
+// Interface for Tonal.js Chord object
+interface TonalChord {
+  empty: boolean;
+  name: string;
+  symbol: string;
+  root: string;
+  bass: string;
+  quality: string;
+  notes: string[];
+  intervals: string[];
+  aliases: string[];
+  tonic: string | null;
+  type: string;
+  setNum: number;
+  chroma: string;
+  normalized: string;
+  rootDegree: number;
+}
+
+/**
+ * Normalize chord symbols to be compatible with Tonal.js
+ * Based on Tonal.js documentation and testing
+ */
+function normalizeChordSymbol(symbol: string): string {
+  // Replace chord notation variations that Tonal.js doesn't recognize
+  return symbol
+    .replace(/maj6/g, "6")     // maj6 -> 6 (Cmaj6 -> C6)
+    .replace(/Maj6/g, "6")     // Maj6 -> 6
+    .replace(/MAJ6/g, "6");    // MAJ6 -> 6
+  // Note: maj9, maj13 are valid in Tonal.js, only maj6 needs normalization
+}
+
+/**
+ * Safe chord creation with fallback
+ */
+function safeGetChord(symbol: string): TonalChord {
+  const normalizedSymbol = normalizeChordSymbol(symbol);
+  const chord = Chord.get(normalizedSymbol) as TonalChord;
+  
+  // If chord is empty, try to fallback to a simpler version
+  if (chord.empty) {
+    console.warn(`Invalid chord symbol: ${symbol}, trying fallback`);
+    
+    // Extract root and try basic major chord as fallback
+    const root = symbol.match(/^[A-G][#b]?/)?.[0] || "C";
+    const fallbackChord = Chord.get(root) as TonalChord;
+    
+    return {
+      ...fallbackChord,
+      symbol: normalizedSymbol, // Keep the intended symbol
+    };
+  }
+  
+  return {
+    ...chord,
+    symbol: normalizedSymbol,
+  };
+}
+
 /**
  * Select a chord based on emotion analysis
  */
@@ -39,7 +98,7 @@ export function selectFromEmotion(
       const symbol = root + quality;
       return {
         symbol,
-        chord: Chord.get(symbol),
+        chord: safeGetChord(symbol),
         context: { gems: dominantGems },
       };
     }
@@ -180,8 +239,8 @@ function generatePolychord(root: string, emotion: AdvancedEmotionAnalysis): Chor
   const selected = options[Math.floor(Math.random() * options.length)];
   const [bottom, top] = selected.split("/");
 
-  const bottomChord = Chord.get(bottom);
-  const topChord = Chord.get(top);
+  const bottomChord = safeGetChord(bottom);
+  const topChord = safeGetChord(top);
 
   return {
     symbol: selected,
@@ -226,7 +285,7 @@ function generateAdvancedHarmony(emotion: AdvancedEmotionAnalysis, options?: Cho
 
   return {
     symbol: root + quality,
-    chord: Chord.get(root + quality),
+    chord: safeGetChord(root + quality),
     context: {
       harmonic: "extended",
     },
@@ -239,7 +298,7 @@ function buildAlteredChord(root: string, quality: string): {
   intervals: string[];
   quality: string;
 } {
-  const baseChord = Chord.get(root + "7");
+  const baseChord = safeGetChord(root + "7");
   const notes = [...baseChord.notes];
   const intervals = [...baseChord.intervals];
 
@@ -307,7 +366,7 @@ function generateModalInterchange(root: string, emotion: AdvancedEmotionAnalysis
 
   return {
     symbol: root + borrowed.chord,
-    chord: Chord.get(root + borrowed.chord),
+    chord: safeGetChord(root + borrowed.chord),
     context: {
       harmonic: "modal_interchange",
     },
@@ -326,7 +385,7 @@ function selectFromValenceArousal(emotion: AdvancedEmotionAnalysis, options?: Ch
     quality = qualities[Math.floor(Math.random() * qualities.length)];
   } else if (emotion.valence > 0.5 && emotion.arousal < 0.5) {
     // Peaceful, content
-    const qualities = ["maj7", "add9", "sus2", "maj6"];
+    const qualities = ["maj7", "add9", "sus2", "6"]; // Changed maj6 to 6
     quality = qualities[Math.floor(Math.random() * qualities.length)];
   } else if (emotion.valence < -0.5 && emotion.arousal > 0.5) {
     // Angry, anxious
@@ -338,9 +397,10 @@ function selectFromValenceArousal(emotion: AdvancedEmotionAnalysis, options?: Ch
     quality = qualities[Math.floor(Math.random() * qualities.length)];
   }
 
+  const symbol = root + quality;
   return {
-    symbol: root + quality,
-    chord: Chord.get(root + quality),
+    symbol,
+    chord: safeGetChord(symbol),
     context: {},
   };
 }

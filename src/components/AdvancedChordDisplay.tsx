@@ -14,6 +14,7 @@ import {
   Sparkles,
   Globe,
 } from "lucide-react";
+import { EmotionChordLogo } from "@/components/ui/EmotionChordLogo";
 
 const noteNames = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
 const flatNoteNames = ["C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B"];
@@ -107,9 +108,7 @@ export function AdvancedChordDisplay({
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="p-2 bg-[#238636] rounded-full">
-            <Music className="w-6 h-6 text-white" />
-          </div>
+          <EmotionChordLogo size={40} />
           <div>
             <h3 className="text-xl font-bold text-[#f0f6fc]">{chord.symbol}</h3>
             <p className="text-sm text-[#7d8590]">

@@ -2,6 +2,7 @@ import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import type { EmotionAnalysis } from "@/types/emotion-chord";
 import { getEmotionColor, getArousalIntensity, getTensionLevel } from "@/lib/utils";
+import Image from "next/image";
 
 interface EmotionAnalysisDisplayProps {
   emotion: EmotionAnalysis;
@@ -16,9 +17,19 @@ export function EmotionAnalysisDisplay({ emotion }: EmotionAnalysisDisplayProps)
   return (
     <Card className="bg-[#161b22] border-[#30363d]">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-[#f0f6fc]">
-          <span className="text-lg">🧠</span>
-          Emotion Analysis
+        <CardTitle className="flex items-center gap-3">
+          <Image
+            src="/brain-research.svg"
+            alt="Brain Research"
+            width={36}
+            height={36}
+            className="object-contain"
+            style={{
+              filter:
+                "brightness(0) saturate(100%) invert(29%) sepia(99%) saturate(4947%) hue-rotate(235deg) brightness(104%) contrast(107%)",
+            }}
+          />
+          <span className="text-xl font-bold">Emotion Analysis</span>
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -26,7 +37,9 @@ export function EmotionAnalysisDisplay({ emotion }: EmotionAnalysisDisplayProps)
         <div>
           <h4 className="font-medium text-[#f0f6fc] mb-1">Primary Emotion</h4>
           <span
-            className={`text-lg font-semibold capitalize ${getEmotionColor(emotion.valence)}`}
+            className={`text-lg font-semibold capitalize ${getEmotionColor(
+              emotion.valence
+            )}`}
           >
             {emotion.primaryEmotion}
           </span>
@@ -80,9 +93,9 @@ export function EmotionAnalysisDisplay({ emotion }: EmotionAnalysisDisplayProps)
                 <span>Calm</span>
                 <span>Energetic</span>
               </div>
-              <div className="w-full bg-gray-200 rounded-full h-2">
+              <div className="w-full bg-[#21262d] rounded-full h-2">
                 <div
-                  className="h-2 bg-blue-500 rounded-full transition-all"
+                  className="h-2 bg-[#4044ff] rounded-full transition-all"
                   style={{ width: `${arousalPercentage}%` }}
                 />
               </div>

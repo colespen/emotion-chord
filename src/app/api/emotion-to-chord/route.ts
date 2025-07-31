@@ -6,10 +6,10 @@ import type { AdvancedChordSuggestion, AdvancedEmotionAnalysis, ChordProgression
 
 // Response type
 interface EmotionChordResponse {
-  chord: AdvancedChordSuggestion;
-  emotionAnalysis: AdvancedEmotionAnalysis;
-  progression?: ChordProgression;
-  alternatives?: AdvancedChordSuggestion[];
+  emotion: AdvancedEmotionAnalysis;
+  primaryChord: AdvancedChordSuggestion;
+  alternativeChords: AdvancedChordSuggestion[];
+  chordProgression?: ChordProgression;
 }
 
 const EmotionRequestSchema = z.object({
@@ -49,7 +49,16 @@ export async function POST(request: NextRequest) {
     }
 
     // Analyze emotion using functional approach
-    const emotionAnalysis = await analyzeEmotion(openaiKey, emotion);
+    const emotionAnalysis = await analyzeEmotion(openaiKey, emotion, {
+      culturalPreference: options?.culturalPreference,
+      stylePreference: options?.stylePreference,
+    });
+
+    // Validate the emotion analysis result
+    if (!emotionAnalysis.primaryEmotion) {
+      console.error("Invalid emotion analysis - missing primaryEmotion:", emotionAnalysis);
+      throw new Error("Failed to analyze emotion properly");
+    }
 
     // Generate chord using functional approach
     const chordOptions = {
@@ -59,17 +68,20 @@ export async function POST(request: NextRequest) {
     const chordSuggestion = chordGeneration.generateChord(emotionAnalysis, chordOptions);
 
     // Generate additional content if requested
+    let alternatives: AdvancedChordSuggestion[] = [];
+    
+    if (options?.includeCulturalAlternatives) {
+      alternatives = chordGeneration.generateAlternatives(emotionAnalysis);
+    }
+
     const result: EmotionChordResponse = {
-      chord: chordSuggestion,
-      emotionAnalysis,
+      emotion: emotionAnalysis,
+      primaryChord: chordSuggestion,
+      alternativeChords: alternatives,
     };
 
     if (options?.includeProgression) {
-      result.progression = chordGeneration.generateProgression(emotionAnalysis);
-    }
-
-    if (options?.includeCulturalAlternatives) {
-      result.alternatives = chordGeneration.generateAlternatives(emotionAnalysis);
+      result.chordProgression = chordGeneration.generateProgression(emotionAnalysis);
     }
 
     return NextResponse.json(result);

@@ -13,17 +13,17 @@ import type {
   ApiError,
 } from "@/types/emotion-chord";
 
-const API_BASE_URL = "";
-
 /**
  * Generic API request handler
  * Pure function for making HTTP requests
+ * Uses relative paths for Next.js internal API routes (current best practice)
  */
 async function makeApiRequest<T>(
   endpoint: string,
   options: RequestInit = {}
 ): Promise<T> {
-  const url = `${API_BASE_URL}${endpoint}`;
+  // For Next.js internal API routes, use relative paths directly
+  const url = endpoint;
 
   const response = await fetch(url, {
     headers: {
@@ -89,7 +89,10 @@ export async function getApiHealth(): Promise<HealthCheckResponse> {
  * Validate emotion input
  * Pure function for input validation
  */
-export function validateEmotionInput(emotion: string): { isValid: boolean; error?: string } {
+export function validateEmotionInput(emotion: string): {
+  isValid: boolean;
+  error?: string;
+} {
   if (!emotion.trim()) {
     return { isValid: false, error: "Emotion cannot be empty" };
   }
@@ -122,12 +125,12 @@ export function getEmotionExamples(): Record<string, string[]> {
       "the feeling of looking at old photographs on a rainy afternoon",
       "spiritual devotion mixed with earthly longing",
     ],
-    cultural: [
-      "the serenity of a Japanese tea ceremony",
-      "the passionate intensity of flamenco",
-      "the mystical depth of Sufi meditation",
-      "the communal joy of an Senegalese celebration",
-    ],
+    // cultural: [
+    //   "the serenity of a Japanese tea ceremony",
+    //   "the passionate intensity of flamenco",
+    //   "the mystical depth of Sufi meditation",
+    //   "the communal joy of an Senegalese celebration",
+    // ],
     sophisticated: [
       "sophisticated nostalgia tinged with hope",
       "chaotic anxiety with underlying determination",
@@ -156,12 +159,12 @@ export function getRandomEmotionExample(
   category?: "basic" | "complex" | "cultural" | "sophisticated"
 ): string {
   const examples = getEmotionExamples();
-  
+
   if (category) {
     const categoryExamples = examples[category];
     return categoryExamples[Math.floor(Math.random() * categoryExamples.length)];
   }
-  
+
   // Get random from all categories
   const allExamples = Object.values(examples).flat();
   return allExamples[Math.floor(Math.random() * allExamples.length)];

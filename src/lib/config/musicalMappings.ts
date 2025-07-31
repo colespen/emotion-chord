@@ -38,7 +38,7 @@ export const ADVANCED_EMOTION_MAPPINGS = {
       harmonicFeatures: ["gentle", "warm", "intimate"],
     },
     nostalgia: {
-      chordQualities: ["m6", "mMaj7", "maj6", "m7", "dim7"],
+      chordQualities: ["m6", "mMaj7", "6", "m7", "dim7"], // Changed maj6 to 6
       voicingPreference: "rootless",
       harmonicFeatures: ["bittersweet", "yearning", "chromatic"],
     },

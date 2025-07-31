@@ -24,7 +24,10 @@ export function useEmotionChord() {
     setState((prev) => ({ ...prev, loading: true, error: null }));
 
     try {
-      const data = await emotionChordApi.generateChordFromEmotion(emotion);
+      const data = await emotionChordApi.generateChordFromEmotion(emotion, {
+        includeCulturalAlternatives: true,
+        includeProgression: false,
+      });
       setState({ data, loading: false, error: null });
     } catch (error) {
       const errorMessage =

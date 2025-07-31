@@ -4,11 +4,13 @@ import React, { useState, useCallback } from "react";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Input } from "@/components/ui/Input";
+import { BrandLogo } from "@/components/ui/BrandLogo";
 import { getEmotionExamples, validateEmotionInput } from "@/services/emotionChordApi";
+import { STYLE_PREFERENCES, INPUT_LIMITS, PLACEHOLDER_TEXT, BUTTON_TEXT } from "@/lib/constants/form";
+import { COLORS } from "@/lib/constants/ui";
 import {
   Sparkles,
   Music,
-  // globe,
   Settings,
   ChevronDown,
   ChevronUp,
@@ -83,12 +85,13 @@ export const AdvancedEmotionInput: React.FC<AdvancedEmotionInputProps> = ({
   };
 
   return (
-    <Card className="w-full max-w-2xl mx-auto p-6 space-y-6 bg-[#0d1117] border-[#30363d]">
+    <Card className="w-full mb-10 max-w-2xl mt-6 mx-auto p-6 space-y-6 bg-[#0d1117] border-[#30363d]">
       {/* Header */}
       <div className="text-center space-y-2">
         <div className="flex items-center justify-center gap-2">
-          <Sparkles className="w-6 h-6 text-[#238636]" />
+          <BrandLogo variant="left" size="xsmall" alt="Logo Left" />
           <h2 className="text-2xl font-bold text-[#f0f6fc]">Emotion to Chord</h2>
+          <BrandLogo variant="right" size="xsmall" alt="Logo Right" />
         </div>
         <p className="text-[#7d8590]">
           Describe your emotion in detail for the most accurate musical interpretation
@@ -107,21 +110,21 @@ export const AdvancedEmotionInput: React.FC<AdvancedEmotionInputProps> = ({
               type="text"
               value={emotion}
               onChange={(e) => setEmotion(e.target.value)}
-              placeholder="e.g., transcendent wonder with a touch of melancholy..."
-              className="w-full pr-10 bg-[#0d1117] border-[#30363d] text-[#f0f6fc] placeholder:text-[#7d8590] focus:border-[#238636] focus:ring-[#238636]"
+              placeholder={PLACEHOLDER_TEXT.EMOTION_INPUT}
+              className="w-full pr-10"
               disabled={disabled}
-              maxLength={500}
+              maxLength={INPUT_LIMITS.EMOTION_MAX_LENGTH}
             />
             <button
               type="button"
               onClick={handleRandomExample}
               className="absolute right-2 top-1/2 transform -translate-y-1/2 p-1 text-[#7d8590] hover:text-[#f0f6fc]"
-              title="Random example"
+              title={BUTTON_TEXT.RANDOM_EXAMPLE}
             >
               <Shuffle className="w-4 h-4" />
             </button>
           </div>
-          <div className="text-xs text-[#6e7681]">{emotion.length}/500 characters</div>
+          <div className="text-xs text-[#6e7681]">{emotion.length}/{INPUT_LIMITS.EMOTION_MAX_LENGTH} characters</div>
         </div>
 
         {/* Examples Toggle - OMIT EXAMPLES - DONT NEED RIGHT NOW. */}
@@ -155,7 +158,7 @@ export const AdvancedEmotionInput: React.FC<AdvancedEmotionInputProps> = ({
                         key={index}
                         type="button"
                         onClick={() => handleExampleClick(example)}
-                        className="text-left text-sm p-2 rounded bg-[#0d1117] hover:bg-[#21262d] border border-[#30363d] hover:border-[#238636] transition-colors text-[#f0f6fc]"
+                        className="text-left text-sm p-2 rounded bg-[#0d1117] hover:bg-[#21262d] border border-[#30363d] hover:border-[#4044ff] transition-colors text-[#f0f6fc]"
                       >
                         {example}
                       </button>
@@ -177,7 +180,7 @@ export const AdvancedEmotionInput: React.FC<AdvancedEmotionInputProps> = ({
             className="w-full flex items-center justify-center gap-2 bg-[#21262d] border-[#30363d] text-[#f0f6fc] hover:bg-[#30363d]"
           >
             <Settings className="w-4 h-4" />
-            Advanced Options
+            {BUTTON_TEXT.ADVANCED_OPTIONS}
             {showAdvanced ? (
               <ChevronUp className="w-4 h-4" />
             ) : (
@@ -196,7 +199,7 @@ export const AdvancedEmotionInput: React.FC<AdvancedEmotionInputProps> = ({
                 <select
                   value={culturalPreference}
                   onChange={(e) => setCulturalPreference(e.target.value)}
-                  className="w-full p-2 border border-[#30363d] rounded-md focus:ring-2 focus:ring-[#238636] focus:border-[#238636] bg-[#0d1117] text-[#f0f6fc]"
+                  className="w-full p-2 border border-[#30363d] rounded-md focus:ring-2 focus:ring-[#6366f1] focus:border-[#6366f1] bg-[#0d1117] text-[#f0f6fc]"
                   disabled={disabled}
                 >
                   <option value="universal">Universal</option>
@@ -215,13 +218,14 @@ export const AdvancedEmotionInput: React.FC<AdvancedEmotionInputProps> = ({
                 <select
                   value={stylePreference}
                   onChange={(e) => setStylePreference(e.target.value)}
-                  className="w-full p-2 border border-[#30363d] rounded-md focus:ring-2 focus:ring-[#238636] focus:border-[#238636] bg-[#0d1117] text-[#f0f6fc]"
+                  className="w-full p-2 border border-[#30363d] rounded-md focus:outline-none focus:border-[#4044ff] bg-[#0d1117] text-[#f0f6fc]"
                   disabled={disabled}
                 >
-                  <option value="contemporary">Contemporary</option>
-                  <option value="classical">Classical</option>
-                  <option value="jazz">Jazz</option>
-                  <option value="experimental">Experimental</option>
+                  {STYLE_PREFERENCES.map(({ value, label }) => (
+                    <option key={value} value={value}>
+                      {label}
+                    </option>
+                  ))}
                 </select>
               </div>
 
@@ -262,19 +266,19 @@ export const AdvancedEmotionInput: React.FC<AdvancedEmotionInputProps> = ({
         {/* Submit Button */}
         <Button
           type="submit"
-          className="w-full bg-[#238636] hover:bg-[#2ea043] text-white border-[#238636]"
+          className={`w-full bg-[${COLORS.PRIMARY}] hover:bg-[${COLORS.PRIMARY_HOVER}] text-white border-[${COLORS.PRIMARY}]`}
           disabled={disabled || loading || !emotion.trim()}
           size="lg"
         >
           {loading ? (
             <div className="flex items-center justify-center gap-2">
               <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-              Analyzing Emotion...
+              {BUTTON_TEXT.ANALYZING}
             </div>
           ) : (
             <div className="flex items-center justify-center gap-2">
               <Sparkles className="w-5 h-5" />
-              Generate Chord
+              {BUTTON_TEXT.GENERATE_CHORD}
             </div>
           )}
         </Button>

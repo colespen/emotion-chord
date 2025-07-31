@@ -21,12 +21,12 @@ export function Button({
 
   const variants = {
     primary:
-      "bg-[#238636] text-white hover:bg-[#2ea043] focus-visible:ring-[#238636] border-[#238636]",
+      "bg-[#4044ff] text-white hover:bg-[#5b52f0] focus-visible:ring-[#4044ff] border-[#4044ff]",
     secondary:
-      "bg-[#6e7681] text-white hover:bg-[#7d8590] focus-visible:ring-[#6e7681] border-[#6e7681]",
+      "bg-[#6366f1] text-white hover:bg-[#4044ff] focus-visible:ring-[#6366f1] border-[#6366f1]",
     outline:
-      "border border-[#30363d] bg-[#21262d] text-[#f0f6fc] hover:bg-[#30363d] focus-visible:ring-[#238636]",
-    ghost: "text-[#f0f6fc] hover:bg-[#30363d] focus-visible:ring-[#238636]",
+      "border border-[#30363d] bg-[#21262d] text-[#f0f6fc] hover:bg-[#30363d] focus-visible:ring-[#4044ff]",
+    ghost: "text-[#f0f6fc] hover:bg-[#30363d] focus-visible:ring-[#4044ff]",
   };
 
   const sizes = {

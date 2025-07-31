@@ -3,14 +3,14 @@
 import React, { useState } from "react";
 import { AdvancedEmotionInput } from "@/components/AdvancedEmotionInput";
 import { AdvancedChordDisplay } from "@/components/AdvancedChordDisplay";
-import { ChordProgressionDisplay } from "@/components/ChordProgressionDisplay";
 import { EmotionAnalysisDisplay } from "@/components/EmotionAnalysisDisplay";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { useEmotionChord } from "@/hooks/use-emotion-chord";
 import type { AdvancedChordSuggestion } from "@/types/emotion-chord";
 import { useAudio } from "@/hooks/useAudio";
-import { Music, Volume2, RefreshCw, PlayCircle, Square } from "lucide-react";
+import { Volume2, RefreshCw, PlayCircle, Square } from "lucide-react";
+import { EmotionChordLogo } from "@/components/ui/EmotionChordLogo";
 
 export default function Home() {
   const [lastEmotion, setLastEmotion] = useState<string>("");
@@ -35,18 +35,6 @@ export default function Home() {
     audio.stopAudio();
   };
 
-  const handlePlayProgression = () => {
-    if (data?.chordProgression) {
-      audio.playProgression(data.chordProgression, false);
-    }
-  };
-
-  const handleLoopProgression = () => {
-    if (data?.chordProgression) {
-      audio.playProgression(data.chordProgression, !audio.isProgressionLooping);
-    }
-  };
-
   const handleRetry = () => {
     if (lastEmotion) {
       generateChord(lastEmotion);
@@ -65,15 +53,13 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0d1117]">
+    <div className="min-h-screen bg-[#0d1117] flex flex-col">
       {/* Header */}
       <header className="bg-[#161b22] border-b border-[#30363d] sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-[#238636] rounded-lg">
-                <Music className="w-8 h-8 text-white" />
-              </div>
+              <EmotionChordLogo size={48} />
               <div>
                 <h1 className="text-2xl font-bold text-[#f0f6fc]">Emotion Chord</h1>
                 <p className="text-sm text-[#7d8590]">
@@ -88,7 +74,7 @@ export default function Home() {
                   onClick={handlePlayAllChords}
                   variant={audio.isPlayingAllChords ? "secondary" : "outline"}
                   size="sm"
-                  className="flex items-center gap-2 bg-[#21262d] border-[#30363d] text-[#f0f6fc] hover:bg-[#30363d]"
+                  className="flex items-center gap-2 bg-[#4044ff] border-[#4044ff] text-white hover:bg-[#5b52f0]"
                 >
                   {audio.isPlayingAllChords ? (
                     <Square className="w-4 h-4" />
@@ -98,9 +84,7 @@ export default function Home() {
                   {audio.isPlayingAllChords ? "Stop Loop" : "Loop Chords"}
                 </Button>
               )}
-              {(audio.isPlaying ||
-                audio.isProgressionPlaying ||
-                audio.isPlayingAllChords) && (
+              {(audio.isPlaying || audio.isPlayingAllChords) && (
                 <Button
                   onClick={audio.stopAudio}
                   variant="outline"
@@ -117,15 +101,15 @@ export default function Home() {
       </header>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="space-y-8">
           {/* Emotion Input */}
-          <Card className="p-6 bg-[#161b22] border-[#30363d]">
+          {/* <Card className="p-6 bg-[#161b22] border-[#30363d]">
             <div className="mb-6">
               <h2 className="text-xl font-bold text-[#f0f6fc]">Express Your Emotion</h2>
-            </div>
+            </div> */}
             <AdvancedEmotionInput onGenerate={handleEmotionSubmit} loading={loading} />
-          </Card>
+          {/* </Card> */}
 
           {/* Error Display */}
           {error && (
@@ -143,7 +127,7 @@ export default function Home() {
                       onClick={handleRetry}
                       variant="outline"
                       size="sm"
-                      className="bg-[#21262d] border-[#30363d] text-[#f0f6fc] hover:bg-[#30363d]"
+                      className="bg-[#4044ff] border-[#4044ff] text-white hover:bg-[#5b52f0]"
                     >
                       <RefreshCw className="w-4 h-4 mr-2" />
                       Retry
@@ -153,7 +137,7 @@ export default function Home() {
                     onClick={clearData}
                     variant="outline"
                     size="sm"
-                    className="bg-[#21262d] border-[#30363d] text-[#f0f6fc] hover:bg-[#30363d]"
+                    className="bg-[#4044ff] border-[#4044ff] text-white hover:bg-[#5b52f0]"
                   >
                     Dismiss
                   </Button>
@@ -171,7 +155,7 @@ export default function Home() {
               {/* Primary Chord */}
               <div className="space-y-4">
                 <h2 className="text-2xl font-bold text-[#f0f6fc] flex items-center gap-3">
-                  <Music className="w-7 h-7 text-[#238636]" />
+                  {/* <Music className="w-7 h-7 text-[#238636]" /> */}
                   Primary Chord Suggestion
                 </h2>
                 <AdvancedChordDisplay
@@ -209,26 +193,7 @@ export default function Home() {
                 </div>
               )}
 
-              {/* Chord Progression */}
-              {data.chordProgression && (
-                <div className="space-y-4">
-                  <h2 className="text-2xl font-bold text-[#f0f6fc]">
-                    Emotional Chord Progression
-                  </h2>
-                  <ChordProgressionDisplay
-                    progression={data.chordProgression}
-                    currentChord={audio.currentChord}
-                    isPlaying={audio.isProgressionPlaying}
-                    isLooping={audio.isProgressionLooping}
-                    onPlay={handlePlayProgression}
-                    onPause={audio.pauseProgression}
-                    onLoop={handleLoopProgression}
-                    onNext={audio.nextChord}
-                    onPrev={audio.previousChord}
-                    onChordSelect={audio.selectChord}
-                  />
-                </div>
-              )}
+
 
               {/* Cultural Alternatives */}
               {data.culturalAlternatives && (
@@ -329,8 +294,8 @@ export default function Home() {
       </main>
 
       {/* Footer */}
-      <footer className="bg-[#161b22] border-t border-[#30363d] mt-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <footer className="bg-[#161b22] border-t border-[#30363d] mt-16 py-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <p className="text-[#7d8590] text-sm">
               Powered by advanced AI emotion recognition, GEMS framework, and
@@ -346,9 +311,10 @@ export default function Home() {
 
       {/* Fixed Audio Ready Badge */}
       {audio.isInitialized && (
-        <div className="fixed bottom-4 right-4 z-50 animate-in fade-in-0 duration-500">
-          <div className="flex items-center gap-2 px-3 py-2 bg-[#238636]/90 backdrop-blur-sm text-[#f0f6fc] rounded-full text-sm shadow-lg border border-[#238636]">
-            <span className="font-medium">🔊 Audio Ready</span>
+        <div className="fixed bottom-4 right-4 z-50 animate-in fade-in-0 duration-500 opacity-80">
+          <div className="flex items-center gap-2 px-3 py-2 bg-[#4044ff]/90 backdrop-blur-sm text-white rounded-full text-sm shadow-lg border border-[#4044ff]">
+            <span className="font-medium">🔊</span>
+            <span className="font-medium">Audio Ready</span>
           </div>
         </div>
       )}
