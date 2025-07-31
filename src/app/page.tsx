@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/Button";
 import { useEmotionChord } from "@/hooks/use-emotion-chord";
 import type { AdvancedChordSuggestion } from "@/types/emotion-chord";
 import { useAudio } from "@/hooks/useAudio";
-import { Volume2, RefreshCw, PlayCircle, Square } from "lucide-react";
+import { Volume2, RefreshCw, PlayCircle, Square, VolumeX } from "lucide-react";
 import { EmotionChordLogo } from "@/components/ui/EmotionChordLogo";
 
 export default function Home() {
@@ -56,43 +56,37 @@ export default function Home() {
     <div className="min-h-screen bg-[#0d1117] flex flex-col">
       {/* Header */}
       <header className="bg-[#161b22] border-b border-[#30363d] sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 w-full">
+          <div className="flex items-center justify-between w-full">
+            <div className="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
               <EmotionChordLogo size={48} />
-              <div>
-                <h1 className="text-2xl font-bold text-[#f0f6fc]">Emotion Chord</h1>
-                <p className="text-sm text-[#7d8590]">
+              <div className="min-w-0">
+                <h1 className="text-lg sm:text-2xl font-bold text-[#f0f6fc] truncate">Emotion Chord</h1>
+                <p className="text-xs sm:text-sm text-[#7d8590] hidden sm:block">
                   Transform emotions into harmonious music
                 </p>
               </div>
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-shrink-0">
               {data && (
                 <Button
                   onClick={handlePlayAllChords}
                   variant={audio.isPlayingAllChords ? "secondary" : "outline"}
                   size="sm"
-                  className="flex items-center gap-2 bg-[#4044ff] border-[#4044ff] text-white hover:bg-[#5b52f0]"
+                  className="flex items-center gap-1 sm:gap-2 bg-[#4044ff] border-[#4044ff] text-white hover:bg-[#5b52f0] text-xs sm:text-sm px-2 sm:px-3"
                 >
                   {audio.isPlayingAllChords ? (
-                    <Square className="w-4 h-4" />
+                    <Square className="w-3 h-3 sm:w-4 sm:h-4" />
                   ) : (
-                    <PlayCircle className="w-4 h-4" />
+                    <PlayCircle className="w-3 h-3 sm:w-4 sm:h-4" />
                   )}
-                  {audio.isPlayingAllChords ? "Stop Loop" : "Loop Chords"}
-                </Button>
-              )}
-              {(audio.isPlaying || audio.isPlayingAllChords) && (
-                <Button
-                  onClick={audio.stopAudio}
-                  variant="outline"
-                  size="sm"
-                  className="flex items-center gap-2 bg-[#21262d] border-[#30363d] text-[#f0f6fc] hover:bg-[#da3633] hover:border-[#da3633]"
-                >
-                  <Volume2 className="w-4 h-4" />
-                  Stop All
+                  <span className="hidden sm:inline">
+                    {audio.isPlayingAllChords ? "Stop Loop" : "Loop Chords"}
+                  </span>
+                  <span className="sm:hidden">
+                    {audio.isPlayingAllChords ? "Stop" : "Loop"}
+                  </span>
                 </Button>
               )}
             </div>
@@ -101,7 +95,7 @@ export default function Home() {
       </header>
 
       {/* Main Content */}
-      <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
         <div className="space-y-8">
           {/* Emotion Input */}
           {/* <Card className="p-6 bg-[#161b22] border-[#30363d]">
@@ -295,7 +289,7 @@ export default function Home() {
 
       {/* Footer */}
       <footer className="bg-[#161b22] border-t border-[#30363d] mt-16 py-8">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
           <div className="text-center">
             <p className="text-[#7d8590] text-sm">
               Powered by advanced AI emotion recognition, GEMS framework, and
@@ -309,13 +303,23 @@ export default function Home() {
         </div>
       </footer>
 
-      {/* Fixed Audio Ready Badge */}
+      {/* Fixed Audio Ready Badge / Stop All Button */}
       {audio.isInitialized && (
-        <div className="fixed bottom-4 right-4 z-50 animate-in fade-in-0 duration-500 opacity-80">
-          <div className="flex items-center gap-2 px-3 py-2 bg-[#4044ff]/90 backdrop-blur-sm text-white rounded-full text-sm shadow-lg border border-[#4044ff]">
-            <span className="font-medium">🔊</span>
-            <span className="font-medium">Audio Ready</span>
-          </div>
+        <div className="fixed bottom-4 right-4 z-50 animate-in fade-in-0 duration-500">
+          {(audio.isPlaying || audio.isPlayingAllChords) ? (
+            <button
+              onClick={audio.stopAudio}
+              className="flex items-center gap-2 px-4 py-3 bg-[#da3633]/20 backdrop-blur-md text-[#da3633] rounded-full text-sm shadow-lg border border-[#da3633]/30 hover:bg-[#da3633] hover:text-white hover:border-[#da3633] transition-all duration-300"
+            >
+              <VolumeX className="w-5 h-5" />
+              <span className="font-medium">Stop All</span>
+            </button>
+          ) : (
+            <div className="flex items-center gap-2 px-4 py-3 bg-[#4044ff]/20 backdrop-blur-md text-[#4044ff] rounded-full text-sm shadow-lg border border-[#4044ff]/30">
+              <Volume2 className="w-5 h-5 opacity-60" />
+              <span className="font-medium">Audio Ready</span>
+            </div>
+          )}
         </div>
       )}
     </div>

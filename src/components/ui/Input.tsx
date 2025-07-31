@@ -15,7 +15,15 @@ export function Input({
       )}
       style={{
         WebkitBoxShadow: '0 0 0 1000px #0d1117 inset',
-        WebkitTextFillColor: '#f0f6fc',
+      }}
+      onInput={(e) => {
+        // Ensure text color is correct for actual input while preserving placeholder
+        const input = e.target as HTMLInputElement;
+        if (input.value) {
+          input.style.webkitTextFillColor = '#f0f6fc';
+        } else {
+          input.style.webkitTextFillColor = '';
+        }
       }}
       {...props}
     />

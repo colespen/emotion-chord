@@ -85,7 +85,7 @@ export const AdvancedEmotionInput: React.FC<AdvancedEmotionInputProps> = ({
   };
 
   return (
-    <Card className="w-full mb-10 max-w-2xl mt-6 mx-auto p-6 space-y-6 bg-[#0d1117] border-[#30363d]">
+    <Card className="w-full mb-10 max-w-[622px] mx-auto p-4 sm:p-6 space-y-6 bg-[#0d1117] border-[#30363d] mt-6">
       {/* Header */}
       <div className="text-center space-y-2">
         <div className="flex items-center justify-center gap-2">
