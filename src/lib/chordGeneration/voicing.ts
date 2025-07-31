@@ -4,8 +4,8 @@
  */
 
 import { Note } from "tonal";
-import type { AdvancedEmotionAnalysis, VoicingInfo } from "../types/emotion";
-import type { BasicChord } from "../types/chordTypes";
+import type { AdvancedEmotionAnalysis, VoicingInfo } from "@/types/emotionChord";
+import type { BasicChord } from "@/types/chords";
 
 /**
  * Generate voicing for a chord based on emotion and style

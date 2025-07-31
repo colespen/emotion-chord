@@ -1,6 +1,6 @@
 import OpenAI from "openai";
 import { z } from "zod";
-import type { AdvancedEmotionAnalysis } from "../types/emotion";
+import type { AdvancedEmotionAnalysis } from "@/types/emotionChord";
 
 const AdvancedEmotionSchema = z.object({
   primaryEmotion: z.string(),

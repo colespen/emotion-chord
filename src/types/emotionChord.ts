@@ -12,6 +12,7 @@ import type {
   DynamicsLevel,
   ArticulationType,
   TimbreType,
+  GEMSEmotions,
 } from "./common";
 
 export interface AdvancedEmotionAnalysis {
@@ -25,17 +26,7 @@ export interface AdvancedEmotionAnalysis {
   arousal: number; // 0 to 1
 
   // gEMS (Geneva Emotional Music Scale) dimensions
-  gems?: {
-    joy?: number;
-    sadness?: number;
-    tension?: number;
-    wonder?: number;
-    peacefulness?: number;
-    power?: number;
-    tenderness?: number;
-    nostalgia?: number;
-    transcendence?: number;
-  };
+  gems?: GEMSEmotions;
 
   // musical characteristics
   tension: number; // 0 to 1

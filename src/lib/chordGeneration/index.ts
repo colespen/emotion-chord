@@ -8,8 +8,13 @@ import type {
   AdvancedEmotionAnalysis,
   AdvancedChordSuggestion,
   ChordProgression,
-} from "../types/emotion";
-import type { ChordOptions, ChordData } from "../types/chordTypes";
+} from "@/types/emotionChord";
+import type {
+  TimbreType,
+  DynamicsLevel,
+  ArticulationType,
+} from "@/types/common";
+import type { ChordOptions, ChordData } from "@/types/chords";
 import * as chordSelection from "./chordSelection";
 import * as voicing from "./voicing";
 import * as harmonic from "./harmonicAnalysis";
@@ -151,10 +156,10 @@ function generateJustification(
   return parts.join(", ") + ".";
 }
 
-function suggestTimbre(emotion: AdvancedEmotionAnalysis): string {
+function suggestTimbre(emotion: AdvancedEmotionAnalysis): TimbreType {
   if (emotion.gems?.tenderness && emotion.gems.tenderness > 0.7) return "strings";
   if (emotion.gems?.power && emotion.gems.power > 0.7) return "brass";
-  if (emotion.gems?.wonder && emotion.gems.wonder > 0.7) return "synth_pad";
+  if (emotion.gems?.wonder && emotion.gems.wonder > 0.7) return "synth";
   if (
     emotion.acousticFeatures?.acousticness &&
     emotion.acousticFeatures.acousticness > 0.7
@@ -163,7 +168,7 @@ function suggestTimbre(emotion: AdvancedEmotionAnalysis): string {
   return "piano"; // Default
 }
 
-function suggestDynamics(emotion: AdvancedEmotionAnalysis): string {
+function suggestDynamics(emotion: AdvancedEmotionAnalysis): DynamicsLevel {
   const intensity = emotion.emotionalIntensity;
   if (intensity > 0.8) return "ff";
   if (intensity > 0.6) return "f";
@@ -172,9 +177,9 @@ function suggestDynamics(emotion: AdvancedEmotionAnalysis): string {
   return "pp";
 }
 
-function suggestArticulation(emotion: AdvancedEmotionAnalysis): string {
+function suggestArticulation(emotion: AdvancedEmotionAnalysis): ArticulationType {
   if (emotion.gems?.tension && emotion.gems.tension > 0.7) return "staccato";
   if (emotion.gems?.peacefulness && emotion.gems.peacefulness > 0.7) return "legato";
   if (emotion.arousal > 0.7) return "marcato";
-  return "normal";
+  return "legato"; // Default to legato instead of "normal"
 }

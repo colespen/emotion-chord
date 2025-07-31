@@ -2,17 +2,7 @@ import React, { useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { Textarea } from "@/components/ui/Input";
 import { Send } from "lucide-react";
-
-const suggestions = [
-  "I feel overwhelmed by my responsibilities",
-  "Excited about new possibilities",
-  "Nostalgic about childhood memories",
-  "Anxious about the future",
-  "Peaceful and content",
-  "Frustrated with current situation",
-  "Hopeful despite challenges",
-  "Melancholic on a rainy day",
-];
+import { suggestions } from "@/lib/constants/ui";
 
 interface EmotionInputProps {
   onSubmit: (emotion: string) => void;

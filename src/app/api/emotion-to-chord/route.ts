@@ -4,17 +4,8 @@ import { analyzeEmotion } from "@/lib/services/emotionAnalyzer";
 import * as chordGeneration from "@/lib/chordGeneration";
 import type {
   AdvancedChordSuggestion,
-  AdvancedEmotionAnalysis,
-  ChordProgression,
-} from "@/lib/types/emotion";
-
-// Response type
-interface EmotionChordResponse {
-  emotion: AdvancedEmotionAnalysis;
-  primaryChord: AdvancedChordSuggestion;
-  alternativeChords: AdvancedChordSuggestion[];
-  chordProgression?: ChordProgression;
-}
+  EmotionChordResponse,
+} from "@/types/emotionChord";
 
 const EmotionRequestSchema = z.object({
   emotion: z.string().min(1).max(500),

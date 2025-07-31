@@ -70,3 +70,17 @@ export type EmotionCategory = "basic" | "complex" | "cultural" | "sophisticated"
 
 // API status types
 export type ApiStatus = "healthy" | "degraded" | "down";
+
+// GEMS (Geneva Emotional Music Scale) dimensions
+export interface GEMSEmotions {
+  [key: string]: number | undefined;
+  joy?: number;
+  sadness?: number;
+  tension?: number;
+  wonder?: number;
+  peacefulness?: number;
+  power?: number;
+  tenderness?: number;
+  nostalgia?: number;
+  transcendence?: number;
+}

@@ -18,6 +18,7 @@ export type {
   TimbreType,
   EmotionCategory,
   ApiStatus,
+  GEMSEmotions,
 } from "./common";
 
 // Main emotion-chord types
@@ -39,3 +40,13 @@ export type {
   EmotionAnalysis,
   ChordSuggestion,
 } from "./emotionChord";
+
+// Chord generation types
+export type {
+  ChordOptions,
+  BasicChord,
+  ChordContext,
+  ChordData,
+  HarmonicAnalysis,
+  VoiceLeading,
+} from "./chords";

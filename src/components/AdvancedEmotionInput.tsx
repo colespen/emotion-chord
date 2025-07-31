@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useMemo } from "react";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Input } from "@/components/ui/Input";
@@ -13,6 +13,10 @@ import {
   BUTTON_TEXT,
 } from "@/lib/constants/form";
 import { COLORS } from "@/lib/constants/ui";
+import {
+  DEFAULT_EMOTION_ANALYSIS_CONFIG,
+  DEFAULT_STYLE_PREFERENCE,
+} from "@/lib/config/emotionAnalysis";
 import type { CulturalPreference, StylePreference } from "@/types/common";
 import {
   Sparkles,
@@ -44,10 +48,20 @@ export const AdvancedEmotionInput: React.FC<AdvancedEmotionInputProps> = ({
 }) => {
   const [emotion, setEmotion] = useState("");
   const [showAdvanced, setShowAdvanced] = useState(false);
-  const [stylePreference, setStylePreference] = useState<string>("contemporary");
+  const [stylePreference, setStylePreference] = useState<string>(
+    DEFAULT_STYLE_PREFERENCE
+  );
   const [showExamples, setShowExamples] = useState(false);
 
   const examples = getEmotionExamples();
+
+  const options = useMemo(
+    () => ({
+      ...DEFAULT_EMOTION_ANALYSIS_CONFIG,
+      stylePreference: stylePreference as StylePreference,
+    }),
+    [stylePreference]
+  );
 
   const handleSubmit = useCallback(
     (e: React.FormEvent) => {
@@ -59,24 +73,9 @@ export const AdvancedEmotionInput: React.FC<AdvancedEmotionInputProps> = ({
         return;
       }
 
-      const options = {
-        culturalPreference: "universal" as
-          | "western"
-          | "indian"
-          | "arabic"
-          | "universal",
-        stylePreference: stylePreference as
-          | "classical"
-          | "jazz"
-          | "contemporary"
-          | "experimental",
-        includeProgression: true,
-        includeCulturalAlternatives: true,
-      };
-
       onGenerate(emotion, options);
     },
-    [emotion, stylePreference, onGenerate]
+    [emotion, options, onGenerate]
   );
 
   const handleExampleClick = (exampleEmotion: string) => {

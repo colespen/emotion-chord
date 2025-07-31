@@ -26,3 +26,14 @@ export const LOGO_SIZES = {
   MEDIUM: { width: 32, height: 64 },
   LARGE: { width: 48, height: 96 },
 } as const;
+
+export const suggestions = [
+  "I feel overwhelmed by my responsibilities",
+  "Excited about new possibilities",
+  "Nostalgic about childhood memories",
+  "Anxious about the future",
+  "Peaceful and content",
+  "Frustrated with current situation",
+  "Hopeful despite challenges",
+  "Melancholic on a rainy day",
+];

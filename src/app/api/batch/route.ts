@@ -5,7 +5,7 @@ import * as chordGeneration from "@/lib/chordGeneration";
 import type {
   AdvancedChordSuggestion,
   AdvancedEmotionAnalysis,
-} from "@/lib/types/emotion";
+} from "@/types/emotionChord";
 
 interface BatchChordResponse {
   emotion: string;

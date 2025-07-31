@@ -3,8 +3,8 @@
  * Pure functions for analyzing chord harmony and theory
  */
 
-import type { AdvancedEmotionAnalysis } from "../types/emotion";
-import type { BasicChord, ChordData, HarmonicAnalysis } from "../types/chordTypes";
+import type { AdvancedEmotionAnalysis } from "@/types/emotionChord";
+import type { BasicChord, ChordData, HarmonicAnalysis } from "@/types/chords";
 
 /**
  * Analyze harmonic characteristics of a chord

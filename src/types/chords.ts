@@ -1,4 +1,8 @@
-// Comprehensive types for the chord generator
+/**
+ * Chord Generation Types
+ * Types specific to chord generation, voicing, and harmonic analysis
+ */
+
 export interface ChordOptions {
   preferredRoot?: string;
   voicingStyle?: string;
@@ -31,36 +35,10 @@ export interface HarmonicAnalysis {
   dissonance: number;
 }
 
-// GEMS type for proper typing
-export interface GEMSEmotions {
-  joy?: number;
-  sadness?: number;
-  tension?: number;
-  wonder?: number;
-  peacefulness?: number;
-  power?: number;
-  tenderness?: number;
-  nostalgia?: number;
-  transcendence?: number;
-}
-
 // Voice leading types
 export interface VoiceLeading {
   from: number;
   to: number;
   distance: number;
   quality: "step" | "leap" | "jump";
-}
-
-// Cultural alternative types
-export interface CulturalAlternative {
-  name: string;
-  emotion: string;
-  notes: string[];
-  characteristic: string;
-}
-
-export interface CulturalAlternatives {
-  indian?: CulturalAlternative;
-  arabic?: CulturalAlternative;
 }

@@ -7,7 +7,8 @@ import type {
   AdvancedEmotionAnalysis,
   ChordProgression,
   VoiceLeadingInfo,
-} from "../types/emotion";
+  ProgressionChord,
+} from "@/types/emotionChord";
 import * as chordSelection from "./chordSelection";
 import * as voicing from "./voicing";
 // import * as harmonic from "./harmonicAnalysis"; // Reserved for future harmonic analysis
@@ -19,7 +20,7 @@ export function generate(
   emotion: AdvancedEmotionAnalysis,
   length: number = 4
 ): ChordProgression {
-  const chords: string[] = [];
+  const chords: ProgressionChord[] = [];
   const romanNumerals: string[] = [];
   const voiceLeading: VoiceLeadingInfo[] = [];
 
@@ -29,7 +30,15 @@ export function generate(
     const chordData = chordSelection.selectFromEmotion(emotion);
     const voicingInfo = voicing.generateVoicing(chordData.chord, emotion);
 
-    chords.push(chordData.symbol);
+    // Create ProgressionChord object
+    const progressionChord: ProgressionChord = {
+      symbol: chordData.symbol,
+      duration: 4, // Default to 4 beats per chord
+      tension: emotion.tension,
+      function: determineHarmonicFunction(i, length),
+    };
+    
+    chords.push(progressionChord);
 
     // Generate roman numeral (simplified)
     romanNumerals.push(generateRomanNumeral(chordData.symbol, i));
@@ -37,7 +46,7 @@ export function generate(
     if (i > 0) {
       // Track voice leading
       voiceLeading.push({
-        fromChord: chords[i - 1],
+        fromChord: chords[i - 1].symbol,
         toChord: chordData.symbol,
         voiceMovements: [], // Simplified - would need actual voice analysis
         smoothness: voicingInfo.voiceLeadingScore || 0,
@@ -47,10 +56,27 @@ export function generate(
 
   return {
     chords,
+    key: "C", // Default key - should be determined from emotion
+    mode: emotion.musicalMode,
+    tempo: emotion.suggestedTempo,
+    totalDuration: length * 4, // 4 beats per chord
+    type: "static", // Default type - should be determined from emotion
+    complexity: emotion.complexity,
+    tensionCurve: "plateau", // Default - should be determined from progression
+    emotionalJourney: describeEmotionalArc(emotion),
     romanNumerals,
-    emotionalArc: describeEmotionalArc(emotion),
     voiceLeading,
   };
+}
+
+/**
+ * Determine harmonic function based on position in progression
+ */
+function determineHarmonicFunction(position: number, length: number): string {
+  if (position === 0) return "tonic";
+  if (position === length - 1) return "tonic";
+  if (position === Math.floor(length / 2)) return "dominant";
+  return "subdominant";
 }
 
 /**

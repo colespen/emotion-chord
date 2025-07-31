@@ -4,8 +4,9 @@
  */
 
 import { Chord, Note } from "tonal";
-import type { AdvancedEmotionAnalysis } from "../types/emotion";
-import type { ChordOptions, ChordData } from "../types/chordTypes";
+import type { AdvancedEmotionAnalysis } from "@/types/emotionChord";
+import type { GEMSEmotions } from "@/types/common";
+import type { ChordOptions, ChordData } from "@/types/chords";
 import { ADVANCED_EMOTION_MAPPINGS } from "../config/musicalMappings";
 
 // Interface for Tonal.js Chord object
@@ -116,7 +117,9 @@ export function selectFromEmotion(
 /**
  * Get the dominant GEMS emotion
  */
-export function getDominantGEMS(gems: Record<string, number>): string | null {
+export function getDominantGEMS(gems: GEMSEmotions | undefined): string | null {
+  if (!gems) return null;
+  
   let maxValue = 0;
   let dominant = null;
 

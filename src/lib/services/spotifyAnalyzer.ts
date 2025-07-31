@@ -248,7 +248,8 @@ async function getAudioFeaturesWithFallback(
   token: string
 ): Promise<(SpotifyAudioFeatures | null)[]> {
   try {
-    return await getTrackAudioFeatures(trackIds, token);
+    console.log({ token });
+    return await getTrackAudioFeatures(trackIds);
   } catch (error) {
     console.error("Failed to get batch audio features:", error);
 
@@ -258,7 +259,7 @@ async function getAudioFeaturesWithFallback(
     for (const trackId of trackIds.slice(0, 3)) {
       // Limit to 3 tracks for fallback
       try {
-        const feature = await getSingleTrackAudioFeatures(trackId, token);
+        const feature = await getSingleTrackAudioFeatures(trackId);
         individualFeatures.push(feature);
       } catch (individualError) {
         console.error(`Failed to get features for track ${trackId}:`, individualError);
