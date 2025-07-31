@@ -31,33 +31,33 @@ const AdvancedEmotionSchema = z.object({
     .optional(),
 });
 
+const commonEmotions = [
+  "happy",
+  "sad",
+  "angry",
+  "fear",
+  "joy",
+  "love",
+  "peace",
+  "calm",
+  "excited",
+  "nervous",
+  "confident",
+  "worried",
+  "hopeful",
+  "grateful",
+  "lonely",
+  "proud",
+  "disappointed",
+  "surprised",
+  "content",
+  "frustrated",
+  "relaxed",
+  "anxious",
+];
+
 // Helper function to extract primary emotion from input text
 const extractPrimaryEmotion = (input: string): string | null => {
-  const commonEmotions = [
-    "happy",
-    "sad",
-    "angry",
-    "fear",
-    "joy",
-    "love",
-    "peace",
-    "calm",
-    "excited",
-    "nervous",
-    "confident",
-    "worried",
-    "hopeful",
-    "grateful",
-    "lonely",
-    "proud",
-    "disappointed",
-    "surprised",
-    "content",
-    "frustrated",
-    "relaxed",
-    "anxious",
-  ];
-
   const words = input.toLowerCase().split(/\s+/);
   return (
     commonEmotions.find((emotion) =>
@@ -134,6 +134,7 @@ Return complete JSON for emotion analysis.`;
 
   try {
     const response = await openai.chat.completions.create({
+      // model: "gpt-4o",
       model: "gpt-4o-mini",
       messages: [
         { role: "system", content: systemPrompt },
@@ -143,7 +144,7 @@ Return complete JSON for emotion analysis.`;
         },
       ],
       response_format: { type: "json_object" },
-      temperature: 0.3, // Lower temperature for more consistent structure
+      temperature: 0.25,
       max_tokens: 1000,
     });
 
