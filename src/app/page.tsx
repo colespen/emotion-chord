@@ -61,7 +61,9 @@ export default function Home() {
             <div className="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
               <EmotionChordLogo size={48} />
               <div className="min-w-0">
-                <h1 className="text-lg sm:text-2xl font-bold text-[#f0f6fc] truncate">Emotion Chord</h1>
+                <h1 className="text-lg sm:text-2xl font-bold text-[#f0f6fc] truncate">
+                  Emotion Chord
+                </h1>
                 <p className="text-xs sm:text-sm text-[#7d8590] hidden sm:block">
                   Transform emotions into killer chords
                 </p>
@@ -102,7 +104,7 @@ export default function Home() {
             <div className="mb-6">
               <h2 className="text-xl font-bold text-[#f0f6fc]">Express Your Emotion</h2>
             </div> */}
-            <AdvancedEmotionInput onGenerate={handleEmotionSubmit} loading={loading} />
+          <AdvancedEmotionInput onGenerate={handleEmotionSubmit} loading={loading} />
           {/* </Card> */}
 
           {/* Error Display */}
@@ -186,8 +188,6 @@ export default function Home() {
                   </div>
                 </div>
               )}
-
-
 
               {/* Cultural Alternatives */}
               {data.culturalAlternatives && (
@@ -306,7 +306,7 @@ export default function Home() {
       {/* Fixed Audio Ready Badge / Stop All Button */}
       {audio.isInitialized && (
         <div className="fixed bottom-4 right-4 z-50 animate-in fade-in-0 duration-500">
-          {(audio.isPlaying || audio.isPlayingAllChords) ? (
+          {audio.isPlaying || audio.isPlayingAllChords ? (
             <button
               onClick={audio.stopAudio}
               className="flex items-center gap-2 px-4 py-3 bg-[#da3633]/20 backdrop-blur-md text-[#da3633] rounded-full text-sm shadow-lg border border-[#da3633]/30 hover:bg-[#da3633] hover:text-white hover:border-[#da3633] transition-all duration-300"

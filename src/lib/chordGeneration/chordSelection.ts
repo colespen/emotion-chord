@@ -34,9 +34,9 @@ interface TonalChord {
 function normalizeChordSymbol(symbol: string): string {
   // Replace chord notation variations that Tonal.js doesn't recognize
   return symbol
-    .replace(/maj6/g, "6")     // maj6 -> 6 (Cmaj6 -> C6)
-    .replace(/Maj6/g, "6")     // Maj6 -> 6
-    .replace(/MAJ6/g, "6");    // MAJ6 -> 6
+    .replace(/maj6/g, "6") // maj6 -> 6 (Cmaj6 -> C6)
+    .replace(/Maj6/g, "6") // Maj6 -> 6
+    .replace(/MAJ6/g, "6"); // MAJ6 -> 6
   // Note: maj9, maj13 are valid in Tonal.js, only maj6 needs normalization
 }
 
@@ -46,21 +46,21 @@ function normalizeChordSymbol(symbol: string): string {
 function safeGetChord(symbol: string): TonalChord {
   const normalizedSymbol = normalizeChordSymbol(symbol);
   const chord = Chord.get(normalizedSymbol) as TonalChord;
-  
+
   // If chord is empty, try to fallback to a simpler version
   if (chord.empty) {
     console.warn(`Invalid chord symbol: ${symbol}, trying fallback`);
-    
+
     // Extract root and try basic major chord as fallback
     const root = symbol.match(/^[A-G][#b]?/)?.[0] || "C";
     const fallbackChord = Chord.get(root) as TonalChord;
-    
+
     return {
       ...fallbackChord,
       symbol: normalizedSymbol, // Keep the intended symbol
     };
   }
-  
+
   return {
     ...chord,
     symbol: normalizedSymbol,
@@ -184,7 +184,10 @@ function generateQuartalChord(root: string): ChordData {
   };
 }
 
-function generateSpectralChord(root: string, emotion: AdvancedEmotionAnalysis): ChordData {
+function generateSpectralChord(
+  root: string,
+  emotion: AdvancedEmotionAnalysis
+): ChordData {
   // Generate based on harmonic series
   const fundamentalMidi = Note.midi(root + "2") || 36;
   const harmonics = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13];
@@ -258,7 +261,10 @@ function generatePolychord(root: string, emotion: AdvancedEmotionAnalysis): Chor
   };
 }
 
-function generateAdvancedHarmony(emotion: AdvancedEmotionAnalysis, options?: ChordOptions): ChordData {
+function generateAdvancedHarmony(
+  emotion: AdvancedEmotionAnalysis,
+  options?: ChordOptions
+): ChordData {
   const root = options?.preferredRoot || selectRoot(emotion);
 
   // For high tension, use altered dominants or diminished
@@ -292,7 +298,10 @@ function generateAdvancedHarmony(emotion: AdvancedEmotionAnalysis, options?: Cho
   };
 }
 
-function buildAlteredChord(root: string, quality: string): {
+function buildAlteredChord(
+  root: string,
+  quality: string
+): {
   root: string;
   notes: string[];
   intervals: string[];
@@ -328,7 +337,10 @@ function buildAlteredChord(root: string, quality: string): {
   };
 }
 
-function generateModalInterchange(root: string, emotion: AdvancedEmotionAnalysis): ChordData {
+function generateModalInterchange(
+  root: string,
+  emotion: AdvancedEmotionAnalysis
+): ChordData {
   // Borrow chords from parallel modes
   const borrowings = {
     melancholic: {
@@ -374,7 +386,10 @@ function generateModalInterchange(root: string, emotion: AdvancedEmotionAnalysis
   };
 }
 
-function selectFromValenceArousal(emotion: AdvancedEmotionAnalysis, options?: ChordOptions): ChordData {
+function selectFromValenceArousal(
+  emotion: AdvancedEmotionAnalysis,
+  options?: ChordOptions
+): ChordData {
   const root = options?.preferredRoot || selectRoot(emotion);
   let quality = "";
 

@@ -38,7 +38,9 @@ export const defaultAudioConfig: AudioConfig = {
  * Initialize audio synthesis with configuration
  * Pure function that returns configured synth and effects chain
  */
-export async function createAudioSynth(config: AudioConfig = defaultAudioConfig): Promise<Tone.PolySynth> {
+export async function createAudioSynth(
+  config: AudioConfig = defaultAudioConfig
+): Promise<Tone.PolySynth> {
   // Start audio context if needed
   if (Tone.getContext().state !== "running") {
     await Tone.start();
@@ -98,19 +100,33 @@ export function calculateArpeggioSpeed(tempo: number): number {
 export function getChordFrequencies(chord: AdvancedChordSuggestion): number[] {
   if (chord.midiNotes && chord.midiNotes.length > 0) {
     return chord.midiNotes.map(midiToFrequency);
-  } 
-  
+  }
+
   if (chord.voicing?.notes && chord.voicing.notes.length > 0) {
     return chord.voicing.notes.map(midiToFrequency);
   }
-  
+
   // Fallback to note names
   const noteToMidi: Record<string, number> = {
-    C: 60, "C#": 61, Db: 61, D: 62, "D#": 63, Eb: 63, E: 64,
-    F: 65, "F#": 66, Gb: 66, G: 67, "G#": 68, Ab: 68, A: 69,
-    "A#": 70, Bb: 70, B: 71,
+    C: 60,
+    "C#": 61,
+    Db: 61,
+    D: 62,
+    "D#": 63,
+    Eb: 63,
+    E: 64,
+    F: 65,
+    "F#": 66,
+    Gb: 66,
+    G: 67,
+    "G#": 68,
+    Ab: 68,
+    A: 69,
+    "A#": 70,
+    Bb: 70,
+    B: 71,
   };
-  
+
   return chord.notes.map((note) => {
     const midiNote = noteToMidi[note] || 60;
     return midiToFrequency(midiNote + 12);
@@ -131,12 +147,18 @@ export function getArpeggioFrequencies(chord: AdvancedChordSuggestion): number[]
  */
 export function getDynamicsVelocity(dynamics?: string): number {
   switch (dynamics) {
-    case "pp": return 0.2;
-    case "p": return 0.4;
-    case "mf": return 0.6;
-    case "f": return 0.8;
-    case "ff": return 1.0;
-    default: return 0.6;
+    case "pp":
+      return 0.2;
+    case "p":
+      return 0.4;
+    case "mf":
+      return 0.6;
+    case "f":
+      return 0.8;
+    case "ff":
+      return 1.0;
+    default:
+      return 0.6;
   }
 }
 
@@ -166,9 +188,7 @@ export async function playArpeggio(
 ): Promise<void> {
   const frequencies = getArpeggioFrequencies(chord);
   const velocity = getDynamicsVelocity(chord.dynamics);
-  const noteDelay = emotion
-    ? calculateArpeggioSpeed(emotion.suggestedTempo)
-    : 0.15;
+  const noteDelay = emotion ? calculateArpeggioSpeed(emotion.suggestedTempo) : 0.15;
 
   // Cancel any existing scheduled events
   Tone.getTransport().cancel();
@@ -206,20 +226,13 @@ export function createArpeggioLoop(
 ): Tone.Loop {
   const frequencies = getArpeggioFrequencies(chord);
   const velocity = getDynamicsVelocity(chord.dynamics);
-  const arpeggioSpeed = emotion
-    ? calculateArpeggioSpeed(emotion.suggestedTempo)
-    : 0.3;
+  const arpeggioSpeed = emotion ? calculateArpeggioSpeed(emotion.suggestedTempo) : 0.3;
 
   let currentIndex = 0;
   let direction = 1;
 
   return new Tone.Loop((time) => {
-    synth.triggerAttackRelease(
-      frequencies[currentIndex],
-      noteLength,
-      time,
-      velocity
-    );
+    synth.triggerAttackRelease(frequencies[currentIndex], noteLength, time, velocity);
 
     currentIndex += direction;
 

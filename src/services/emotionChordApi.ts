@@ -150,9 +150,7 @@ export function getEmotionExamples(): Record<string, string[]> {
  * Get emotion examples by category
  * Pure function for category-specific examples
  */
-export function getEmotionExamplesByCategory(
-  category: EmotionCategory
-): string[] {
+export function getEmotionExamplesByCategory(category: EmotionCategory): string[] {
   const examples = getEmotionExamples();
   return examples[category] || [];
 }
@@ -161,9 +159,7 @@ export function getEmotionExamplesByCategory(
  * Get random emotion example
  * Pure function for random example selection
  */
-export function getRandomEmotionExample(
-  category?: EmotionCategory
-): string {
+export function getRandomEmotionExample(category?: EmotionCategory): string {
   const examples = getEmotionExamples();
 
   if (category) {

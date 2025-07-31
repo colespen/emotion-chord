@@ -49,7 +49,7 @@ export interface VoiceLeading {
   from: number;
   to: number;
   distance: number;
-  quality: 'step' | 'leap' | 'jump';
+  quality: "step" | "leap" | "jump";
 }
 
 // Cultural alternative types

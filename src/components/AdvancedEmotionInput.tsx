@@ -6,7 +6,12 @@ import { Card } from "@/components/ui/Card";
 import { Input } from "@/components/ui/Input";
 import { BrandLogo } from "@/components/ui/BrandLogo";
 import { getEmotionExamples, validateEmotionInput } from "@/services/emotionChordApi";
-import { STYLE_PREFERENCES, INPUT_LIMITS, PLACEHOLDER_TEXT, BUTTON_TEXT } from "@/lib/constants/form";
+import {
+  STYLE_PREFERENCES,
+  INPUT_LIMITS,
+  PLACEHOLDER_TEXT,
+  BUTTON_TEXT,
+} from "@/lib/constants/form";
 import { COLORS } from "@/lib/constants/ui";
 import type { CulturalPreference, StylePreference } from "@/types/common";
 import {
@@ -125,7 +130,9 @@ export const AdvancedEmotionInput: React.FC<AdvancedEmotionInputProps> = ({
               <Shuffle className="w-4 h-4" />
             </button>
           </div>
-          <div className="text-xs text-[#6e7681]">{emotion.length}/{INPUT_LIMITS.EMOTION_MAX_LENGTH} characters</div>
+          <div className="text-xs text-[#6e7681]">
+            {emotion.length}/{INPUT_LIMITS.EMOTION_MAX_LENGTH} characters
+          </div>
         </div>
 
         {/* Examples Toggle - OMIT EXAMPLES - DONT NEED RIGHT NOW. */}

@@ -100,8 +100,8 @@ async function searchSpotifyTracks(
 }
 
 async function getTrackAudioFeatures(
-  trackIds: string[],
-  token: string
+  trackIds: string[]
+  // token: string
 ): Promise<(SpotifyAudioFeatures | null)[]> {
   // mock audio features response
   console.log("Mock audio features requested for", trackIds.length, "tracks");
@@ -109,8 +109,8 @@ async function getTrackAudioFeatures(
 }
 
 async function getSingleTrackAudioFeatures(
-  trackId: string,
-  token: string
+  trackId: string
+  // token: string
 ): Promise<SpotifyAudioFeatures | null> {
   // mock single track audio features
   console.log("Mock audio features requested for track:", trackId);

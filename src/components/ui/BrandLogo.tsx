@@ -1,9 +1,9 @@
-import React from 'react';
-import Image from 'next/image';
-import { CSS_FILTERS, LOGO_SIZES } from '@/lib/constants/ui';
+import React from "react";
+import Image from "next/image";
+import { CSS_FILTERS, LOGO_SIZES } from "@/lib/constants/ui";
 
-type LogoVariant = 'left' | 'right' | 'full';
-type LogoSize = 'xsmall' | 'small' | 'medium' | 'large';
+type LogoVariant = "left" | "right" | "full";
+type LogoSize = "xsmall" | "small" | "medium" | "large";
 
 interface BrandLogoProps {
   variant?: LogoVariant;
@@ -13,9 +13,9 @@ interface BrandLogoProps {
 }
 
 const LOGO_SOURCES = {
-  left: '/musicbrainz-left.svg',
-  right: '/musicbrainz-right.svg',
-  full: '/musicbrainz.svg',
+  left: "/musicbrainz-left.svg",
+  right: "/musicbrainz-right.svg",
+  full: "/musicbrainz.svg",
 } as const;
 
 const SIZE_MAP = {
@@ -26,14 +26,15 @@ const SIZE_MAP = {
 } as const;
 
 export const BrandLogo: React.FC<BrandLogoProps> = ({
-  variant = 'full',
-  size = 'small',
+  variant = "full",
+  size = "small",
   alt,
-  className = '',
+  className = "",
 }) => {
   const dimensions = SIZE_MAP[size];
   const src = LOGO_SOURCES[variant];
-  const defaultAlt = alt || `Brand Logo ${variant.charAt(0).toUpperCase() + variant.slice(1)}`;
+  const defaultAlt =
+    alt || `Brand Logo ${variant.charAt(0).toUpperCase() + variant.slice(1)}`;
 
   return (
     <Image

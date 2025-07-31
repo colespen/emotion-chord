@@ -52,175 +52,188 @@ export function useAudio() {
     try {
       const synth = await audioService.createAudioSynth();
       synthRef.current = synth;
-      setState(prev => ({ ...prev, isInitialized: true, error: null }));
+      setState((prev) => ({ ...prev, isInitialized: true, error: null }));
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : "Failed to initialize audio";
-      setState(prev => ({ ...prev, error: errorMessage }));
+      const errorMessage =
+        error instanceof Error ? error.message : "Failed to initialize audio";
+      setState((prev) => ({ ...prev, error: errorMessage }));
     }
   }, [state.isInitialized]);
 
   // Play a chord
-  const playChord = useCallback(async (chord: AdvancedChordSuggestion) => {
-    setState(prev => ({
-      ...prev,
-      isPlaying: true,
-      playingChord: chord.symbol,
-      error: null,
-    }));
-
-    try {
-      await initialize();
-      if (!synthRef.current) return;
-
-      await audioService.playChord(synthRef.current, chord);
-
-      // Auto-stop playing state after duration
-      setTimeout(() => {
-        setState(prev => ({ ...prev, isPlaying: false, playingChord: null }));
-      }, 2000);
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : "Failed to play chord";
-      setState(prev => ({
+  const playChord = useCallback(
+    async (chord: AdvancedChordSuggestion) => {
+      setState((prev) => ({
         ...prev,
-        isPlaying: false,
-        playingChord: null,
-        error: errorMessage,
+        isPlaying: true,
+        playingChord: chord.symbol,
+        error: null,
       }));
-    }
-  }, [initialize]);
+
+      try {
+        await initialize();
+        if (!synthRef.current) return;
+
+        await audioService.playChord(synthRef.current, chord);
+
+        // Auto-stop playing state after duration
+        setTimeout(() => {
+          setState((prev) => ({ ...prev, isPlaying: false, playingChord: null }));
+        }, 2000);
+      } catch (error) {
+        const errorMessage =
+          error instanceof Error ? error.message : "Failed to play chord";
+        setState((prev) => ({
+          ...prev,
+          isPlaying: false,
+          playingChord: null,
+          error: errorMessage,
+        }));
+      }
+    },
+    [initialize]
+  );
 
   // Play arpeggio once
-  const playArpeggio = useCallback(async (
-    chord: AdvancedChordSuggestion,
-    emotion?: AdvancedEmotionAnalysis,
-    noteLength: string = "8n"
-  ) => {
-    await initialize();
-    if (!synthRef.current) return;
+  const playArpeggio = useCallback(
+    async (
+      chord: AdvancedChordSuggestion,
+      emotion?: AdvancedEmotionAnalysis,
+      noteLength: string = "8n"
+    ) => {
+      await initialize();
+      if (!synthRef.current) return;
 
-    try {
-      await audioService.playArpeggio(synthRef.current, chord, emotion, noteLength);
-    } catch (error) {
-      console.error("Failed to play arpeggio:", error);
-    }
-  }, [initialize]);
+      try {
+        await audioService.playArpeggio(synthRef.current, chord, emotion, noteLength);
+      } catch (error) {
+        console.error("Failed to play arpeggio:", error);
+      }
+    },
+    [initialize]
+  );
 
   // Toggle arpeggio loop
-  const toggleArpeggio = useCallback(async (
-    chord: AdvancedChordSuggestion,
-    emotion?: AdvancedEmotionAnalysis,
-    noteLength: string = "8n"
-  ) => {
-    setState(prev => ({ ...prev, error: null }));
+  const toggleArpeggio = useCallback(
+    async (
+      chord: AdvancedChordSuggestion,
+      emotion?: AdvancedEmotionAnalysis,
+      noteLength: string = "8n"
+    ) => {
+      setState((prev) => ({ ...prev, error: null }));
 
-    try {
-      await initialize();
-      if (!synthRef.current) return;
+      try {
+        await initialize();
+        if (!synthRef.current) return;
 
-      if (state.isArpeggioPlaying) {
-        // Stop current arpeggio
-        if (arpeggioLoopRef.current) {
-          arpeggioLoopRef.current.stop();
-          arpeggioLoopRef.current.dispose();
-          arpeggioLoopRef.current = null;
+        if (state.isArpeggioPlaying) {
+          // Stop current arpeggio
+          if (arpeggioLoopRef.current) {
+            arpeggioLoopRef.current.stop();
+            arpeggioLoopRef.current.dispose();
+            arpeggioLoopRef.current = null;
+          }
+          Tone.getTransport().stop();
+          setState((prev) => ({
+            ...prev,
+            isArpeggioPlaying: false,
+            arpeggioChord: null,
+          }));
+        } else {
+          // Start arpeggio loop
+          const loop = audioService.createArpeggioLoop(
+            synthRef.current,
+            chord,
+            emotion,
+            noteLength
+          );
+
+          arpeggioLoopRef.current = loop;
+          loop.start(0);
+          Tone.getTransport().start();
+          setState((prev) => ({
+            ...prev,
+            isArpeggioPlaying: true,
+            arpeggioChord: chord.symbol,
+          }));
         }
-        Tone.getTransport().stop();
-        setState(prev => ({ 
-          ...prev, 
-          isArpeggioPlaying: false,
-          arpeggioChord: null,
-        }));
-      } else {
-        // Start arpeggio loop
-        const loop = audioService.createArpeggioLoop(
-          synthRef.current,
-          chord,
-          emotion,
-          noteLength
-        );
-        
-        arpeggioLoopRef.current = loop;
-        loop.start(0);
-        Tone.getTransport().start();
-        setState(prev => ({ 
-          ...prev, 
-          isArpeggioPlaying: true,
-          arpeggioChord: chord.symbol,
-        }));
+      } catch (error) {
+        const errorMessage =
+          error instanceof Error ? error.message : "Failed to toggle arpeggio";
+        setState((prev) => ({ ...prev, error: errorMessage }));
       }
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : "Failed to toggle arpeggio";
-      setState(prev => ({ ...prev, error: errorMessage }));
-    }
-  }, [initialize, state.isArpeggioPlaying]);
+    },
+    [initialize, state.isArpeggioPlaying]
+  );
 
   // Play progression
-  const playProgression = useCallback(async (
-    progression: ChordProgression,
-    loop: boolean = false
-  ) => {
-    setState(prev => ({
-      ...prev,
-      error: null,
-      isProgressionPlaying: true,
-      isProgressionLooping: loop,
-    }));
+  const playProgression = useCallback(
+    async (progression: ChordProgression, loop: boolean = false) => {
+      setState((prev) => ({
+        ...prev,
+        error: null,
+        isProgressionPlaying: true,
+        isProgressionLooping: loop,
+      }));
 
-    try {
-      await initialize();
-      if (!synthRef.current) return;
+      try {
+        await initialize();
+        if (!synthRef.current) return;
 
-      // Stop any current progression
-      if (progressionSequenceRef.current) {
-        progressionSequenceRef.current.stop();
-        progressionSequenceRef.current.dispose();
-        progressionSequenceRef.current = null;
-      }
-
-      currentProgressionRef.current = progression;
-
-      const sequence = audioService.createProgressionSequence(
-        synthRef.current,
-        progression,
-        (index) => {
-          setState(prev => ({ ...prev, currentChord: index }));
+        // Stop any current progression
+        if (progressionSequenceRef.current) {
+          progressionSequenceRef.current.stop();
+          progressionSequenceRef.current.dispose();
+          progressionSequenceRef.current = null;
         }
-      );
 
-      sequence.loop = loop;
-      if (loop) {
-        sequence.loopEnd = progression.chords.length * 4;
+        currentProgressionRef.current = progression;
+
+        const sequence = audioService.createProgressionSequence(
+          synthRef.current,
+          progression,
+          (index) => {
+            setState((prev) => ({ ...prev, currentChord: index }));
+          }
+        );
+
+        sequence.loop = loop;
+        if (loop) {
+          sequence.loopEnd = progression.chords.length * 4;
+        }
+
+        progressionSequenceRef.current = sequence;
+        sequence.start();
+        Tone.getTransport().start();
+
+        setState((prev) => ({
+          ...prev,
+          currentChord: 0,
+        }));
+      } catch (error) {
+        const errorMessage =
+          error instanceof Error ? error.message : "Failed to play progression";
+        setState((prev) => ({
+          ...prev,
+          isProgressionPlaying: false,
+          error: errorMessage,
+        }));
       }
-
-      progressionSequenceRef.current = sequence;
-      sequence.start();
-      Tone.getTransport().start();
-
-      setState(prev => ({
-        ...prev,
-        currentChord: 0,
-      }));
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : "Failed to play progression";
-      setState(prev => ({
-        ...prev,
-        isProgressionPlaying: false,
-        error: errorMessage,
-      }));
-    }
-  }, [initialize]);
+    },
+    [initialize]
+  );
 
   // Pause progression
   const pauseProgression = useCallback(() => {
     Tone.getTransport().pause();
-    setState(prev => ({ ...prev, isProgressionPlaying: false }));
+    setState((prev) => ({ ...prev, isProgressionPlaying: false }));
   }, []);
 
   // Resume progression
   const resumeProgression = useCallback(() => {
     if (progressionSequenceRef.current) {
       Tone.getTransport().start();
-      setState(prev => ({ ...prev, isProgressionPlaying: true }));
+      setState((prev) => ({ ...prev, isProgressionPlaying: true }));
     }
   }, []);
 
@@ -231,11 +244,11 @@ export function useAudio() {
       progressionSequenceRef.current.dispose();
       progressionSequenceRef.current = null;
     }
-    
+
     Tone.getTransport().stop();
     currentProgressionRef.current = null;
-    
-    setState(prev => ({
+
+    setState((prev) => ({
       ...prev,
       isProgressionPlaying: false,
       isProgressionLooping: false,
@@ -248,7 +261,7 @@ export function useAudio() {
     if (progressionSequenceRef.current) {
       const newLoopState = !state.isProgressionLooping;
       progressionSequenceRef.current.loop = newLoopState;
-      setState(prev => ({ ...prev, isProgressionLooping: newLoopState }));
+      setState((prev) => ({ ...prev, isProgressionLooping: newLoopState }));
       return newLoopState;
     }
     return false;
@@ -256,9 +269,12 @@ export function useAudio() {
 
   // Navigation methods
   const nextChord = useCallback(() => {
-    if (currentProgressionRef.current && state.currentChord < currentProgressionRef.current.chords.length - 1) {
+    if (
+      currentProgressionRef.current &&
+      state.currentChord < currentProgressionRef.current.chords.length - 1
+    ) {
       const newIndex = state.currentChord + 1;
-      setState(prev => ({ ...prev, currentChord: newIndex }));
+      setState((prev) => ({ ...prev, currentChord: newIndex }));
       return newIndex;
     }
     return state.currentChord;
@@ -267,107 +283,118 @@ export function useAudio() {
   const previousChord = useCallback(() => {
     if (state.currentChord > 0) {
       const newIndex = state.currentChord - 1;
-      setState(prev => ({ ...prev, currentChord: newIndex }));
+      setState((prev) => ({ ...prev, currentChord: newIndex }));
       return newIndex;
     }
     return state.currentChord;
   }, [state.currentChord]);
 
-  const selectChord = useCallback((index: number) => {
-    if (currentProgressionRef.current && index >= 0 && index < currentProgressionRef.current.chords.length) {
-      setState(prev => ({ ...prev, currentChord: index }));
-      return index;
-    }
-    return state.currentChord;
-  }, [state.currentChord]);
+  const selectChord = useCallback(
+    (index: number) => {
+      if (
+        currentProgressionRef.current &&
+        index >= 0 &&
+        index < currentProgressionRef.current.chords.length
+      ) {
+        setState((prev) => ({ ...prev, currentChord: index }));
+        return index;
+      }
+      return state.currentChord;
+    },
+    [state.currentChord]
+  );
 
   // Play all chords in sequence
-  const playAllChords = useCallback(async (chords: AdvancedChordSuggestion[]) => {
-    if (chords.length === 0) return;
+  const playAllChords = useCallback(
+    async (chords: AdvancedChordSuggestion[]) => {
+      if (chords.length === 0) return;
 
-    // Stop any existing playback
-    if (abortControllerRef.current) {
-      abortControllerRef.current.abort();
-    }
+      // Stop any existing playback
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
 
-    const abortController = new AbortController();
-    const signal = abortController.signal;
-    abortControllerRef.current = abortController;
+      const abortController = new AbortController();
+      const signal = abortController.signal;
+      abortControllerRef.current = abortController;
 
-    setState(prev => ({
-      ...prev,
-      isPlayingAllChords: true,
-      error: null,
-    }));
+      setState((prev) => ({
+        ...prev,
+        isPlayingAllChords: true,
+        error: null,
+      }));
 
-    try {
-      await initialize();
-      if (!synthRef.current) return;
+      try {
+        await initialize();
+        if (!synthRef.current) return;
 
-      const abortableSleep = (ms: number): Promise<void> => {
-        return new Promise((resolve, reject) => {
-          if (signal.aborted) {
-            reject(new Error("Aborted"));
-            return;
-          }
-
-          const timeout = setTimeout(() => {
+        const abortableSleep = (ms: number): Promise<void> => {
+          return new Promise((resolve, reject) => {
             if (signal.aborted) {
               reject(new Error("Aborted"));
-            } else {
-              resolve();
+              return;
             }
-          }, ms);
 
-          signal.addEventListener("abort", () => {
-            clearTimeout(timeout);
-            reject(new Error("Aborted"));
+            const timeout = setTimeout(() => {
+              if (signal.aborted) {
+                reject(new Error("Aborted"));
+              } else {
+                resolve();
+              }
+            }, ms);
+
+            signal.addEventListener("abort", () => {
+              clearTimeout(timeout);
+              reject(new Error("Aborted"));
+            });
           });
-        });
-      };
+        };
 
-      while (!signal.aborted) {
-        for (let i = 0; i < chords.length && !signal.aborted; i++) {
-          const chord = chords[i];
+        while (!signal.aborted) {
+          for (let i = 0; i < chords.length && !signal.aborted; i++) {
+            const chord = chords[i];
+
+            if (signal.aborted) break;
+
+            setState((prev) => ({ ...prev, playingChord: chord.symbol }));
+
+            await audioService.playChord(synthRef.current!, chord);
+
+            if (signal.aborted) break;
+
+            await abortableSleep(1200);
+
+            if (signal.aborted) break;
+
+            setState((prev) => ({ ...prev, playingChord: null }));
+          }
 
           if (signal.aborted) break;
-
-          setState(prev => ({ ...prev, playingChord: chord.symbol }));
-
-          await audioService.playChord(synthRef.current!, chord);
-
-          if (signal.aborted) break;
-
-          await abortableSleep(1200);
-
-          if (signal.aborted) break;
-
-          setState(prev => ({ ...prev, playingChord: null }));
+        }
+      } catch (error) {
+        if (error instanceof Error && error.message === "Aborted") {
+          return;
         }
 
-        if (signal.aborted) break;
+        const errorMessage =
+          error instanceof Error ? error.message : "Failed to play chord sequence";
+        setState((prev) => ({
+          ...prev,
+          isPlayingAllChords: false,
+          playingChord: null,
+          error: errorMessage,
+        }));
+      } finally {
+        setState((prev) => ({
+          ...prev,
+          isPlayingAllChords: false,
+          playingChord: null,
+        }));
+        abortControllerRef.current = null;
       }
-    } catch (error) {
-      if (error instanceof Error && error.message === "Aborted") {
-        return;
-      }
-
-      const errorMessage = error instanceof Error ? error.message : "Failed to play chord sequence";
-      setState(prev => ({
-        ...prev,
-        isPlayingAllChords: false,
-        playingChord: null,
-        error: errorMessage,
-      }));
-    } finally {
-      setState(prev => ({
-        ...prev,
-        isPlayingAllChords: false,
-        playingChord: null,
-      }));
-      abortControllerRef.current = null;
-    }
-  }, [initialize]);
+    },
+    [initialize]
+  );
 
   // Stop all audio
   const stopAudio = useCallback(() => {
@@ -387,7 +414,7 @@ export function useAudio() {
     currentProgressionRef.current = null;
     abortControllerRef.current = null;
 
-    setState(prev => ({
+    setState((prev) => ({
       ...prev,
       isPlaying: false,
       playingChord: null,

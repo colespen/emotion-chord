@@ -3,7 +3,11 @@
  * Pure functions for generating chord progressions
  */
 
-import type { AdvancedEmotionAnalysis, ChordProgression, VoiceLeadingInfo } from "../types/emotion";
+import type {
+  AdvancedEmotionAnalysis,
+  ChordProgression,
+  VoiceLeadingInfo,
+} from "../types/emotion";
 import * as chordSelection from "./chordSelection";
 import * as voicing from "./voicing";
 // import * as harmonic from "./harmonicAnalysis"; // Reserved for future harmonic analysis
@@ -24,7 +28,7 @@ export function generate(
     // Generate chord data for this position
     const chordData = chordSelection.selectFromEmotion(emotion);
     const voicingInfo = voicing.generateVoicing(chordData.chord, emotion);
-    
+
     chords.push(chordData.symbol);
 
     // Generate roman numeral (simplified)
@@ -55,13 +59,13 @@ export function generate(
 export function getProgressionPattern(emotion: AdvancedEmotionAnalysis): string[] {
   // Classic progressions mapped to emotional qualities
   const patterns = {
-    happy: ["I", "V", "vi", "IV"],           // Classic pop progression
-    sad: ["vi", "IV", "I", "V"],             // Relative minor start
-    dramatic: ["i", "bVII", "bVI", "bVII"],  // Minor with borrowed chords
-    peaceful: ["I", "vi", "ii", "V"],        // Circle of fifths
-    mysterious: ["i", "bII", "i", "V"],      // Neapolitan sixth
-    nostalgic: ["I", "iii", "vi", "IV"],     // Doo-wop progression
-    transcendent: ["I", "bVII", "IV", "I"],  // Mixolydian feel
+    happy: ["I", "V", "vi", "IV"], // Classic pop progression
+    sad: ["vi", "IV", "I", "V"], // Relative minor start
+    dramatic: ["i", "bVII", "bVI", "bVII"], // Minor with borrowed chords
+    peaceful: ["I", "vi", "ii", "V"], // Circle of fifths
+    mysterious: ["i", "bII", "i", "V"], // Neapolitan sixth
+    nostalgic: ["I", "iii", "vi", "IV"], // Doo-wop progression
+    transcendent: ["I", "bVII", "IV", "I"], // Mixolydian feel
   };
 
   // Select pattern based on dominant emotion characteristics
@@ -70,8 +74,10 @@ export function getProgressionPattern(emotion: AdvancedEmotionAnalysis): string[
   if (emotion.tension > 0.7) return patterns.dramatic;
   if (emotion.arousal < 0.3) return patterns.peaceful;
   if (emotion.complexity > 0.7) return patterns.mysterious;
-  if (emotion.gems?.nostalgia && emotion.gems.nostalgia > 0.7) return patterns.nostalgic;
-  if (emotion.gems?.transcendence && emotion.gems.transcendence > 0.7) return patterns.transcendent;
+  if (emotion.gems?.nostalgia && emotion.gems.nostalgia > 0.7)
+    return patterns.nostalgic;
+  if (emotion.gems?.transcendence && emotion.gems.transcendence > 0.7)
+    return patterns.transcendent;
 
   // Default to peaceful progression
   return patterns.peaceful;

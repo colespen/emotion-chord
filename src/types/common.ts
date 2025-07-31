@@ -16,7 +16,7 @@ export type VoicingDensity = "sparse" | "medium" | "dense";
 export type VoicingRegister = "low" | "mid" | "high" | "full";
 
 // Voicing types
-export type VoicingType = 
+export type VoicingType =
   | "close"
   | "open"
   | "drop2"
@@ -27,19 +27,27 @@ export type VoicingType =
   | "spread";
 
 // Progression types
-export type ProgressionType = 
-  | "ascending" 
-  | "descending" 
-  | "circular" 
-  | "static" 
-  | "modal" 
+export type ProgressionType =
+  | "ascending"
+  | "descending"
+  | "circular"
+  | "static"
+  | "modal"
   | "chromatic";
 
 // Tension curve types
 export type TensionCurve = "rising" | "falling" | "arch" | "valley" | "plateau";
 
 // Musical modes
-export type MusicalMode = "major" | "minor" | "dorian" | "phrygian" | "lydian" | "mixolydian" | "aeolian" | "locrian";
+export type MusicalMode =
+  | "major"
+  | "minor"
+  | "dorian"
+  | "phrygian"
+  | "lydian"
+  | "mixolydian"
+  | "aeolian"
+  | "locrian";
 
 // Dynamics levels
 export type DynamicsLevel = "pp" | "p" | "mp" | "mf" | "f" | "ff";
@@ -48,7 +56,14 @@ export type DynamicsLevel = "pp" | "p" | "mp" | "mf" | "f" | "ff";
 export type ArticulationType = "legato" | "staccato" | "tenuto" | "marcato" | "accent";
 
 // Timbre types
-export type TimbreType = "piano" | "strings" | "synth" | "brass" | "woodwinds" | "percussion" | "voice";
+export type TimbreType =
+  | "piano"
+  | "strings"
+  | "synth"
+  | "brass"
+  | "woodwinds"
+  | "percussion"
+  | "voice";
 
 // Emotion categories for examples
 export type EmotionCategory = "basic" | "complex" | "cultural" | "sophisticated";

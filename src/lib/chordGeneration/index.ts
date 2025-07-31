@@ -103,7 +103,10 @@ export function generateProgression(
 }
 
 // Helper functions (pure)
-function calculateResonance(emotion: AdvancedEmotionAnalysis, chordData: ChordData): number {
+function calculateResonance(
+  emotion: AdvancedEmotionAnalysis,
+  chordData: ChordData
+): number {
   let resonance = 0.5;
 
   // Check gems alignment

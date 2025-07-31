@@ -14,15 +14,15 @@ export function Input({
         className
       )}
       style={{
-        WebkitBoxShadow: '0 0 0 1000px #0d1117 inset',
+        WebkitBoxShadow: "0 0 0 1000px #0d1117 inset",
       }}
       onInput={(e) => {
         // Ensure text color is correct for actual input while preserving placeholder
         const input = e.target as HTMLInputElement;
         if (input.value) {
-          input.style.webkitTextFillColor = '#f0f6fc';
+          input.style.webkitTextFillColor = "#f0f6fc";
         } else {
-          input.style.webkitTextFillColor = '';
+          input.style.webkitTextFillColor = "";
         }
       }}
       {...props}
@@ -41,8 +41,8 @@ export function Textarea({
         className
       )}
       style={{
-        WebkitBoxShadow: '0 0 0 1000px #0d1117 inset',
-        WebkitTextFillColor: '#f0f6fc',
+        WebkitBoxShadow: "0 0 0 1000px #0d1117 inset",
+        WebkitTextFillColor: "#f0f6fc",
       }}
       {...props}
     />
