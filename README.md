@@ -7,11 +7,12 @@ Transform emotions into musical chords using AI-powered emotion analysis, advanc
 Emotion Chord is a full-stack application that analyzes emotional text input and generates corresponding musical chords with sophisticated harmonic progressions. The system combines OpenAI's emotion analysis with music theory principles to create meaningful musical expressions.
 
 ## Architecture
+**Next.js Application with:**
 
-**Monorepo Structure:**
-
-- `apps/api/` - Hono-based REST API with OpenAI integration
-- `apps/web/` - Next.js 15 frontend with Tone.js audio synthesis
+- Built-in API routes for emotion-to-chord conversion
+- OpenAI integration for advanced emotion analysis
+- Tone.js audio synthesis for real-time chord playback
+- Advanced music theory algorithms
 
 ## Features
 
@@ -53,27 +54,26 @@ cd emotion-chord
 pnpm install
 
 # Set up environment variables
-cp apps/api/.env.example apps/api/.env
-cp apps/web/.env.example apps/web/.env
+cp .env.example .env.local
 
-# Add your OpenAI API key to apps/api/.env
+# Add your OpenAI API key to .env.local
 OPENAI_API_KEY=your_openai_api_key_here
 
-# Start development servers
+# Start development server
 pnpm dev
 ```
 
 **Access:**
 
 - Web App: http://localhost:3000
-- API: http://localhost:3001
+- API Routes: http://localhost:3000/api/*
 
 ## API Usage
 
 ### Generate Chord from Emotion
 
 ```bash
-POST http://localhost:3001/api/emotion-to-chord
+POST http://localhost:3000/api/emotion-to-chord
 Content-Type: application/json
 
 {
@@ -141,23 +141,24 @@ Content-Type: application/json
 
 ## Environment Variables
 
-### API (`apps/api/.env`)
+### Application (`.env.local`)
 
 ```env
+# OpenAI API Key for emotion analysis
 OPENAI_API_KEY=your_openai_api_key_here
-PORT=3001
-```
 
-### Web (`apps/web/.env`)
+# Development environment
+NODE_ENV=development
 
-```env
-NEXT_PUBLIC_API_URL=http://localhost:3001
+# Spotify API credentials (currently mocked)
+SPOTIFY_CLIENT_ID=your_spotify_client_id
+SPOTIFY_CLIENT_SECRET=your_spotify_client_secret
 ```
 
 ## Development
 
 ```bash
-# Start both apps in development mode
+# Start the application in development mode
 pnpm dev
 
 # Start API only

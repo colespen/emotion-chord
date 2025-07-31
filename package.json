@@ -1,51 +1,37 @@
 {
   "name": "emotion-chord",
-  "version": "1.0.0",
-  "description": "AI-powered emotion to musical chord generator",
+  "version": "0.1.0",
+  "description": "AI-powered emotion-to-chord generation using advanced music theory and OpenAI",
   "private": true,
-  "workspaces": [
-    "apps/*"
-  ],
   "scripts": {
-    "dev": "concurrently \"pnpm dev:api\" \"pnpm dev:web\"",
-    "dev:api": "pnpm --filter api dev",
-    "dev:web": "pnpm --filter web dev",
-    "build": "pnpm build:api && pnpm build:web",
-    "build:api": "pnpm --filter api build",
-    "build:web": "pnpm --filter web build",
-    "start": "concurrently \"pnpm start:api\" \"pnpm start:web\"",
-    "start:api": "pnpm --filter api start",
-    "start:web": "pnpm --filter web start",
-    "lint": "pnpm --filter \"*\" lint",
-    "typecheck": "pnpm --filter \"*\" typecheck",
-    "clean": "pnpm --filter \"*\" clean && rm -rf node_modules",
-    "install:all": "pnpm install",
-    "format": "prettier --write .",
-    "format:check": "prettier --check .",
-    "format:api": "prettier --write apps/api",
-    "format:web": "prettier --write apps/web"
+    "dev": "next dev --turbopack",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf .next"
   },
-  "keywords": [
-    "emotion",
-    "music",
-    "chord",
-    "ai",
-    "openai",
-    "audio",
-    "synthesis",
-    "tone.js",
-    "next.js",
-    "hono"
-  ],
-  "author": "Spencer Cole",
-  "license": "MIT",
+  "dependencies": {
+    "@tonejs/midi": "^2.0.28",
+    "clsx": "^2.1.1",
+    "lucide-react": "^0.532.0",
+    "next": "15.4.4",
+    "openai": "^5.10.2",
+    "react": "19.1.0",
+    "react-dom": "19.1.0",
+    "tone": "^15.1.22",
+    "tonal": "^6.4.2",
+    "zod": "^3.25.76"
+  },
   "devDependencies": {
-    "concurrently": "^8.2.2",
-    "prettier": "^3.6.2"
-  },
-  "engines": {
-    "node": ">=18.0.0",
-    "pnpm": ">=8.0.0"
-  },
-  "packageManager": "pnpm@8.15.0"
+    "@eslint/eslintrc": "^3",
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "15.4.4",
+    "tailwindcss": "^4",
+    "typescript": "^5"
+  }
 }
