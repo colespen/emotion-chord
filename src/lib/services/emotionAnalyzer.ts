@@ -34,15 +34,36 @@ const AdvancedEmotionSchema = z.object({
 // Helper function to extract primary emotion from input text
 const extractPrimaryEmotion = (input: string): string | null => {
   const commonEmotions = [
-    'happy', 'sad', 'angry', 'fear', 'joy', 'love', 'peace', 'calm', 'excited',
-    'nervous', 'confident', 'worried', 'hopeful', 'grateful', 'lonely', 'proud',
-    'disappointed', 'surprised', 'content', 'frustrated', 'relaxed', 'anxious'
+    "happy",
+    "sad",
+    "angry",
+    "fear",
+    "joy",
+    "love",
+    "peace",
+    "calm",
+    "excited",
+    "nervous",
+    "confident",
+    "worried",
+    "hopeful",
+    "grateful",
+    "lonely",
+    "proud",
+    "disappointed",
+    "surprised",
+    "content",
+    "frustrated",
+    "relaxed",
+    "anxious",
   ];
-  
+
   const words = input.toLowerCase().split(/\s+/);
-  return commonEmotions.find(emotion => 
-    words.some(word => word.includes(emotion) || emotion.includes(word))
-  ) || null;
+  return (
+    commonEmotions.find((emotion) =>
+      words.some((word) => word.includes(emotion) || emotion.includes(word))
+    ) || null
+  );
 };
 
 // OpenAI client factory function
@@ -65,7 +86,7 @@ export const analyzeEmotion = async (
   }
 ): Promise<AdvancedEmotionAnalysis> => {
   const openai = createOpenAIClient(apiKey);
-  
+
   const systemPrompt = `You must return a valid JSON object with ALL required fields. Return only JSON, no other text.
 
 REQUIRED STRUCTURE:
@@ -94,8 +115,18 @@ FIELD DEFINITIONS:
 
 OPTIONAL FIELDS (include if relevant):
 - gems: {joy: 0.8, sadness: 0.2, tension: 0.3, wonder: 0.5, peacefulness: 0.1, power: 0.7, tenderness: 0.4, nostalgia: 0.6, transcendence: 0.3}
-- culturalContext: "western" | "indian" | "arabic" | "universal"
-- harmonicStyle: "classical" | "jazz" | "contemporary" | "experimental"
+- culturalContext: ${JSON.stringify([
+    "western",
+    "indian",
+    "arabic",
+    "universal",
+  ])} // CulturalPreference type
+- harmonicStyle: ${JSON.stringify([
+    "classical",
+    "jazz",
+    "contemporary",
+    "experimental",
+  ])} // StylePreference type
 
 ${context ? `Context: ${JSON.stringify(context)}` : ""}
 
@@ -106,7 +137,10 @@ Return complete JSON for emotion analysis.`;
       model: "gpt-4o-mini",
       messages: [
         { role: "system", content: systemPrompt },
-        { role: "user", content: `Analyze this emotional input and return complete JSON: "${input}"` },
+        {
+          role: "user",
+          content: `Analyze this emotional input and return complete JSON: "${input}"`,
+        },
       ],
       response_format: { type: "json_object" },
       temperature: 0.3, // Lower temperature for more consistent structure
@@ -132,30 +166,40 @@ Return complete JSON for emotion analysis.`;
     if (!result.success) {
       console.error("Schema validation failed:", result.error.issues);
       console.error("Received data:", JSON.stringify(parsed, null, 2));
-      
+
       // Enhanced fallback with better emotion detection
-      const primaryEmotion = parsed.primaryEmotion || 
-                            parsed.emotion || 
-                            parsed.mainEmotion ||
-                            extractPrimaryEmotion(input) ||
-                            "neutral";
-      
+      const primaryEmotion =
+        parsed.primaryEmotion ||
+        parsed.emotion ||
+        parsed.mainEmotion ||
+        extractPrimaryEmotion(input) ||
+        "neutral";
+
       const fallbackData = {
         primaryEmotion,
-        secondaryEmotions: Array.isArray(parsed.secondaryEmotions) ? parsed.secondaryEmotions : [],
-        emotionalIntensity: typeof parsed.emotionalIntensity === 'number' ? parsed.emotionalIntensity : 0.5,
-        valence: typeof parsed.valence === 'number' ? parsed.valence : 0,
-        arousal: typeof parsed.arousal === 'number' ? parsed.arousal : 0.5,
-        tension: typeof parsed.tension === 'number' ? parsed.tension : 0.5,
-        complexity: typeof parsed.complexity === 'number' ? parsed.complexity : 0.5,
-        musicalMode: typeof parsed.musicalMode === 'string' ? parsed.musicalMode : "major",
-        suggestedTempo: typeof parsed.suggestedTempo === 'number' ? parsed.suggestedTempo : 120,
+        secondaryEmotions: Array.isArray(parsed.secondaryEmotions)
+          ? parsed.secondaryEmotions
+          : [],
+        emotionalIntensity:
+          typeof parsed.emotionalIntensity === "number"
+            ? parsed.emotionalIntensity
+            : 0.5,
+        valence: typeof parsed.valence === "number" ? parsed.valence : 0,
+        arousal: typeof parsed.arousal === "number" ? parsed.arousal : 0.5,
+        tension: typeof parsed.tension === "number" ? parsed.tension : 0.5,
+        complexity: typeof parsed.complexity === "number" ? parsed.complexity : 0.5,
+        musicalMode:
+          typeof parsed.musicalMode === "string" ? parsed.musicalMode : "major",
+        suggestedTempo:
+          typeof parsed.suggestedTempo === "number" ? parsed.suggestedTempo : 120,
         // Preserve any additional valid fields
-        ...(parsed.gems && typeof parsed.gems === 'object' ? { gems: parsed.gems } : {}),
+        ...(parsed.gems && typeof parsed.gems === "object"
+          ? { gems: parsed.gems }
+          : {}),
         ...(parsed.culturalContext ? { culturalContext: parsed.culturalContext } : {}),
         ...(parsed.harmonicStyle ? { harmonicStyle: parsed.harmonicStyle } : {}),
       };
-      
+
       const fallbackResult = AdvancedEmotionSchema.safeParse(fallbackData);
       if (!fallbackResult.success) {
         console.error("Fallback validation also failed:", fallbackResult.error.issues);
@@ -181,9 +225,7 @@ export const batchAnalyzeEmotions = async (
     previousEmotions?: string[];
   }
 ): Promise<AdvancedEmotionAnalysis[]> => {
-  return Promise.all(
-    inputs.map(input => analyzeEmotion(apiKey, input, context))
-  );
+  return Promise.all(inputs.map((input) => analyzeEmotion(apiKey, input, context)));
 };
 
 // Reset client function for testing or key rotation

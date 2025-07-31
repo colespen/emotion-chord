@@ -1,5 +1,19 @@
 // updated types to match the advanced API structure
 
+import type {
+  CulturalPreference,
+  StylePreference,
+  VoicingDensity,
+  VoicingRegister,
+  VoicingType,
+  ProgressionType,
+  TensionCurve,
+  // MusicalMode,
+  DynamicsLevel,
+  ArticulationType,
+  TimbreType,
+} from "./common";
+
 export interface AdvancedEmotionAnalysis {
   // core emotion data
   primaryEmotion: string;
@@ -30,8 +44,8 @@ export interface AdvancedEmotionAnalysis {
   suggestedTempo: number;
 
   // cultural/stylistic preferences
-  culturalContext?: "western" | "indian" | "arabic" | "universal";
-  harmonicStyle?: "classical" | "jazz" | "contemporary" | "experimental";
+  culturalContext?: CulturalPreference;
+  harmonicStyle?: StylePreference;
 
   // acoustic features (from Spotify/Essentia analysis if available)
   acousticFeatures?: {
@@ -47,19 +61,11 @@ export interface AdvancedEmotionAnalysis {
 
 export interface VoicingInfo {
   notes: number[]; // MIDI numbers
-  voicingType:
-    | "close"
-    | "open"
-    | "drop2"
-    | "drop3"
-    | "rootless"
-    | "cluster"
-    | "quartal"
-    | "spread";
+  voicingType: VoicingType;
   bassNote?: number; // Separate bass note if different from root
   voiceLeadingScore?: number; // Quality of voice leading from previous chord
-  density: "sparse" | "medium" | "dense";
-  register: "low" | "mid" | "high" | "full";
+  density: VoicingDensity;
+  register: VoicingRegister;
 }
 
 export interface AdvancedChordSuggestion {
@@ -98,9 +104,9 @@ export interface AdvancedChordSuggestion {
   culturalReference?: string; // e.g., "Similar to Raga Bhairav's austere quality"
 
   // audio generation hints
-  timbre?: string; // piano, strings, synth, etc.
-  dynamics?: string; // pp, p, mf, f, ff
-  articulation?: string; // legato, staccato, etc.
+  timbre?: TimbreType;
+  dynamics?: DynamicsLevel;
+  articulation?: ArticulationType;
 }
 
 export interface ProgressionChord {
@@ -116,9 +122,9 @@ export interface ChordProgression {
   mode?: string;
   tempo: number; // BPM
   totalDuration: number; // in beats
-  type: "ascending" | "descending" | "circular" | "static" | "modal" | "chromatic";
+  type: ProgressionType;
   complexity: number; // 0-1
-  tensionCurve: "rising" | "falling" | "arch" | "valley" | "plateau";
+  tensionCurve: TensionCurve;
   emotionalJourney: string; // Description of emotional journey
   romanNumerals?: string[];
   features?: string[]; // e.g., ['secondary_dominants', 'modal_interchange']
@@ -167,8 +173,8 @@ export interface EmotionChordResponse {
 export interface EmotionRequest {
   emotion: string;
   options?: {
-    culturalPreference?: "western" | "indian" | "arabic" | "universal";
-    stylePreference?: "classical" | "jazz" | "contemporary" | "experimental";
+    culturalPreference?: CulturalPreference;
+    stylePreference?: StylePreference;
     includeProgression?: boolean;
     includeCulturalAlternatives?: boolean;
   };

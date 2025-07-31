@@ -7,7 +7,7 @@ import { EmotionAnalysisDisplay } from "@/components/EmotionAnalysisDisplay";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { useEmotionChord } from "@/hooks/use-emotion-chord";
-import type { AdvancedChordSuggestion } from "@/types/emotion-chord";
+import type { AdvancedChordSuggestion } from "@/types/emotionChord";
 import { useAudio } from "@/hooks/useAudio";
 import { Volume2, RefreshCw, PlayCircle, Square, VolumeX } from "lucide-react";
 import { EmotionChordLogo } from "@/components/ui/EmotionChordLogo";

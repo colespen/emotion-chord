@@ -8,7 +8,7 @@ import type {
   AdvancedChordSuggestion,
   ChordProgression,
   AdvancedEmotionAnalysis,
-} from "@/types/emotion-chord";
+} from "@/types/emotionChord";
 
 // Types for audio state management
 export interface AudioState {

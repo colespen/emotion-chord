@@ -1,13 +1,14 @@
 // Form and Business Logic Constants
+import type { StylePreference, CulturalPreference } from "@/types/common";
 
-export const STYLE_PREFERENCES = [
+export const STYLE_PREFERENCES: readonly { value: StylePreference; label: string }[] = [
   { value: 'contemporary', label: 'Contemporary' },
   { value: 'classical', label: 'Classical' },
   { value: 'jazz', label: 'Jazz' },
   { value: 'experimental', label: 'Experimental' },
 ] as const;
 
-export const CULTURAL_PREFERENCES = [
+export const CULTURAL_PREFERENCES: readonly { value: CulturalPreference; label: string }[] = [
   { value: 'universal', label: 'Universal' },
   { value: 'western', label: 'Western' },
   { value: 'indian', label: 'Indian (Raga)' },

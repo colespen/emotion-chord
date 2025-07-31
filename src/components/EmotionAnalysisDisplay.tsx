@@ -1,6 +1,6 @@
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
-import type { EmotionAnalysis } from "@/types/emotion-chord";
+import type { EmotionAnalysis } from "@/types/emotionChord";
 import { getEmotionColor, getArousalIntensity, getTensionLevel } from "@/lib/utils";
 import Image from "next/image";
 

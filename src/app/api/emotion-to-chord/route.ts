@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { analyzeEmotion } from "@/lib/services/emotionAnalyzer";
-import * as chordGeneration from "@/lib/chord-generation";
+import * as chordGeneration from "@/lib/chordGeneration";
 import type { AdvancedChordSuggestion, AdvancedEmotionAnalysis, ChordProgression } from "@/lib/types/emotion";
 
 // Response type

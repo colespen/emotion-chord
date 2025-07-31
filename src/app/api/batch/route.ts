@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { batchAnalyzeEmotions } from "@/lib/services/emotionAnalyzer";
-import * as chordGeneration from "@/lib/chord-generation";
+import * as chordGeneration from "@/lib/chordGeneration";
 import type { AdvancedChordSuggestion, AdvancedEmotionAnalysis } from "@/lib/types/emotion";
 
 // Response type for batch processing

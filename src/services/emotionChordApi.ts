@@ -11,7 +11,13 @@ import type {
   BatchResponse,
   HealthCheckResponse,
   ApiError,
-} from "@/types/emotion-chord";
+} from "@/types/emotionChord";
+
+import type {
+  CulturalPreference,
+  StylePreference,
+  EmotionCategory,
+} from "@/types/common";
 
 /**
  * Generic API request handler
@@ -50,8 +56,8 @@ async function makeApiRequest<T>(
 export async function generateChordFromEmotion(
   emotion: string,
   options?: {
-    culturalPreference?: "western" | "indian" | "arabic" | "universal";
-    stylePreference?: "classical" | "jazz" | "contemporary" | "experimental";
+    culturalPreference?: CulturalPreference;
+    stylePreference?: StylePreference;
     includeProgression?: boolean;
     includeCulturalAlternatives?: boolean;
   }
@@ -145,7 +151,7 @@ export function getEmotionExamples(): Record<string, string[]> {
  * Pure function for category-specific examples
  */
 export function getEmotionExamplesByCategory(
-  category: "basic" | "complex" | "cultural" | "sophisticated"
+  category: EmotionCategory
 ): string[] {
   const examples = getEmotionExamples();
   return examples[category] || [];
@@ -156,7 +162,7 @@ export function getEmotionExamplesByCategory(
  * Pure function for random example selection
  */
 export function getRandomEmotionExample(
-  category?: "basic" | "complex" | "cultural" | "sophisticated"
+  category?: EmotionCategory
 ): string {
   const examples = getEmotionExamples();
 

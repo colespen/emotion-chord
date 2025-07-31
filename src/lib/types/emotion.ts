@@ -1,3 +1,11 @@
+import type {
+  CulturalPreference,
+  StylePreference,
+  VoicingDensity,
+  VoicingRegister,
+  VoicingType,
+} from "@/types/common";
+
 export interface AdvancedEmotionAnalysis {
   // core emotion data
   primaryEmotion: string;
@@ -28,8 +36,8 @@ export interface AdvancedEmotionAnalysis {
   suggestedTempo: number;
 
   // cultural/stylistic preferences
-  culturalContext?: "western" | "indian" | "arabic" | "universal";
-  harmonicStyle?: "classical" | "jazz" | "contemporary" | "experimental";
+  culturalContext?: CulturalPreference;
+  harmonicStyle?: StylePreference;
 
   // acoustic features (from Spotify/Essentia analysis if available)
   acousticFeatures?: {
@@ -85,19 +93,11 @@ export interface AdvancedChordSuggestion {
 
 export interface VoicingInfo {
   notes: number[]; // MIDI numbers
-  voicingType:
-    | "close"
-    | "open"
-    | "drop2"
-    | "drop3"
-    | "rootless"
-    | "cluster"
-    | "quartal"
-    | "spread";
+  voicingType: VoicingType;
   bassNote?: number; // Separate bass note if different from root
   voiceLeadingScore?: number; // Quality of voice leading from previous chord
-  density: "sparse" | "medium" | "dense";
-  register: "low" | "mid" | "high" | "full";
+  density: VoicingDensity;
+  register: VoicingRegister;
 }
 
 export interface EmotionChordResponse {

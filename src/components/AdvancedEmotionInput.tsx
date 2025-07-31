@@ -8,6 +8,7 @@ import { BrandLogo } from "@/components/ui/BrandLogo";
 import { getEmotionExamples, validateEmotionInput } from "@/services/emotionChordApi";
 import { STYLE_PREFERENCES, INPUT_LIMITS, PLACEHOLDER_TEXT, BUTTON_TEXT } from "@/lib/constants/form";
 import { COLORS } from "@/lib/constants/ui";
+import type { CulturalPreference, StylePreference } from "@/types/common";
 import {
   Sparkles,
   Music,
@@ -21,8 +22,8 @@ interface AdvancedEmotionInputProps {
   onGenerate: (
     emotion: string,
     options?: {
-      culturalPreference?: "western" | "indian" | "arabic" | "universal";
-      stylePreference?: "classical" | "jazz" | "contemporary" | "experimental";
+      culturalPreference?: CulturalPreference;
+      stylePreference?: StylePreference;
       includeProgression?: boolean;
       includeCulturalAlternatives?: boolean;
     }

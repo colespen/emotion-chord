@@ -10,7 +10,7 @@ import type {
   AdvancedChordSuggestion,
   ChordProgression,
   AdvancedEmotionAnalysis,
-} from "@/types/emotion-chord";
+} from "@/types/emotionChord";
 
 export interface UseAudioState {
   isPlaying: boolean;

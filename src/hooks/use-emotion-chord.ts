@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react";
 import * as emotionChordApi from "@/services/emotionChordApi";
-import type { EmotionChordResponse } from "@/types/emotion-chord";
+import type { EmotionChordResponse } from "@/types/emotionChord";
 
 interface UseEmotionChordState {
   data: EmotionChordResponse | null;

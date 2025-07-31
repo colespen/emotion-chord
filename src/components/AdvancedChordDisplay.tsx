@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
-import type { AdvancedChordSuggestion, VoicingInfo } from "@/types/emotion-chord";
+import type { AdvancedChordSuggestion, VoicingInfo } from "@/types/emotionChord";
 import {
   Music,
   Play,

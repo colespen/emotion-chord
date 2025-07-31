@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
-import type { ChordProgression } from "@/types/emotion-chord";
+import type { ChordProgression } from "@/types/emotionChord";
 import {
   Play,
   Pause,
