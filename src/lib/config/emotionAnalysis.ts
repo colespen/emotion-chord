@@ -12,7 +12,10 @@ export interface EmotionAnalysisConfig {
   includeCulturalAlternatives: boolean;
 }
 
-export const DEFAULT_EMOTION_ANALYSIS_CONFIG: Omit<EmotionAnalysisConfig, 'stylePreference'> = {
+export const DEFAULT_EMOTION_ANALYSIS_CONFIG: Omit<
+  EmotionAnalysisConfig,
+  "stylePreference"
+> = {
   culturalPreference: "universal",
   includeProgression: true,
   includeCulturalAlternatives: true,

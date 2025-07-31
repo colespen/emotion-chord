@@ -9,11 +9,7 @@ import type {
   AdvancedChordSuggestion,
   ChordProgression,
 } from "@/types/emotionChord";
-import type {
-  TimbreType,
-  DynamicsLevel,
-  ArticulationType,
-} from "@/types/common";
+import type { TimbreType, DynamicsLevel, ArticulationType } from "@/types/common";
 import type { ChordOptions, ChordData } from "@/types/chords";
 import * as chordSelection from "./chordSelection";
 import * as voicing from "./voicing";

@@ -3,13 +3,10 @@
  * Re-exports all utility functions for easy importing
  */
 
-// Core utilities
-export * from "../utils";
-
 // Music utilities
 export * from "./music";
 
-// Chord utilities  
+// Chord utilities
 export * from "./chord";
 
 // Styling utilities

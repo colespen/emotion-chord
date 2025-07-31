@@ -119,7 +119,7 @@ export function selectFromEmotion(
  */
 export function getDominantGEMS(gems: GEMSEmotions | undefined): string | null {
   if (!gems) return null;
-  
+
   let maxValue = 0;
   let dominant = null;
 

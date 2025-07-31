@@ -1,6 +1,12 @@
+import { clsx, type ClassValue } from "clsx";
+
 /**
  * Styling utility functions for colors and visual indicators
  */
+
+export function cn(...inputs: ClassValue[]) {
+  return clsx(inputs);
+}
 
 /**
  * Get color class based on complexity level
@@ -43,4 +49,11 @@ export function getTensionColor(tension: number): string {
   if (tension < 0.3) return "bg-[#238636]/20";
   if (tension < 0.7) return "bg-[#fb8500]/20";
   return "bg-[#da3633]/20";
+}
+
+export function getEmotionColor(valence: number): string {
+  if (valence > 0.5) return "text-green-600";
+  if (valence > 0) return "text-yellow-600";
+  if (valence > -0.5) return "text-orange-600";
+  return "text-red-600";
 }

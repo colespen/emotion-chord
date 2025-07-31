@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { Play, Square, Music } from "lucide-react";
 import type { AdvancedChordSuggestion } from "@/types/emotionChord";
-import { formatEmotionalResonance } from "@/lib/utils";
+import { formatEmotionalResonance } from "@/lib/utils/index";
 
 interface ChordDisplayProps {
   chord: AdvancedChordSuggestion;

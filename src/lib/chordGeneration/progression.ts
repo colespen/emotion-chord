@@ -37,7 +37,7 @@ export function generate(
       tension: emotion.tension,
       function: determineHarmonicFunction(i, length),
     };
-    
+
     chords.push(progressionChord);
 
     // Generate roman numeral (simplified)

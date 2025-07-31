@@ -1,8 +1,9 @@
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import type { EmotionAnalysis } from "@/types/emotionChord";
-import { getEmotionColor, getArousalIntensity, getTensionLevel } from "@/lib/utils";
+import { getArousalIntensity, getTensionLevel } from "@/lib/utils/index";
 import Image from "next/image";
+import { getEmotionColor } from "@/lib/utils/index";
 
 interface EmotionAnalysisDisplayProps {
   emotion: EmotionAnalysis;
