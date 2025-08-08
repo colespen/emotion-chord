@@ -1,6 +1,6 @@
 # Emotion Chord
 
-Transform emotions into musical chords using AI-powered emotion analysis, advanced music theory, & real-time audio synthesis!
+Transform emotions into musical chords using AI-powered analysis, advanced music theory, & real-time audio synthesis!
 
 🚀 &nbsp; [emotion-chord](https://emotion-chord.vercel.app/)
 
