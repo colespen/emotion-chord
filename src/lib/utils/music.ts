@@ -2,9 +2,7 @@
  * Music-related utility functions
  */
 
-// Note name arrays for different contexts
-const noteNames = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
-const flatNoteNames = ["C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B"];
+import { NOTE_NAMES, FLAT_NOTE_NAMES } from "../constants/music";
 
 /**
  * Get proper note names considering chord context
@@ -17,7 +15,7 @@ export function getContextualNoteName(midiNote: number, chordSymbol: string): st
   // Use flat notation for flat-based chords
   const useFlatNotation = /^(Bb|Eb|Ab|Db|Gb|F)/.test(chordSymbol);
 
-  const selectedNames = useFlatNotation ? flatNoteNames : noteNames;
+  const selectedNames = useFlatNotation ? FLAT_NOTE_NAMES : NOTE_NAMES;
   return selectedNames[noteIndex] + (octave >= 0 ? octave : "");
 }
 
@@ -46,7 +44,7 @@ export function formatMidiNotes(notes: number[]): string {
   return notes
     .map((note) => {
       const octave = Math.floor(note / 12) - 1;
-      const noteName = noteNames[note % 12];
+      const noteName = NOTE_NAMES[note % 12];
       return `${noteName}${octave}`;
     })
     .join(" - ");

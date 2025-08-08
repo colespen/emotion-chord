@@ -27,6 +27,16 @@ export const LOGO_SIZES = {
   LARGE: { width: 48, height: 96 },
 } as const;
 
+// Progression type color mappings
+export const PROGRESSION_TYPE_COLORS = {
+  ascending: "text-[#238636] bg-[#238636]/10",
+  descending: "text-[#2563eb] bg-[#2563eb]/10",
+  circular: "text-[#8b5cf6] bg-[#8b5cf6]/10",
+  static: "text-[#7d8590] bg-[#7d8590]/10",
+  modal: "text-[#6366f1] bg-[#6366f1]/10",
+  chromatic: "text-[#da3633] bg-[#da3633]/10",
+} as const;
+
 export const suggestions = [
   "I feel overwhelmed by my responsibilities",
   "Excited about new possibilities",

@@ -1,4 +1,5 @@
 import { clsx, type ClassValue } from "clsx";
+import { PROGRESSION_TYPE_COLORS } from "../constants/ui";
 
 /**
  * Styling utility functions for colors and visual indicators
@@ -31,15 +32,7 @@ export function getResonanceColor(resonance: number): string {
  * Get color class and background for progression types
  */
 export function getProgressionTypeColor(type: string): string {
-  const colors: Record<string, string> = {
-    ascending: "text-[#238636] bg-[#238636]/10",
-    descending: "text-[#2563eb] bg-[#2563eb]/10",
-    circular: "text-[#8b5cf6] bg-[#8b5cf6]/10",
-    static: "text-[#7d8590] bg-[#7d8590]/10",
-    modal: "text-[#6366f1] bg-[#6366f1]/10",
-    chromatic: "text-[#da3633] bg-[#da3633]/10",
-  };
-  return colors[type] || "text-[#7d8590] bg-[#7d8590]/10";
+  return PROGRESSION_TYPE_COLORS[type as keyof typeof PROGRESSION_TYPE_COLORS] || "text-[#7d8590] bg-[#7d8590]/10";
 }
 
 /**

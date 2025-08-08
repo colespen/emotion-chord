@@ -8,6 +8,8 @@ import type { AdvancedEmotionAnalysis } from "@/types/emotionChord";
 import type { GEMSEmotions } from "@/types/common";
 import type { ChordOptions, ChordData } from "@/types/chords";
 import { ADVANCED_EMOTION_MAPPINGS } from "../config/musicalMappings";
+import { BRIGHT_ROOTS, DARK_ROOTS, AMBIGUOUS_ROOTS } from "../constants/music";
+import { MODAL_INTERCHANGE_BORROWINGS, POLYCHORD_MAP } from "../constants/harmony";
 
 // Interface for Tonal.js Chord object
 interface TonalChord {
@@ -147,16 +149,12 @@ export function selectRoot(emotion: AdvancedEmotionAnalysis): string {
   }
 
   // Western root selection based on emotion
-  const brightRoots = ["C", "G", "D", "A", "E"];
-  const darkRoots = ["F", "Bb", "Eb", "Ab", "Db"];
-  const ambiguousRoots = ["B", "F#", "C#"];
-
   if (emotion.valence > 0.5) {
-    return brightRoots[Math.floor(Math.random() * brightRoots.length)];
+    return BRIGHT_ROOTS[Math.floor(Math.random() * BRIGHT_ROOTS.length)];
   } else if (emotion.valence < -0.5) {
-    return darkRoots[Math.floor(Math.random() * darkRoots.length)];
+    return DARK_ROOTS[Math.floor(Math.random() * DARK_ROOTS.length)];
   } else {
-    return ambiguousRoots[Math.floor(Math.random() * ambiguousRoots.length)];
+    return AMBIGUOUS_ROOTS[Math.floor(Math.random() * AMBIGUOUS_ROOTS.length)];
   }
 }
 
@@ -227,13 +225,6 @@ function generateSpectralChord(
 }
 
 function generatePolychord(root: string, emotion: AdvancedEmotionAnalysis): ChordData {
-  // Select polychord based on emotion
-  const polychordMap = {
-    dramatic: ["C/F#", "D♭/C", "E♭/E"],
-    mystical: ["D/E♭", "F/G♭", "E/F"],
-    expansive: ["C/G", "F/C", "B♭/F"],
-  };
-
   const type =
     emotion.tension > 0.7
       ? "dramatic"
@@ -241,7 +232,7 @@ function generatePolychord(root: string, emotion: AdvancedEmotionAnalysis): Chor
         ? "mystical"
         : "expansive";
 
-  const options = polychordMap[type];
+  const options = POLYCHORD_MAP[type];
   const selected = options[Math.floor(Math.random() * options.length)];
   const [bottom, top] = selected.split("/");
 
@@ -344,30 +335,6 @@ function generateModalInterchange(
   root: string,
   emotion: AdvancedEmotionAnalysis
 ): ChordData {
-  // Borrow chords from parallel modes
-  const borrowings = {
-    melancholic: {
-      chord: "m6",
-      mode: "dorian",
-      description: "Borrowed from dorian mode",
-    },
-    nostalgic: {
-      chord: "mMaj7",
-      mode: "melodic minor",
-      description: "Borrowed from melodic minor",
-    },
-    dark: {
-      chord: "dim7",
-      mode: "locrian",
-      description: "Borrowed from locrian mode",
-    },
-    mystical: {
-      chord: "maj7#5",
-      mode: "lydian augmented",
-      description: "Borrowed from lydian augmented",
-    },
-  };
-
   const emotionType =
     (emotion.gems?.sadness ?? 0) > 0.7
       ? "melancholic"
@@ -377,7 +344,7 @@ function generateModalInterchange(
           ? "dark"
           : "mystical";
 
-  const borrowed = borrowings[emotionType];
+  const borrowed = MODAL_INTERCHANGE_BORROWINGS[emotionType];
 
   return {
     symbol: root + borrowed.chord,
