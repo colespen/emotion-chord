@@ -40,6 +40,7 @@ export function useAudio() {
   });
 
   const synthRef = useRef<Tone.PolySynth | null>(null);
+  const oneOffSynthRef = useRef<Tone.PolySynth | null>(null);
   const arpeggioLoopRef = useRef<Tone.Loop | null>(null);
   const progressionSequenceRef = useRef<Tone.Sequence | null>(null);
   const currentProgressionRef = useRef<ChordProgression | null>(null);
@@ -52,6 +53,17 @@ export function useAudio() {
     try {
       const synth = await audioService.createAudioSynth();
       synthRef.current = synth;
+      
+      // Create separate synth for one-off chord playback with DRAMATICALLY longer envelope for testing
+      const oneOffEnvelope = {
+        attack: 0.1,     // 5x longer attack (was 0.02)
+        decay: 1.0,      // 5x longer decay (was 0.2) 
+        sustain: 0.9,    // Much higher sustain (was 0.65)
+        release: 4.0,    // Much longer release (was 1.2)
+      };
+      const oneOffSynth = await audioService.createAudioSynth(audioService.defaultAudioConfig, oneOffEnvelope);
+      oneOffSynthRef.current = oneOffSynth;
+      
       setState((prev) => ({ ...prev, isInitialized: true, error: null }));
     } catch (error) {
       const errorMessage =
@@ -72,9 +84,9 @@ export function useAudio() {
 
       try {
         await initialize();
-        if (!synthRef.current) return;
+        if (!oneOffSynthRef.current) return;
 
-        await audioService.playChord(synthRef.current, chord);
+        await audioService.playChord(oneOffSynthRef.current, chord);
 
         // Auto-stop playing state after duration
         setTimeout(() => {
@@ -408,6 +420,11 @@ export function useAudio() {
       arpeggioLoopRef.current || undefined,
       progressionSequenceRef.current || undefined
     );
+    
+    // Also stop the one-off synth
+    if (oneOffSynthRef.current) {
+      oneOffSynthRef.current.releaseAll();
+    }
 
     arpeggioLoopRef.current = null;
     progressionSequenceRef.current = null;
@@ -434,6 +451,10 @@ export function useAudio() {
       if (synthRef.current) {
         audioService.disposeAudio(synthRef.current);
         synthRef.current = null;
+      }
+      if (oneOffSynthRef.current) {
+        audioService.disposeAudio(oneOffSynthRef.current);
+        oneOffSynthRef.current = null;
       }
     };
   }, [stopAudio]);

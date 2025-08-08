@@ -39,7 +39,8 @@ export const defaultAudioConfig: AudioConfig = {
  * Pure function that returns configured synth and effects chain
  */
 export async function createAudioSynth(
-  config: AudioConfig = defaultAudioConfig
+  config: AudioConfig = defaultAudioConfig,
+  envelope?: { attack: number; decay: number; sustain: number; release: number }
 ): Promise<Tone.PolySynth> {
   // Start audio context if needed
   if (Tone.getContext().state !== "running") {
@@ -49,15 +50,18 @@ export async function createAudioSynth(
   // Set destination volume
   Tone.getDestination().volume.value = -12;
 
+  // Default envelope for loops
+  const defaultEnvelope = {
+    attack: 0.04,
+    decay: 0.2,
+    sustain: 0.775,
+    release: 1.2,
+  };
+
   // Create synth
   const synth = new Tone.PolySynth(Tone.Synth, {
     volume: config.volume,
-    envelope: {
-      attack: 0.02,
-      decay: 0.2,
-      sustain: 0.65,
-      release: 1.2,
-    },
+    envelope: envelope || defaultEnvelope,
     oscillator: {
       type: "triangle",
     },

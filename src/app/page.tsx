@@ -17,6 +17,12 @@ export default function Home() {
   const { data, loading, error, generateChord, clearData } = useEmotionChord();
   const audio = useAudio();
 
+  const isAudioPlaying =
+    audio.isPlaying ||
+    audio.isPlayingAllChords ||
+    audio.isArpeggioPlaying ||
+    audio.isProgressionPlaying;
+
   const handleEmotionSubmit = (emotion: string) => {
     setLastEmotion(emotion);
     // for now, just use the emotion since the api doesn't support options yet
@@ -306,7 +312,7 @@ export default function Home() {
       {/* Fixed Audio Ready Badge / Stop All Button */}
       {audio.isInitialized && (
         <div className="fixed bottom-4 right-4 z-50 animate-in fade-in-0 duration-500">
-          {audio.isPlaying || audio.isPlayingAllChords ? (
+          {isAudioPlaying ? (
             <button
               onClick={audio.stopAudio}
               className="flex items-center gap-2 px-4 py-3 bg-[#da3633]/20 backdrop-blur-md text-[#da3633] rounded-full text-sm shadow-lg border border-[#da3633]/30 hover:bg-[#da3633] hover:text-white hover:border-[#da3633] transition-all duration-300"
