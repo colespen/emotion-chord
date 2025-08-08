@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { batchAnalyzeEmotions } from "@/lib/services/emotionAnalyzer";
-import * as chordGeneration from "@/lib/chordGeneration";
+import { generateChord } from "@/lib/chordGeneration";
 import type {
   AdvancedChordSuggestion,
   AdvancedEmotionAnalysis,
@@ -43,7 +43,7 @@ export async function POST(request: NextRequest) {
     const results: BatchChordResponse[] = emotionAnalyses.map(
       (emotionAnalysis, index) => {
         const emotion = emotions[index];
-        const chord = chordGeneration.generateChord(emotionAnalysis);
+        const chord = generateChord(emotionAnalysis);
 
         return {
           emotion,

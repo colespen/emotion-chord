@@ -1,7 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { analyzeEmotion } from "@/lib/services/emotionAnalyzer";
-import * as chordGeneration from "@/lib/chordGeneration";
+import {
+  generateChord,
+  generateAlternatives,
+  generateProgression,
+} from "@/lib/chordGeneration";
 import type {
   AdvancedChordSuggestion,
   EmotionChordResponse,
@@ -63,16 +67,13 @@ export async function POST(request: NextRequest) {
       preferredRoot: undefined, // Could be derived from cultural preference
       voicingStyle: options?.stylePreference === "jazz" ? "drop2" : undefined,
     };
-    const chordSuggestion = chordGeneration.generateChord(
-      emotionAnalysis,
-      chordOptions
-    );
+    const chordSuggestion = generateChord(emotionAnalysis, chordOptions);
 
     // Generate additional content if requested
     let alternatives: AdvancedChordSuggestion[] = [];
 
     if (options?.includeCulturalAlternatives) {
-      alternatives = chordGeneration.generateAlternatives(emotionAnalysis);
+      alternatives = generateAlternatives(emotionAnalysis);
     }
 
     const result: EmotionChordResponse = {
@@ -82,7 +83,7 @@ export async function POST(request: NextRequest) {
     };
 
     if (options?.includeProgression) {
-      result.chordProgression = chordGeneration.generateProgression(emotionAnalysis);
+      result.chordProgression = generateProgression(emotionAnalysis);
     }
 
     return NextResponse.json(result);

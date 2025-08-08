@@ -1,5 +1,5 @@
 import { useState, useCallback } from "react";
-import * as emotionChordApi from "@/services/emotionChordApi";
+import { generateChordFromEmotion } from "@/services/emotionChordApi";
 import type { EmotionChordResponse } from "@/types/emotionChord";
 
 interface UseEmotionChordState {
@@ -24,7 +24,7 @@ export function useEmotionChord() {
     setState((prev) => ({ ...prev, loading: true, error: null }));
 
     try {
-      const data = await emotionChordApi.generateChordFromEmotion(emotion, {
+      const data = await generateChordFromEmotion(emotion, {
         includeCulturalAlternatives: true,
         includeProgression: false,
       });

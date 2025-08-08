@@ -11,10 +11,10 @@ import type {
 } from "@/types/emotionChord";
 import type { TimbreType, DynamicsLevel, ArticulationType } from "@/types/common";
 import type { ChordOptions, ChordData } from "@/types/chords";
-import * as chordSelection from "./chordSelection";
-import * as voicing from "./voicing";
-import * as harmonic from "./harmonicAnalysis";
-import * as progression from "./progression";
+import { selectFromEmotion, getDominantGEMS } from "./chordSelection";
+import { generateVoicing } from "./voicing";
+import { analyzeChord, buildTheoreticalContext } from "./harmonicAnalysis";
+import { generate } from "./progression";
 
 /**
  * Generate a chord suggestion based on emotion analysis
@@ -25,20 +25,16 @@ export function generateChord(
   options?: ChordOptions
 ): AdvancedChordSuggestion {
   // Select chord based on emotion
-  const chordData = chordSelection.selectFromEmotion(emotion, options);
+  const chordData = selectFromEmotion(emotion, options);
 
   // Generate sophisticated voicing
-  const voicingInfo = voicing.generateVoicing(
-    chordData.chord,
-    emotion,
-    options?.voicingStyle
-  );
+  const voicingInfo = generateVoicing(chordData.chord, emotion, options?.voicingStyle);
 
   // Calculate harmonic characteristics
-  const harmonicAnalysis = harmonic.analyzeChord(chordData.chord, emotion);
+  const harmonicAnalysis = analyzeChord(chordData.chord, emotion);
 
   // Build theoretical context
-  const theoreticalContext = harmonic.buildTheoreticalContext(chordData);
+  const theoreticalContext = buildTheoreticalContext(chordData);
 
   return {
     symbol: chordData.symbol,
@@ -100,7 +96,7 @@ export function generateProgression(
   emotion: AdvancedEmotionAnalysis,
   length: number = 4
 ): ChordProgression {
-  return progression.generate(emotion, length);
+  return generate(emotion, length);
 }
 
 // Helper functions (pure)
@@ -143,7 +139,7 @@ function generateJustification(
 
   // Gems justification
   if (emotion.gems) {
-    const dominant = chordSelection.getDominantGEMS(emotion.gems);
+    const dominant = getDominantGEMS(emotion.gems);
     if (dominant) {
       parts.push(`emphasizing the ${dominant} quality`);
     }
