@@ -9,7 +9,10 @@ import { VOICING_DESCRIPTIONS } from "../constants/voicing";
  * Get descriptive text for different voicing types
  */
 export function getVoicingDescription(voicing: VoicingInfo): string {
-  return VOICING_DESCRIPTIONS[voicing.voicingType as keyof typeof VOICING_DESCRIPTIONS] || voicing.voicingType;
+  return (
+    VOICING_DESCRIPTIONS[voicing.voicingType as keyof typeof VOICING_DESCRIPTIONS] ||
+    voicing.voicingType
+  );
 }
 
 export function formatConfidence(confidence: number): string {

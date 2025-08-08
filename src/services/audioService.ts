@@ -10,7 +10,7 @@ import type {
   AdvancedEmotionAnalysis,
 } from "@/types/emotionChord";
 
-// Types for audio state management
+// types for audio state management
 export interface AudioState {
   isInitialized: boolean;
   isArpeggioPlaying: boolean;
@@ -26,7 +26,7 @@ export interface AudioConfig {
   compressor: { threshold: number; ratio: number; attack: number; release: number };
 }
 
-// Default audio configuration
+// default audio configuration
 export const defaultAudioConfig: AudioConfig = {
   volume: -8,
   reverb: { decay: 1.2, wet: 0.2 },
@@ -42,15 +42,15 @@ export async function createAudioSynth(
   config: AudioConfig = defaultAudioConfig,
   envelope?: { attack: number; decay: number; sustain: number; release: number }
 ): Promise<Tone.PolySynth> {
-  // Start audio context if needed
+  // start audio context if needed
   if (Tone.getContext().state !== "running") {
     await Tone.start();
   }
 
-  // Set destination volume
+  // set destination volume
   Tone.getDestination().volume.value = -12;
 
-  // Default envelope for loops
+  // default envelope for loops
   const defaultEnvelope = {
     attack: 0.04,
     decay: 0.2,
@@ -58,7 +58,7 @@ export async function createAudioSynth(
     release: 1.2,
   };
 
-  // Create synth
+  // create synth
   const synth = new Tone.PolySynth(Tone.Synth, {
     volume: config.volume,
     envelope: envelope || defaultEnvelope,
@@ -67,12 +67,12 @@ export async function createAudioSynth(
     },
   });
 
-  // Create effects chain
+  // create effects chain
   const reverb = new Tone.Reverb(config.reverb);
   const filter = new Tone.Filter(config.filter);
   const compressor = new Tone.Compressor(config.compressor);
 
-  // Connect effects chain
+  // connect effects chain
   synth.connect(filter);
   filter.connect(reverb);
   reverb.connect(compressor);
@@ -110,7 +110,7 @@ export function getChordFrequencies(chord: AdvancedChordSuggestion): number[] {
     return chord.voicing.notes.map(midiToFrequency);
   }
 
-  // Fallback to note names
+  // fallback to note names
   const noteToMidi: Record<string, number> = {
     C: 60,
     "C#": 61,
@@ -194,10 +194,10 @@ export async function playArpeggio(
   const velocity = getDynamicsVelocity(chord.dynamics);
   const noteDelay = emotion ? calculateArpeggioSpeed(emotion.suggestedTempo) : 0.15;
 
-  // Cancel any existing scheduled events
+  // cancel any existing scheduled events
   Tone.getTransport().cancel();
 
-  // Schedule arpeggio notes
+  // schedule arpeggio notes
   frequencies.forEach((freq, index) => {
     Tone.getTransport().schedule(
       (time) => {
@@ -207,7 +207,7 @@ export async function playArpeggio(
     );
   });
 
-  // Start transport and schedule stop
+  // start transport and schedule stop
   Tone.getTransport().start();
   Tone.getTransport().schedule(
     () => {
@@ -259,7 +259,7 @@ export function createProgressionSequence(
   progression: ChordProgression,
   onChordChange?: (index: number) => void
 ): Tone.Sequence {
-  // Set transport tempo
+  // set transport tempo
   Tone.getTransport().bpm.value = progression.tempo;
 
   const events = progression.chords.map((chord, index) => ({
@@ -272,9 +272,9 @@ export function createProgressionSequence(
     (time, data) => {
       onChordChange?.(data.index);
 
-      // Get chord frequencies - simplified for now
-      // TODO: Use actual chord data for more accurate playback
-      const frequencies = [220, 277, 330, 415]; // Should be derived from chord data
+      // get chord frequencies - simplified for now
+      // TODO: use actual chord data for more accurate playback
+      const frequencies = [220, 277, 330, 415]; // should be derived from chord data
       const duration = `${data.chord.duration}n` as Tone.Unit.Time;
 
       synth.triggerAttackRelease(frequencies, duration, time);
@@ -293,22 +293,22 @@ export function stopAllAudio(
   arpeggioLoop?: Tone.Loop,
   progressionSequence?: Tone.Sequence
 ): void {
-  // Release all synth voices
+  // release all synth voices
   synth?.releaseAll();
 
-  // Stop and dispose arpeggio loop
+  // stop and dispose arpeggio loop
   if (arpeggioLoop) {
     arpeggioLoop.stop();
     arpeggioLoop.dispose();
   }
 
-  // Stop and dispose progression sequence
+  // stop and dispose progression sequence
   if (progressionSequence) {
     progressionSequence.stop();
     progressionSequence.dispose();
   }
 
-  // Stop transport
+  // stop transport
   Tone.getTransport().stop();
   Tone.getTransport().cancel();
 }

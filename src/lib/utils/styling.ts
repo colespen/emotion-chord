@@ -32,7 +32,10 @@ export function getResonanceColor(resonance: number): string {
  * Get color class and background for progression types
  */
 export function getProgressionTypeColor(type: string): string {
-  return PROGRESSION_TYPE_COLORS[type as keyof typeof PROGRESSION_TYPE_COLORS] || "text-[#7d8590] bg-[#7d8590]/10";
+  return (
+    PROGRESSION_TYPE_COLORS[type as keyof typeof PROGRESSION_TYPE_COLORS] ||
+    "text-[#7d8590] bg-[#7d8590]/10"
+  );
 }
 
 /**

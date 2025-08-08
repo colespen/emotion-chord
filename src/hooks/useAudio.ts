@@ -53,17 +53,20 @@ export function useAudio() {
     try {
       const synth = await audioService.createAudioSynth();
       synthRef.current = synth;
-      
+
       // Create separate synth for one-off chord playback with DRAMATICALLY longer envelope for testing
       const oneOffEnvelope = {
-        attack: 0.1,     // 5x longer attack (was 0.02)
-        decay: 1.0,      // 5x longer decay (was 0.2) 
-        sustain: 0.9,    // Much higher sustain (was 0.65)
-        release: 4.0,    // Much longer release (was 1.2)
+        attack: 0.1, // 5x longer attack (was 0.02)
+        decay: 1.0, // 5x longer decay (was 0.2)
+        sustain: 0.9, // Much higher sustain (was 0.65)
+        release: 4.0, // Much longer release (was 1.2)
       };
-      const oneOffSynth = await audioService.createAudioSynth(audioService.defaultAudioConfig, oneOffEnvelope);
+      const oneOffSynth = await audioService.createAudioSynth(
+        audioService.defaultAudioConfig,
+        oneOffEnvelope
+      );
       oneOffSynthRef.current = oneOffSynth;
-      
+
       setState((prev) => ({ ...prev, isInitialized: true, error: null }));
     } catch (error) {
       const errorMessage =
@@ -420,7 +423,7 @@ export function useAudio() {
       arpeggioLoopRef.current || undefined,
       progressionSequenceRef.current || undefined
     );
-    
+
     // Also stop the one-off synth
     if (oneOffSynthRef.current) {
       oneOffSynthRef.current.releaseAll();

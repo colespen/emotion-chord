@@ -1,6 +1,6 @@
 /**
- * Chord Selection Logic
- * Pure functions for selecting chords based on emotions
+ * chord selection logic
+ * pure functions for selecting chords based on emotions
  */
 
 import { Chord, Note } from "tonal";
@@ -11,7 +11,7 @@ import { ADVANCED_EMOTION_MAPPINGS } from "../config/musicalMappings";
 import { BRIGHT_ROOTS, DARK_ROOTS, AMBIGUOUS_ROOTS } from "../constants/music";
 import { MODAL_INTERCHANGE_BORROWINGS, POLYCHORD_MAP } from "../constants/harmony";
 
-// Interface for Tonal.js Chord object
+// interface for tonal.js chord object
 interface TonalChord {
   empty: boolean;
   name: string;
@@ -31,36 +31,36 @@ interface TonalChord {
 }
 
 /**
- * Normalize chord symbols to be compatible with Tonal.js
- * Based on Tonal.js documentation and testing
+ * normalize chord symbols to be compatible with tonal.js
+ * based on tonal.js documentation and testing
  */
 function normalizeChordSymbol(symbol: string): string {
-  // Replace chord notation variations that Tonal.js doesn't recognize
+  // replace chord notation variations that tonal.js doesn't recognize
   return symbol
-    .replace(/maj6/g, "6") // maj6 -> 6 (Cmaj6 -> C6)
-    .replace(/Maj6/g, "6") // Maj6 -> 6
-    .replace(/MAJ6/g, "6"); // MAJ6 -> 6
-  // Note: maj9, maj13 are valid in Tonal.js, only maj6 needs normalization
+    .replace(/maj6/g, "6") // maj6 -> 6 (cmaj6 -> c6)
+    .replace(/Maj6/g, "6") // maj6 -> 6
+    .replace(/MAJ6/g, "6"); // maj6 -> 6
+  // note: maj9, maj13 are valid in tonal.js, only maj6 needs normalization
 }
 
 /**
- * Safe chord creation with fallback
+ * safe chord creation with fallback
  */
 function safeGetChord(symbol: string): TonalChord {
   const normalizedSymbol = normalizeChordSymbol(symbol);
   const chord = Chord.get(normalizedSymbol) as TonalChord;
 
-  // If chord is empty, try to fallback to a simpler version
+  // if chord is empty, try to fallback to a simpler version
   if (chord.empty) {
     console.warn(`Invalid chord symbol: ${symbol}, trying fallback`);
 
-    // Extract root and try basic major chord as fallback
+    // extract root and try basic major chord as fallback
     const root = symbol.match(/^[A-G][#b]?/)?.[0] || "C";
     const fallbackChord = Chord.get(root) as TonalChord;
 
     return {
       ...fallbackChord,
-      symbol: normalizedSymbol, // Keep the intended symbol
+      symbol: normalizedSymbol, // keep the intended symbol
     };
   }
 
@@ -71,13 +71,13 @@ function safeGetChord(symbol: string): TonalChord {
 }
 
 /**
- * Select a chord based on emotion analysis
+ * select a chord based on emotion analysis
  */
 export function selectFromEmotion(
   emotion: AdvancedEmotionAnalysis,
   options?: ChordOptions
 ): ChordData {
-  // Check for specific GEMS emotions first
+  // check for specific gems emotions first
   if (emotion.gems) {
     const dominantGems = getDominantGEMS(emotion.gems);
     if (dominantGems && dominantGems in ADVANCED_EMOTION_MAPPINGS.gems) {
@@ -89,7 +89,7 @@ export function selectFromEmotion(
       const quality = qualities[Math.floor(Math.random() * qualities.length)];
       const root = options?.preferredRoot || selectRoot(emotion);
 
-      // Handle special chord types
+      // handle special chord types
       if (quality === "quartal") {
         return generateQuartalChord(root);
       } else if (quality === "spectral") {
@@ -107,17 +107,17 @@ export function selectFromEmotion(
     }
   }
 
-  // Check for high tension/complexity emotions
+  // check for high tension/complexity emotions
   if (emotion.tension > 0.7 && emotion.complexity > 0.6) {
     return generateAdvancedHarmony(emotion, options);
   }
 
-  // Default to sophisticated selection based on valence/arousal
+  // default to sophisticated selection based on valence/arousal
   return selectFromValenceArousal(emotion, options);
 }
 
 /**
- * Get the dominant GEMS emotion
+ * get the dominant gems emotion
  */
 export function getDominantGEMS(gems: GEMSEmotions | undefined): string | null {
   if (!gems) return null;
@@ -136,19 +136,19 @@ export function getDominantGEMS(gems: GEMSEmotions | undefined): string | null {
 }
 
 /**
- * Select root note based on emotion and cultural context
+ * select root note based on emotion and cultural context
  */
 export function selectRoot(emotion: AdvancedEmotionAnalysis): string {
-  // Cultural context influences root selection
+  // cultural context influences root selection
   if (emotion.culturalContext === "indian") {
-    // Indian music often centers on sa (c) or pa (g)
+    // indian music often centers on sa (c) or pa (g)
     return emotion.valence > 0 ? "C" : "G";
   } else if (emotion.culturalContext === "arabic") {
-    // Arabic music often uses d as tonic
+    // arabic music often uses d as tonic
     return "D";
   }
 
-  // Western root selection based on emotion
+  // western root selection based on emotion
   if (emotion.valence > 0.5) {
     return BRIGHT_ROOTS[Math.floor(Math.random() * BRIGHT_ROOTS.length)];
   } else if (emotion.valence < -0.5) {
@@ -158,12 +158,12 @@ export function selectRoot(emotion: AdvancedEmotionAnalysis): string {
   }
 }
 
-// Helper functions for special chord types
+// helper functions for special chord types
 function generateQuartalChord(root: string): ChordData {
   const notes: string[] = [root];
   const intervals = ["1P", "4P", "4P", "4P"];
 
-  // Build quartal stack
+  // build quartal stack
   let currentNote = root;
   for (let i = 0; i < 3; i++) {
     currentNote = Note.transpose(currentNote, "4P");
@@ -189,16 +189,16 @@ function generateSpectralChord(
   root: string,
   emotion: AdvancedEmotionAnalysis
 ): ChordData {
-  // Generate based on harmonic series
+  // generate based on harmonic series
   const fundamentalMidi = Note.midi(root + "2") || 36;
   const harmonics = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13];
   const notes: string[] = [];
 
-  // Select harmonics based on emotion
+  // select harmonics based on emotion
   const selectedHarmonics =
     (emotion.gems?.transcendence ?? 0) > 0.7
-      ? harmonics.slice(6) // Higher harmonics for transcendence
-      : harmonics.slice(2, 8); // Middle harmonics for general use
+      ? harmonics.slice(6) // higher harmonics for transcendence
+      : harmonics.slice(2, 8); // middle harmonics for general use
 
   selectedHarmonics.forEach((harmonic) => {
     const freq = 440 * Math.pow(2, (fundamentalMidi - 69) / 12) * harmonic;
@@ -213,7 +213,7 @@ function generateSpectralChord(
     symbol: `${root}spectral`,
     chord: {
       root,
-      notes: notes.slice(0, 6), // Limit to 6 notes
+      notes: notes.slice(0, 6), // limit to 6 notes
       intervals: ["1P", "5P", "3M", "7m", "9M", "#11"],
       quality: "spectral",
     },
@@ -261,7 +261,7 @@ function generateAdvancedHarmony(
 ): ChordData {
   const root = options?.preferredRoot || selectRoot(emotion);
 
-  // For high tension, use altered dominants or diminished
+  // for high tension, use altered dominants or diminished
   if (emotion.tension > 0.8) {
     const alterations = ["7b9", "7#9", "7alt", "13b9#11"];
     const quality = alterations[Math.floor(Math.random() * alterations.length)];
@@ -274,12 +274,12 @@ function generateAdvancedHarmony(
     };
   }
 
-  // For complex emotions, use modal interchange
+  // for complex emotions, use modal interchange
   if (emotion.complexity > 0.7) {
     return generateModalInterchange(root, emotion);
   }
 
-  // Default to extended harmony
+  // default to extended harmony
   const qualities = ["maj7#11", "m11", "maj13", "m13"];
   const quality = qualities[Math.floor(Math.random() * qualities.length)];
 
@@ -305,7 +305,7 @@ function buildAlteredChord(
   const notes = [...baseChord.notes];
   const intervals = [...baseChord.intervals];
 
-  // Add alterations based on quality
+  // add alterations based on quality
   if (quality.includes("b9")) {
     notes.push(Note.transpose(root, "2m"));
     intervals.push("9m");
@@ -363,21 +363,21 @@ function selectFromValenceArousal(
   const root = options?.preferredRoot || selectRoot(emotion);
   let quality = "";
 
-  // Quadrant-based selection
+  // quadrant-based selection
   if (emotion.valence > 0.5 && emotion.arousal > 0.5) {
-    // Happy, excited
+    // happy, excited
     const qualities = ["maj7", "maj9", "6/9", "maj13"];
     quality = qualities[Math.floor(Math.random() * qualities.length)];
   } else if (emotion.valence > 0.5 && emotion.arousal < 0.5) {
-    // Peaceful, content
-    const qualities = ["maj7", "add9", "sus2", "6"]; // Changed maj6 to 6
+    // peaceful, content
+    const qualities = ["maj7", "add9", "sus2", "6"]; // changed maj6 to 6
     quality = qualities[Math.floor(Math.random() * qualities.length)];
   } else if (emotion.valence < -0.5 && emotion.arousal > 0.5) {
-    // Angry, anxious
+    // angry, anxious
     const qualities = ["7b9", "m7b5", "dim7", "7alt"];
     quality = qualities[Math.floor(Math.random() * qualities.length)];
   } else {
-    // Sad, melancholic
+    // sad, melancholic
     const qualities = ["m7", "m9", "m6", "mMaj7"];
     quality = qualities[Math.floor(Math.random() * qualities.length)];
   }
